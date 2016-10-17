@@ -19,8 +19,6 @@ public class PauseState extends State {
         restartBtn = new Button("Restart.png", camera.position.x+200, camera.position.y);
         onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250);
         offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250);
-        //onSoundBtn.getBounds().setCenter(camera.position.x-330, camera.position.y+600);
-        //offSoundBtn.getBounds().setCenter(camera.position.x-330, camera.position.y+600);
     }
 
     @Override

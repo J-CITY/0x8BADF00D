@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.runnergame.game.states.CoinsManager;
 import com.runnergame.game.states.GameStateManager;
 import com.runnergame.game.states.MenuState;
 import com.runnergame.game.states.RecordManager;
@@ -25,7 +26,10 @@ public class GameRunner extends ApplicationAdapter {
 	public  static BitmapFont font;
 
 	public static RecordManager rm;
+	public static CoinsManager cm;
 	public static int score = 0;
+	public static int new_coins = 0;
+	public static boolean reborn = false;
 
 	public static Colors colors = new Colors();
 
@@ -33,6 +37,7 @@ public class GameRunner extends ApplicationAdapter {
 	public void create () {
 		batch = new SpriteBatch();
 		rm = new RecordManager("GameRunner");
+		cm = new CoinsManager("GameRunner");
 		gsm = new GameStateManager();
 		music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
 		music.setLooping(true);
@@ -57,51 +62,44 @@ public class GameRunner extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		//if(next == 1) {
-			next = 0;
-
-			if(inc == 3) {
-				inc = 0;
-				if(H == 0)
-					dir = 1;
-				if(H == 360)
-					dir = -1;
-				H += dir;
-				Vmin = (100 - S) * V / 100;
-				float a = (V - Vmin) * (H % 60) / 60;
-				Vinc = Vmin + a;
-				Vdec = V - a;
-			}
-			if(H < 60) {
-				Gdx.gl.glClearColor( V * 1 / 255, Vinc * 1 / 255, Vmin * 1 / 255, 1 );
-				//System.out.print("R: " + V * 1 / 255 + "G: " + Vinc * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
-			}
-			if(H >= 60 && H < 120) {
-				Gdx.gl.glClearColor( Vdec * 1 / 255, V * 1 / 255, Vmin * 1 / 255, 1 );
-				//System.out.print("R: " +  Vdec * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
-			}
-			if(H >= 120 && H < 180) {
-				Gdx.gl.glClearColor( Vmin * 1 / 255, V * 1 / 255, Vinc * 1 / 255, 1 );
-				//System.out.print("R: " + Vmin * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vinc * 1 / 255 + "\n");
-			}
-			if(H >= 180 && H < 240) {
-				Gdx.gl.glClearColor( Vmin * 1 / 255, Vdec * 1 / 255, V * 1 / 255, 1 );
-				//System.out.print("R: " + Vmin * 1 / 255 + "G: " + Vdec * 1 / 255 + "B: " + V * 1 / 255 + "\n");
-			}
-			if(H >= 240 && H < 300) {
-				Gdx.gl.glClearColor( Vinc * 1 / 255, Vmin * 1 / 255, V * 1 / 255, 1 );
-				//System.out.print("R: " + Vinc * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + V * 1 / 255 + "\n");
-			}
-			if(H >= 300 && H < 360) {
-				Gdx.gl.glClearColor( V * 1 / 255, Vmin * 1 / 255, Vdec * 1 / 255, 1 );
-				//System.out.print("R: " + V * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + Vdec * 1 / 255 + "\n");
-			}
-
-			//System.out.print("H: " + H + "S: " + S + "V: " + V + "\n");
-			inc++;
-			//inc=6;
-		//} else
-		//	next++;
+		next = 0;
+		if(inc == 3) {
+			inc = 0;
+			if(H == 0)
+				dir = 1;
+			if(H == 360)
+				dir = -1;
+			H += dir;
+			Vmin = (100 - S) * V / 100;
+			float a = (V - Vmin) * (H % 60) / 60;
+			Vinc = Vmin + a;
+			Vdec = V - a;
+		}
+		if(H < 60) {
+			Gdx.gl.glClearColor( V * 1 / 255, Vinc * 1 / 255, Vmin * 1 / 255, 1 );
+			//System.out.print("R: " + V * 1 / 255 + "G: " + Vinc * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
+		}
+		if(H >= 60 && H < 120) {
+			Gdx.gl.glClearColor( Vdec * 1 / 255, V * 1 / 255, Vmin * 1 / 255, 1 );
+			//System.out.print("R: " +  Vdec * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
+		}
+		if(H >= 120 && H < 180) {
+			Gdx.gl.glClearColor( Vmin * 1 / 255, V * 1 / 255, Vinc * 1 / 255, 1 );
+			//System.out.print("R: " + Vmin * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vinc * 1 / 255 + "\n");
+		}
+		if(H >= 180 && H < 240) {
+			Gdx.gl.glClearColor( Vmin * 1 / 255, Vdec * 1 / 255, V * 1 / 255, 1 );
+			//System.out.print("R: " + Vmin * 1 / 255 + "G: " + Vdec * 1 / 255 + "B: " + V * 1 / 255 + "\n");
+		}
+		if(H >= 240 && H < 300) {
+			Gdx.gl.glClearColor( Vinc * 1 / 255, Vmin * 1 / 255, V * 1 / 255, 1 );
+			//System.out.print("R: " + Vinc * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + V * 1 / 255 + "\n");
+		}
+		if(H >= 300 && H < 360) {
+			Gdx.gl.glClearColor( V * 1 / 255, Vmin * 1 / 255, Vdec * 1 / 255, 1 );
+			//System.out.print("R: " + V * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + Vdec * 1 / 255 + "\n");
+		}
+		inc++;
 
 		if(music.isPlaying() && !isPlay) {
 			music.stop();

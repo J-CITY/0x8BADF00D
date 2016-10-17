@@ -16,12 +16,11 @@ public class GameOver extends State {
     public GameOver(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         GameRunner.rm.save(GameRunner.score);
+        GameRunner.cm.addCoins(GameRunner.new_coins);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
         playBtn = new Button("Play.png", camera.position.x, camera.position.y);
         onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250);
         offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250);
-        //onSoundBtn.getBounds().setCenter(camera.position.x-330, camera.position.y+600);
-        //offSoundBtn.getBounds().setCenter(camera.position.x-330, camera.position.y+600);
     }
 
     @Override

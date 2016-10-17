@@ -93,6 +93,13 @@ public class Player {
         floor = _y;
     }
 
+    public void NCM(int __y) {
+        position.y+=__y;
+        sprite.setCenter(position.x, position.y);
+        bound.setPosition(position.x, position.y);
+        bound.setCenter(position.x, position.y);
+    }
+
     public void changeColor() {
         color = color % 2 + 1;
     }

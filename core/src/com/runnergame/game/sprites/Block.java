@@ -22,10 +22,7 @@ public abstract class Block {
     public int color = 0;//0- def; 1- blue; 2- red
 
     public Block(float x, int type) {
- //       tex = new Texture("block.png");
         TYPE = type;
-        //pos = new Vector2(x, rand.nextInt(FLUCTUATION) + 20);
-
     }
 
     public abstract void update(float delta, float _x);

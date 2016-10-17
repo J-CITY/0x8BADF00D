@@ -7,33 +7,37 @@ import com.badlogic.gdx.math.Vector3;
 import com.runnergame.game.GameRunner;
 import com.runnergame.game.sprites.Button;
 
-public class MenuState extends State {
-
-    private Button playBtn, onSoundBtn, offSoundBtn;
-    private String TITLE = "0x8BADF00D";
+public class PreGameOver extends State {
+    private Button playBtn, onSoundBtn, offSoundBtn, endGameBtn;
+    private String TITLE = "<< GAME OVER >>";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
-    public MenuState(GameStateManager gameStateMenager) {
+    public PreGameOver(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x, camera.position.y);
+        playBtn = new Button("Play.png", camera.position.x-50, camera.position.y);
         onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250);
         offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250);
+        endGameBtn = new Button("EndGame.png", camera.position.x+50, camera.position.y);
     }
 
     @Override
     protected void hendleInput() {
         if(Gdx.input.justTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-
             if(playBtn.collide(vec.x, vec.y)) {
-                gameStateMenager.set(new PlayState(gameStateMenager));
+                if (GameRunner.cm.load() >= 100) {
+                    GameRunner.cm.addCoins(-100);
+                    GameRunner.reborn = true;
+                    gameStateMenager.set(new PlayState(gameStateMenager));
+                }
             } else if(onSoundBtn.collide(vec.x, vec.y)) {
                 GameRunner.isPlay = !GameRunner.isPlay;
+            } if(endGameBtn.collide(vec.x, vec.y)) {
+                gameStateMenager.set(new GameOver(gameStateMenager));
             }
         }
     }
-
 
     @Override
     public void update(float delta) {
@@ -44,8 +48,12 @@ public class MenuState extends State {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
+        GameRunner.font.draw(sb, "SCORE: " + GameRunner.score, GameRunner.WIDTH / 2, GameRunner.HEIGHT - 150);
+        GameRunner.font.draw(sb, "RECORD: " + GameRunner.rm.load(), GameRunner.WIDTH / 2, GameRunner.HEIGHT - 200);
+        GameRunner.font.draw(sb, "COINS: " + GameRunner.cm.load(), GameRunner.WIDTH / 2, GameRunner.HEIGHT - 250);
         GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
         playBtn.getSprite().draw(sb);
+        endGameBtn.getSprite().draw(sb);
         if(GameRunner.isPlay) {
             onSoundBtn.getSprite().draw(sb);
         } else {

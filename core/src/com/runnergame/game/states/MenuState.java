@@ -27,7 +27,8 @@ public class MenuState extends State {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
             if(playBtn.collide(vec.x, vec.y)) {
-                gameStateMenager.set(new PlayState(gameStateMenager));
+                //gameStateMenager.set(new PlayState(gameStateMenager));
+                gameStateMenager.set(new MetaGameState(gameStateMenager));
             } else if(onSoundBtn.collide(vec.x, vec.y)) {
                 GameRunner.isPlay = !GameRunner.isPlay;
             }
@@ -44,6 +45,7 @@ public class MenuState extends State {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
+
         GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
         playBtn.getSprite().draw(sb);
         if(GameRunner.isPlay) {

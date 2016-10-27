@@ -6,5 +6,6 @@ public class Constants {
     public static float BLOCK_W = 64;
     public static int B_FLOOR = 0;
     public static int B_JUMP = 4;
+    public static int B_FINISH = 5;
     public static int B_NEEDLE = 1;
 }

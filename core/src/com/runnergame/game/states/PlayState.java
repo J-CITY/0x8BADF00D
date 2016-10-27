@@ -10,6 +10,7 @@ import com.runnergame.game.Colors;
 import com.runnergame.game.Constants;
 import com.runnergame.game.GameRunner;
 import com.runnergame.game.sprites.Block;
+import com.runnergame.game.sprites.BlockFinish;
 import com.runnergame.game.sprites.BlockFloor;
 import com.runnergame.game.sprites.BlockJump;
 import com.runnergame.game.sprites.BlockNeedle;
@@ -20,14 +21,16 @@ import com.runnergame.game.sprites.Player;
 public class PlayState extends State {
     public static final int BLOCK_SPACING = 64;
     private Player player;
-    int star=0;
 
     private Array<Block> blocks;
     public static final int BLOCKS_MAX_COUNT = 80;
-    Button pauseBtn;
+    Button pauseBtn, ncBtn;
 
     private Array<Coin> coins;
     int NYAN_CAT_MODE = 0;
+
+    int BLOCK_COUNT;
+    private SpriteBatch tb;
 
     private void addPlatform(float x) {
         int platform_count = MathUtils.random(3, 8);
@@ -236,17 +239,31 @@ public class PlayState extends State {
         }
     }
 
+    private void addFinish(float x) {
+        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.get(blocks.size-1).setColor(0);
+        blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
+        blocks.get(blocks.size-1).setColor(0);
+        blocks.add(new BlockFloor(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_FLOOR));
+        blocks.get(blocks.size-1).setColor(0);
+        blocks.add(new BlockFinish(x + BLOCK_SPACING*2, 148, Constants.B_FINISH));
+        blocks.get(blocks.size-1).setColor(0);
+
+    }
+
     public PlayState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         if(GameRunner.reborn) {
             GameRunner.reborn = false;
         } else {
             GameRunner.score = 0;
-            GameRunner.new_coins = 0;
+            //GameRunner.new_coins = 0;
         }
 
-        camera.setToOrtho(false, GameRunner.WIDTH / 2, GameRunner.HEIGHT / 2);
+        BLOCK_COUNT = MathUtils.random(20, 35);
 
+        camera.setToOrtho(false, GameRunner.WIDTH / 2, GameRunner.HEIGHT / 2);
+        tb = new SpriteBatch();
         player = new Player(200, 232);
 
         coins = new Array<Coin>();//!!!!!!!!
@@ -259,6 +276,8 @@ public class PlayState extends State {
 
         pauseBtn = new Button("Pause.png", camera.position.x - 280, camera.position.y + 150);
         pauseBtn.getBounds().setCenter(camera.position.x - 280, camera.position.y + 150);
+        ncBtn = new Button("nc.png", camera.position.x + 280, camera.position.y + 150);
+        //ncBtn.getBounds().setCenter(camera.position.x + 280, camera.position.y + 150);
     }
 
     @Override
@@ -268,6 +287,14 @@ public class PlayState extends State {
             if(pauseBtn.collide(vec.x, vec.y)) {
                 gameStateMenager.push(new PauseState(gameStateMenager));
             }
+            if(ncBtn.collide(vec.x, vec.y)) {
+                if(GameRunner.new_stars >= 5 && NYAN_CAT_MODE == 0) {//!!!!!!!!!!!!!!!!
+                    GameRunner.new_stars -= 5;
+                    blocks.add(new BlockFloor(blocks.get(blocks.size-1).getPos().x + Constants.BLOCK_W, 100, 7));
+                    NYAN_CAT_MODE = 1;
+                }
+                return;
+            }
             player.changeColor();
         }
         if(Gdx.input.isTouched() && NYAN_CAT_MODE == 2) {//!!!!!!!!!!!
@@ -275,6 +302,7 @@ public class PlayState extends State {
             if(pauseBtn.collide(vec.x, vec.y)) {
                 gameStateMenager.push(new PauseState(gameStateMenager));
             }
+
             if(vec.y > player.getPosition().y) {
                 player.NCM(5);
             } else {
@@ -297,14 +325,9 @@ public class PlayState extends State {
             gameStateMenager.set(new PreGameOver(gameStateMenager));
         }
 
-        if(star >= 5) {//!!!!!!!!!!!!!!!!
-            star = 5;
-            if(NYAN_CAT_MODE == 0) {
-                blocks.add(new BlockFloor(blocks.get(blocks.size-1).getPos().x + Constants.BLOCK_W, 100, 7));
-                NYAN_CAT_MODE = 1;
-            }
-        }
-        while (blocks.size < BLOCKS_MAX_COUNT && star < 4) {//!!!!!
+
+        while (blocks.size < BLOCKS_MAX_COUNT && BLOCK_COUNT > 0 && NYAN_CAT_MODE == 0) {//!!!!!
+            BLOCK_COUNT--;
             int new_blocks = MathUtils.random(0, 7);
             switch (new_blocks) {
                 case 0:
@@ -333,6 +356,10 @@ public class PlayState extends State {
                     addCoinJump(blocks.get(blocks.size-1).getPos().x + Constants.BLOCK_W);
                     break;
             }
+        }
+        if(BLOCK_COUNT == 0) {
+            BLOCK_COUNT--;
+            addFinish(blocks.get(blocks.size-1).getPos().x + Constants.BLOCK_W);
         }
         boolean flag = true;
         for (int i = 0; i < blocks.size; ++i){
@@ -366,12 +393,15 @@ public class PlayState extends State {
                         coins.add(new Coin(coins.get(coins.size-1).getPos().x+64, MathUtils.random(100, 550), 0));
                     }
                 }
+                if (f.TYPE == Constants.B_FINISH) {
+                    System.out.print("WIN" + "\n");
+                    gameStateMenager.set(new WinState(gameStateMenager));
+                }
             }
         }
         //System.out.print(coins.size+"\n");
         if(coins.size == 0 && NYAN_CAT_MODE == 2) {//!!!!!!!!!!!
             NYAN_CAT_MODE = 0;
-            star = 0;
             addFloor(0);
             for (int i = 0; i < 3; ++i) {
                 addFloor(blocks.get(blocks.size-1).getPos().x + Constants.BLOCK_W);
@@ -387,7 +417,7 @@ public class PlayState extends State {
                 if(c.TYPE == 0) {
                     GameRunner.new_coins++;
                 } else {
-                    star++;
+                    GameRunner.new_stars++;
                 }
                 c.life = false;
             }
@@ -433,11 +463,13 @@ public class PlayState extends State {
             }
         }
         pauseBtn.getSprite().draw(sb);
-        GameRunner.font.draw(sb, "SCORE: " + GameRunner.score, camera.position.x - 280, camera.position.y - 160);
-        GameRunner.font.draw(sb, "COINS: " + GameRunner.new_coins, camera.position.x - 280, camera.position.y - 135);
-        GameRunner.font.draw(sb, "STARS: " + star + "/5", camera.position.x - 280, camera.position.y - 110);
-
+        ncBtn.getSprite().draw(sb);
         sb.end();
+
+        tb.setProjectionMatrix(camera.combined.scl(0.5f));
+        tb.begin();
+        GameRunner.font.draw(tb, "COINS: " + GameRunner.new_coins + " STARS: " + GameRunner.new_stars, camera.position.x - 280, camera.position.y - 160);
+        tb.end();
     }
 
     @Override

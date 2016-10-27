@@ -9,18 +9,26 @@ import com.runnergame.game.GameRunner;
 import com.runnergame.game.sprites.Button;
 
 public class GameOver extends State {
-    private Button playBtn, onSoundBtn, offSoundBtn;
+    private Button playBtn, onSoundBtn, offSoundBtn, exitBtn;
     private String TITLE = "<< GAME OVER >>";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
+    //private DataManager dm;
+
     public GameOver(GameStateManager gameStateMenager) {
         super(gameStateMenager);
-        GameRunner.rm.save(GameRunner.score);
-        GameRunner.cm.addCoins(GameRunner.new_coins);
+
+        //dm = new DataManager("GameRunner");
+        //dm.setParam("star");
+        //dm.plusData(GameRunner.new_stars);
+
+        //GameRunner.rm.save(GameRunner.score);
+        //GameRunner.cm.addCoins(GameRunner.new_coins);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x, camera.position.y);
+        playBtn = new Button("Play.png", camera.position.x-200, camera.position.y);
         onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250);
         offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250);
+        exitBtn = new Button("close.png", camera.position.x+200, camera.position.y);
     }
 
     @Override
@@ -31,6 +39,8 @@ public class GameOver extends State {
                 gameStateMenager.set(new PlayState(gameStateMenager));
             } else if(onSoundBtn.collide(vec.x, vec.y)) {
                 GameRunner.isPlay = !GameRunner.isPlay;
+            } else if(exitBtn.collide(vec.x, vec.y)) {
+                gameStateMenager.set(new MetaGameState(gameStateMenager));
             }
         }
     }
@@ -44,10 +54,11 @@ public class GameOver extends State {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
-        GameRunner.font.draw(sb, "SCORE: " + GameRunner.score, GameRunner.WIDTH / 2, GameRunner.HEIGHT - 150);
-        GameRunner.font.draw(sb, "RECORD: " + GameRunner.rm.load(), GameRunner.WIDTH / 2, GameRunner.HEIGHT - 200);
+        //GameRunner.font.draw(sb, "SCORE: " + GameRunner.score, GameRunner.WIDTH / 2, GameRunner.HEIGHT - 150);
+        //GameRunner.font.draw(sb, "RECORD: " + GameRunner.rm.load(), GameRunner.WIDTH / 2, GameRunner.HEIGHT - 200);
         GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
         playBtn.getSprite().draw(sb);
+        exitBtn.getSprite().draw(sb);
         if(GameRunner.isPlay) {
             onSoundBtn.getSprite().draw(sb);
         } else {

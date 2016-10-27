@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.runnergame.game.states.CoinsManager;
+import com.runnergame.game.states.DataManager;
 import com.runnergame.game.states.GameStateManager;
 import com.runnergame.game.states.MenuState;
 import com.runnergame.game.states.RecordManager;
@@ -25,10 +26,12 @@ public class GameRunner extends ApplicationAdapter {
 	public static boolean isPlay = true;
 	public  static BitmapFont font;
 
-	public static RecordManager rm;
-	public static CoinsManager cm;
+	//public static RecordManager rm;
+	//public static CoinsManager cm;
+	public static DataManager dm;
 	public static int score = 0;
 	public static int new_coins = 0;
+	public static int new_stars = 0;
 	public static boolean reborn = false;
 
 	public static Colors colors = new Colors();
@@ -36,8 +39,22 @@ public class GameRunner extends ApplicationAdapter {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		rm = new RecordManager("GameRunner");
-		cm = new CoinsManager("GameRunner");
+		//rm = new RecordManager("GameRunner");
+		//cm = new CoinsManager("GameRunner");
+		dm = new DataManager("GameRunner");
+		//									cm.setCoins(250);
+		/*DataManager dm = new DataManager("GameRunner");
+		for(int i=0; i<16; ++i) {
+			dm.setParam("Unit" + i);
+			dm.addData(0);
+		}*/
+		dm.setParam("coins");
+		//					dm.addData(250);
+		new_coins = dm.load();
+		dm.setParam("star");
+		new_stars = dm.load();
+
+
 		gsm = new GameStateManager();
 		music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
 		music.setLooping(true);

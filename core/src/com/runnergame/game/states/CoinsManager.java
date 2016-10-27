@@ -12,9 +12,14 @@ public class CoinsManager {
         }
 
         public void addCoins(int _c) {
-            int c = prefs.getInteger("coins");
-            c += _c;
-            prefs.putInteger("coins", c);
+            //int c = prefs.getInteger("coins");
+            //c += _c;
+            prefs.putInteger("coins", _c);
+            prefs.flush();
+        }
+
+        public void setCoins(int _c) {
+            prefs.putInteger("coins", _c);
             prefs.flush();
         }
 

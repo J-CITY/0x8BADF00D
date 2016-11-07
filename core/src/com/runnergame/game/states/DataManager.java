@@ -33,6 +33,14 @@ public class DataManager {
         prefs.flush();
     }
 
+    public void addDataTime(String par, long c) {
+        prefs.putLong(par, c);
+        prefs.flush();
+    }
+    public long loadDataTime(String str) {
+        return prefs.getLong(str, 0);
+    }
+
     public int load() {
         return prefs.getInteger(param, 0);
     }

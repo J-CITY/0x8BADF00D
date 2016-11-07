@@ -1,5 +1,6 @@
 package com.runnergame.game.sprites;
 
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
@@ -15,11 +16,10 @@ public class Unit {
     private Texture texture;
     private Sprite sprite;
 
-    public int giveParam = 0;//0-nothing, 1-coin, 2 star, 3 energy
-    public int giveCount = 0;
-
-    public int takeParam = 0;
-    public int takeCount = 0;
+    public int level = 0;
+    public int energy = 0;//0-nothing, 1-coin, 2 star, 3 energy
+    public int coin = 0;
+    public int star = 0;
 
     public int type = 0;// 0-lock 1-unlock
     public int num;
@@ -37,51 +37,68 @@ public class Unit {
         switch (type) {
             case 0:
                 texture = new Texture("lock.png");
-                giveParam = 0;
-                giveCount = 0;
-                takeParam = 0;
-                takeCount = 0;
+                level = 0;
+                energy = 0;
+                coin = 0;
+                star = 0;
                 price = 0;
                 discription = "";
                 break;
             case 1:
                 texture = new Texture("unlock.png");
-                giveParam = 0;
-                giveCount = 0;
-                takeParam = 0;
-                takeCount = 0;
+                level = 0;
+                energy = 0;
+                coin = 0;
+                star = 0;
                 price = 100;
                 discription = "";
                 break;
             case 2:
                 texture = new Texture("energy.png");
-                giveParam = 3;
-                giveCount = 1;
-                takeParam = 0;
-                takeCount = 0;
+                level = 0;
+                energy = 1;
+                coin = 0;
+                star = 0;
                 price = 100;
                 discription = "+1 energy";
                 break;
             case 3:
                 texture = new Texture("coinGen.png");
-                giveParam = 1;
-                giveCount = 1;
-                takeParam = 3;
-                takeCount = 1;
+                level = 0;
+                energy = -1;
+                coin = 1;
+                star = 0;
                 price = 100;
                 discription = "-1 energy; +1 coin.";
                 break;
             case 4:
                 texture = new Texture("starGen.png");
-                giveParam = 2;
-                giveCount = 1;
-                takeParam = 3;
-                takeCount = 1;
+                level = 0;
+                energy = -1;
+                coin = 0;
+                star = 1;
                 price = 100;
                 discription = "-1 energy; +1 star.";
                 break;
+            case 5:
+                texture = new Texture("starGen.png");
+                level = 10;
+                energy = 21;
+                coin = 0;
+                star = 3;
+                price = 100;
+                discription = "-2 energy; +3 star.";
+                break;
+            case 6:
+                texture = new Texture("coinGen.png");
+                level = 10;
+                energy = -2;
+                coin = 4;
+                star = 0;
+                price = 100;
+                discription = "-2 energy; +4 coin.";
+                break;
         }
-        //System.out.print(type);
         sprite = new Sprite(texture);
         if(type == 0 || type == 1) {
             sprite.setColor(Colors.red);
@@ -95,6 +112,8 @@ public class Unit {
     int TIME = 30;
     int time = TIME;
     public void update(float delta) {
+        //long curTime = System.currentTimeMillis();
+        //System.out.print(curTime + "\n");
         if(!onTime) {
             onTime = !onTime;
             com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
@@ -104,11 +123,22 @@ public class Unit {
                     time--;
                     if (time == 0) {
                         time = TIME;
-                        if(giveParam == 1)
-                            dm.setParam("coins");
-                        if(giveParam == 2)
-                            dm.setParam("star");
-                        dm.plusData(1);
+                        long curTime = System.currentTimeMillis();
+
+                        if(curTime > dm.loadDataTime("datatime" + num)) {
+                            System.out.print(curTime + " " +  dm.loadDataTime("datatime" + num) +  "\n");
+                            System.out.print(coin + " " +  star +  "\n");
+                            if(coin > 0) {
+                                dm.setParam("coins");
+                                dm.plusData(coin);
+                                dm.addDataTime("datatime" + num, curTime + 300000);
+                            }
+                            if(star > 0) {
+                                dm.setParam("star");
+                                dm.plusData(star);
+                                dm.addDataTime("datatime" + num, curTime + 300000);
+                            }
+                        }
                     }
                     onTime = !onTime;
                 }

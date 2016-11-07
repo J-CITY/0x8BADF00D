@@ -12,6 +12,8 @@ public class PauseState extends State {
     private String TITLE = "<< PAUSE >>";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
+    public static int whatGame = 0;
+
     public PauseState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
@@ -31,7 +33,11 @@ public class PauseState extends State {
                 GameRunner.isPlay = !GameRunner.isPlay;
             } else if(restartBtn.collide(vec.x, vec.y)) {
                 gameStateMenager.pop();
-                gameStateMenager.set(new PlayState(gameStateMenager));
+                if(whatGame == 0) {
+                    gameStateMenager.set(new PlayState(gameStateMenager));
+                } else if(whatGame == 1) {
+                    gameStateMenager.set(new BossGameState(gameStateMenager));
+                }
             }
         }
     }

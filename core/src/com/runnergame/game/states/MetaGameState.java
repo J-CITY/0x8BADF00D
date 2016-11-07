@@ -19,24 +19,13 @@ import com.runnergame.game.sprites.Coin;
 import com.runnergame.game.sprites.Player;
 import com.runnergame.game.sprites.Unit;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class MetaGameState extends State {
 
-    private final float targetFPS = 1f; // Any value
-    private final long targetDelay = 1000 / (long) targetFPS;
-    private long diff, start;
-
+    private final float targetFPS = 1f;
     private void limitFPS() {
-        //diff = System.currentTimeMillis() - start;
-
-        /*if (diff < targetDelay) {
-            try {
-                Thread.sleep(targetDelay - diff);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-        //}
-
-        //start = System.currentTimeMillis();
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
@@ -44,8 +33,7 @@ public class MetaGameState extends State {
         }
     }
 
-    int star=0;
-
+    Button ncBtn;
     Button pauseBtn, runnerPlayBtn;
     boolean isUpdate = false;
     private Array<Unit> units;
@@ -54,6 +42,8 @@ public class MetaGameState extends State {
     private int energy=5;
 
     private SpriteBatch tb;
+
+    private long timeNC, timeNow;
 
     public MetaGameState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
@@ -72,31 +62,49 @@ public class MetaGameState extends State {
             for(int j = 0; j < UNIT_COUNT/4; ++j) {
                 units.add(new Unit(camera.position.x - 35*2 + i*35,
                         camera.position.y - 35*2 + j*35, i*4+j));
-                if(units.get(units.size-1).takeParam == 3) {
-                    energy -= units.get(units.size-1).takeCount;
-                }
-                if(units.get(units.size-1).giveParam == 3) {
-                    energy += units.get(units.size-1).giveCount;
-                }
+                energy += units.get(units.size-1).energy;
             }
         }
-
         pauseBtn = new Button("Pause.png", camera.position.x - 280, camera.position.y + 150);
-        //pauseBtn.getBounds().setCenter(camera.position.x - 280, camera.position.y + 150);
+        pauseBtn.setScale(0.5f);
         runnerPlayBtn = new Button("Play.png", camera.position.x + 280, camera.position.y + 150);
+        runnerPlayBtn.setScale(0.5f);
+
+        ncBtn = new Button("nc.png", camera.position.x + 280, camera.position.y - 150);
         limitFPS();
+
+        timeNC = dm.loadDataTime("NCMODE");
     }
 
     @Override
     protected void hendleInput() {
 
-        if(Gdx.input.isTouched()) {//!!!!!!!!!!!
+        if(Gdx.input.isTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             if(pauseBtn.collide(vec.x, vec.y)) {
-                gameStateMenager.push(new PauseState(gameStateMenager));
+                gameStateMenager.set(new MenuState(gameStateMenager));
             }
             if(runnerPlayBtn.collide(vec.x, vec.y)) {
-                gameStateMenager.set(new PlayState(gameStateMenager));
+                gameStateMenager.push(new SelectLevel(gameStateMenager));
+            }
+            timeNow = System.currentTimeMillis();
+            if(timeNC < timeNow) {
+                if(ncBtn.collide(vec.x, vec.y)) {
+                    if(GameRunner.new_stars >= 5) {
+                        GameRunner.new_stars -= 5;
+                        dm.addData2("star", GameRunner.new_stars);
+                        dm.addDataTime("NCMODE", timeNow + 86400000);
+                        gameStateMenager.set(new NCState(gameStateMenager));
+                    }
+                    return;
+                }
+            }
+            if(ncBtn.collide(vec.x, vec.y)) {
+                if(GameRunner.new_stars >= 5) {
+                    GameRunner.new_stars -= 5;
+                    gameStateMenager.push(new NCState(gameStateMenager));
+                }
+                return;
             }
             for (Unit u : units) {
                 isUpdate = true;
@@ -140,7 +148,6 @@ public class MetaGameState extends State {
                 }
             }, 1);
         }
-        //Gdx.app.log("GameScreen FPS", (1/delta) + "");
         hendleInput();
         if(isUpdate) {
             isUpdate = false;
@@ -150,19 +157,14 @@ public class MetaGameState extends State {
                 for(int j = 0; j < UNIT_COUNT/4; ++j) {
                     units.add(new Unit(camera.position.x - 35*2 + i*35,
                             camera.position.y - 35*2 + j*35, i*4+j));
-                    if(units.get(units.size-1).takeParam == 3) {
-                        energy -= units.get(units.size-1).takeCount;
-                    }
-                    if(units.get(units.size-1).giveParam == 3) {
-                        energy += units.get(units.size-1).giveCount;
-                    }
+                    energy += units.get(units.size-1).energy;
                 }
             }
         }
-        //System.out.print("Coins: " + coin + "  Stars: " + star + "\n");
-
-        for (Unit b : units) {
-            b.update(delta);
+        if(energy >= 0) {
+            for (Unit b : units) {
+                b.update(delta);
+            }
         }
 
         camera.update();
@@ -177,14 +179,24 @@ public class MetaGameState extends State {
         for (Unit b : units) {
             b.getSprite().draw(sb);
         }
-        //GameRunner.font.draw(sb, "COINS: " + GameRunner.new_coins, camera.position.x - 280, camera.position.y - 160);
-        //GameRunner.font.draw(sb, "STARS: " + GameRunner.new_stars, camera.position.x - 280, camera.position.y - 135);
-        //GameRunner.font.draw(sb, "ENERGY: " + energy, camera.position.x - 280, camera.position.y - 110);
+
+        timeNow = System.currentTimeMillis();
+        if(timeNC < timeNow) {
+            ncBtn.getSprite().draw(sb);
+        }
+
         sb.end();
 
-        //mx4Font.setToRotation(new Vector3(0, 0, 0), 0);
         tb.setProjectionMatrix(camera.combined.scl(0.5f));
         tb.begin();
+        if(timeNC >= timeNow) {
+            long seconds = (timeNC - timeNow)/1000;
+            long h = seconds / 3600;
+            long m = (seconds - 3600*h) / 60;
+            long s = (seconds - 3600*h - 60*m);
+            GameRunner.font.draw(tb, "NCMode: " +  h + ":" + m + ":" + s, camera.position.x+680,
+                    camera.position.y - 150);
+        }
         GameRunner.font.draw(tb, "COINS: " + GameRunner.new_coins + " STARS: " + GameRunner.new_stars +  " ENERGY: " + energy, camera.position.x - 280, camera.position.y - 160);
         tb.end();
     }
@@ -194,5 +206,7 @@ public class MetaGameState extends State {
         for(Unit b : units) {
             b.dispose();
         }
+        pauseBtn.dispose();
+        runnerPlayBtn.dispose();
     }
 }

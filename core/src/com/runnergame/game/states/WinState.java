@@ -17,11 +17,13 @@ public class WinState extends State {
     public WinState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
 
-        dm = new DataManager("GameRunner");
-        dm.setParam("star");
-        dm.plusData(GameRunner.new_stars);
+        //dm = new DataManager("GameRunner");
+        //dm.setParam("star");
+        //dm.plusData(GameRunner.new_stars);
 
         //GameRunner.dm.save(GameRunner.score);
+        GameRunner.dm.setParam("star");
+        GameRunner.dm.addData(GameRunner.new_stars);
         GameRunner.dm.setParam("coins");
         GameRunner.dm.addData(GameRunner.new_coins);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);

@@ -30,6 +30,7 @@ public class Player {
         velosity = new Vector3(0, 0, 0);
         texture = new Texture("Player.png");
         sprite = new Sprite(texture);
+        sprite.setCenter(position.x, position.y);
         sprite.setColor(GameRunner.colors.blue);
 
         bound = new Rectangle(sprite.getBoundingRectangle());
@@ -57,6 +58,15 @@ public class Player {
         bound.setCenter(position.x, position.y);
     }
 
+    public void updateBoss(float delta) {
+        if(color == 1) sprite.setColor(GameRunner.colors.blue);
+        if(color == 2) sprite.setColor(GameRunner.colors.red);
+    }
+
+    public void setScale(float scl) {
+        sprite.setScale(scl);
+        bound = sprite.getBoundingRectangle();
+    }
 
     public Sprite getSprite() {
         return sprite;
@@ -99,6 +109,7 @@ public class Player {
         bound.setPosition(position.x, position.y);
         bound.setCenter(position.x, position.y);
     }
+
 
     public void changeColor() {
         color = color % 2 + 1;

@@ -9,7 +9,7 @@ import com.runnergame.game.sprites.Button;
 
 public class CardUnlockState extends State {
     private Button closeBtn, buyBtn;
-    private String mesg = "Open unit. Price 100.";
+    private String mesg = "Open unit. Price 100";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, mesg);
 
     private DataManager dm;

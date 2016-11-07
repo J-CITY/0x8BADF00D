@@ -35,6 +35,7 @@ public class GameRunner extends ApplicationAdapter {
 	public static boolean reborn = false;
 
 	public static Colors colors = new Colors();
+	public static Levels levels = new Levels();;
 
 	@Override
 	public void create () {
@@ -42,16 +43,18 @@ public class GameRunner extends ApplicationAdapter {
 		//rm = new RecordManager("GameRunner");
 		//cm = new CoinsManager("GameRunner");
 		dm = new DataManager("GameRunner");
-		//									cm.setCoins(250);
+
 		/*DataManager dm = new DataManager("GameRunner");
 		for(int i=0; i<16; ++i) {
 			dm.setParam("Unit" + i);
 			dm.addData(0);
 		}*/
+		//dm.addData2("level", 10);
 		dm.setParam("coins");
 		//					dm.addData(250);
 		new_coins = dm.load();
 		dm.setParam("star");
+		//dm.addData(250);
 		new_stars = dm.load();
 
 

@@ -8,4 +8,5 @@ public class Constants {
     public static int B_JUMP = 4;
     public static int B_FINISH = 5;
     public static int B_NEEDLE = 1;
+    public static int B_BEAM = 6;
 }

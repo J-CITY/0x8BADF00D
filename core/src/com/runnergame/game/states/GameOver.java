@@ -58,7 +58,9 @@ public class GameOver extends State {
         //GameRunner.font.draw(sb, "RECORD: " + GameRunner.rm.load(), GameRunner.WIDTH / 2, GameRunner.HEIGHT - 200);
         GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
         playBtn.getSprite().draw(sb);
+        GameRunner.font.draw(sb, "PLAY AGAIN.", playBtn.getPos().x-30, playBtn.getPos().y + 70);
         exitBtn.getSprite().draw(sb);
+        GameRunner.font.draw(sb, "END GAME.", exitBtn.getPos().x-30, exitBtn.getPos().y + 70);
         if(GameRunner.isPlay) {
             onSoundBtn.getSprite().draw(sb);
         } else {

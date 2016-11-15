@@ -45,7 +45,7 @@ public class BossGameState extends State {
         SPEED = (int)GameRunner.levels.levels.get(lvl).charAt(1)-48;
 
         time = TIME;
-        pauseBtn = new Button("Pause.png", camera.position.x - 280, camera.position.y + 150);
+        pauseBtn = new Button("Pause.png", camera.position.x - 280, camera.position.y + 150, 1, 1);
         pauseBtn.getBounds().setCenter(camera.position.x - 280, camera.position.y + 150);
         pauseBtn.setScale(0.5f);
     }
@@ -77,7 +77,12 @@ public class BossGameState extends State {
                     if (time == 0) {
                         //time = TIME;
                         GameRunner.new_coins += 100;
-                        gameStateMenager.set(new WinState(gameStateMenager));
+                        DataManager dm = new DataManager("GameRunner");
+                        dm.setParam("level");
+                        int l = dm.load();
+                        if(l == lvl)
+                            dm.addData(lvl+1);
+                        gameStateMenager.set(new WinState(gameStateMenager, lvl));
                     }
                     onTime = !onTime;
                 }
@@ -85,7 +90,6 @@ public class BossGameState extends State {
         }
 
         hendleInput();
-        player.updateBoss(delta);
         Iterator<Bullet> iter = bullets.iterator();
         while (iter.hasNext()) {
             Bullet bul = iter.next();
@@ -96,7 +100,7 @@ public class BossGameState extends State {
             if(bul.collide(player.getBounds())) {
                 bul.isLife = false;
                 if(player.color == bul.COLOR) {
-                    gameStateMenager.set(new GameOver(gameStateMenager));
+                    gameStateMenager.set(new GameOverBoss(gameStateMenager));
                 }
             }
         }

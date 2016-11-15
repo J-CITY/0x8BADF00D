@@ -5,18 +5,20 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.runnergame.game.GameRunner;
+import com.runnergame.game.Levels;
 import com.runnergame.game.sprites.Button;
 
 public class WinState extends State {
-    private Button playBtn, onSoundBtn, offSoundBtn;
+    private Button playBtn, closeBtn, onSoundBtn, offSoundBtn;
     private String TITLE = "<< WIN >>";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
     private DataManager dm;
+    int lvl;
 
-    public WinState(GameStateManager gameStateMenager) {
+    public WinState(GameStateManager gameStateMenager, int _lvl) {
         super(gameStateMenager);
-
+        lvl =_lvl;
         //dm = new DataManager("GameRunner");
         //dm.setParam("star");
         //dm.plusData(GameRunner.new_stars);
@@ -27,19 +29,29 @@ public class WinState extends State {
         GameRunner.dm.setParam("coins");
         GameRunner.dm.addData(GameRunner.new_coins);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x, camera.position.y);
-        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250);
-        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250);
+        playBtn = new Button("Play.png", camera.position.x, camera.position.y, 1, 1);
+        closeBtn = new Button("close.png", camera.position.x-530, camera.position.y+250, 1, 1);
+        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250, 1, 1);
+        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250, 1, 1);
     }
 
     @Override
     protected void hendleInput() {
         if(Gdx.input.justTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if(playBtn.collide(vec.x, vec.y)) {
-                gameStateMenager.set(new MetaGameState(gameStateMenager));
+            if(playBtn.collide(vec.x, vec.y) && lvl+1 < Levels.levels.size) {
+                lvl++;
+                if(lvl % 9 == 0) {
+                    BossGameState.lvl = lvl;
+                    gameStateMenager.set(new BossGameState(gameStateMenager));
+                } else {
+                    PlayState.lvl = lvl;
+                    gameStateMenager.set(new PlayState(gameStateMenager));
+                }
             } else if(onSoundBtn.collide(vec.x, vec.y)) {
                 GameRunner.isPlay = !GameRunner.isPlay;
+            } else if(closeBtn.collide(vec.x, vec.y)) {
+                gameStateMenager.set(new MoonCityState(gameStateMenager));
             }
         }
     }
@@ -57,6 +69,7 @@ public class WinState extends State {
         //GameRunner.font.draw(sb, "RECORD: " + GameRunner.rm.load(), GameRunner.WIDTH / 2, GameRunner.HEIGHT - 200);
         GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
         playBtn.getSprite().draw(sb);
+        closeBtn.getSprite().draw(sb);
         if(GameRunner.isPlay) {
             onSoundBtn.getSprite().draw(sb);
         } else {

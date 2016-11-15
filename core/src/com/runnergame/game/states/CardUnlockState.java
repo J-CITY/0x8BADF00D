@@ -22,8 +22,8 @@ public class CardUnlockState extends State {
         super(gameStateMenager);
         cardNum = cn;
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        closeBtn = new Button("close.png", camera.position.x - 280, camera.position.y - 150);
-        buyBtn = new Button("ok.png", camera.position.x + 280, camera.position.y - 150);
+        closeBtn = new Button("close.png", camera.position.x - 280, camera.position.y - 150, 1, 1);
+        buyBtn = new Button("ok.png", camera.position.x + 280, camera.position.y - 150, 1, 1);
 
         GameRunner.dm.setParam("coins");
         coins = GameRunner.dm.load();

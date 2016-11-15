@@ -32,8 +32,8 @@ public class CardInfoState extends State {
         sprite.setCenter(camera.position.x - 280, camera.position.y);
         str = _d;
 
-        closeBtn = new Button("close.png", camera.position.x - 280, camera.position.y - 150);
-        delBtn = new Button("delete.png", camera.position.x + 280, camera.position.y - 150);
+        closeBtn = new Button("close.png", camera.position.x - 280, camera.position.y - 150, 1, 1);
+        delBtn = new Button("delete.png", camera.position.x + 280, camera.position.y - 150, 1, 1);
 
         dm = new DataManager("GameRunner");
         dm.setParam("Unit" + cn);

@@ -1,30 +1,15 @@
 package com.runnergame.game.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.runnergame.game.Colors;
-import com.runnergame.game.Constants;
 import com.runnergame.game.GameRunner;
-import com.runnergame.game.sprites.Block;
-import com.runnergame.game.sprites.BlockFloor;
 import com.runnergame.game.sprites.Button;
-import com.runnergame.game.sprites.Coin;
-import com.runnergame.game.sprites.Player;
 import com.runnergame.game.sprites.Unit;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MetaGameState extends State {
 
-    private final float targetFPS = 1f;
     private void limitFPS() {
         try {
             Thread.sleep(500);
@@ -44,6 +29,7 @@ public class MetaGameState extends State {
     private SpriteBatch tb;
 
     private long timeNC, timeNow;
+
 
     public MetaGameState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
@@ -65,12 +51,12 @@ public class MetaGameState extends State {
                 energy += units.get(units.size-1).energy;
             }
         }
-        pauseBtn = new Button("Pause.png", camera.position.x - 280, camera.position.y + 150);
+        pauseBtn = new Button("Pause.png", camera.position.x - 280, camera.position.y + 150, 1, 1);
         pauseBtn.setScale(0.5f);
-        runnerPlayBtn = new Button("Play.png", camera.position.x + 280, camera.position.y + 150);
+        runnerPlayBtn = new Button("Play.png", camera.position.x + 280, camera.position.y + 150, 1, 1);
         runnerPlayBtn.setScale(0.5f);
 
-        ncBtn = new Button("nc.png", camera.position.x + 280, camera.position.y - 150);
+        ncBtn = new Button("nc.png", camera.position.x + 280, camera.position.y - 150, 1, 1);
         limitFPS();
 
         timeNC = dm.loadDataTime("NCMODE");
@@ -90,22 +76,22 @@ public class MetaGameState extends State {
             timeNow = System.currentTimeMillis();
             if(timeNC < timeNow) {
                 if(ncBtn.collide(vec.x, vec.y)) {
-                    if(GameRunner.new_stars >= 5) {
+                    //if(GameRunner.new_stars >= 5) {
                         GameRunner.new_stars -= 5;
                         dm.addData2("star", GameRunner.new_stars);
                         dm.addDataTime("NCMODE", timeNow + 86400000);
                         gameStateMenager.set(new NCState(gameStateMenager));
-                    }
+                    //}
                     return;
                 }
             }
-            if(ncBtn.collide(vec.x, vec.y)) {
+            /*if(ncBtn.collide(vec.x, vec.y)) {
                 if(GameRunner.new_stars >= 5) {
                     GameRunner.new_stars -= 5;
                     gameStateMenager.push(new NCState(gameStateMenager));
                 }
                 return;
-            }
+            }*/
             for (Unit u : units) {
                 isUpdate = true;
                 if(u.collide(vec.x, vec.y)) {

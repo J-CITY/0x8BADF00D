@@ -48,26 +48,26 @@ public class SelectLevel extends State {
             for(int j = 0; j < LEVEL_COUNT/3; ++j) {
                 if((i*3+j + PAGE*10) <= LEVEL_OPENED) {
                     lvls.add(new Button("level.png", camera.position.x - 70 + j*70,
-                            camera.position.y + 70 - i*70));
+                            camera.position.y + 70 - i*70, 1, 1));
                 } else {
                     lvls.add(new Button("level_c.png", camera.position.x - 70 + j*70,
-                            camera.position.y + 70 - i*70));
+                            camera.position.y + 70 - i*70, 1, 1));
                 }
                 lvls.get(lvls.size-1).setScale(2);
             }
         }
         if(LEVEL_COUNT + PAGE*10 <= LEVEL_OPENED) {
             lvls.add(new Button("level.png", camera.position.x,
-                    camera.position.y - 210));
+                    camera.position.y - 210, 1, 1));
         } else {
             lvls.add(new Button("level_c.png", camera.position.x,
-                    camera.position.y - 210));
+                    camera.position.y - 210, 1, 1));
         }
         lvls.get(lvls.size-1).setScale(2);
 
-        backBtn = new Button("close.png", camera.position.x - 380, camera.position.y - 250);
-        arr_lBtn = new Button("arror_l.png", camera.position.x - 180, camera.position.y - 250);
-        arr_rBtn = new Button("arror_r.png", camera.position.x + 180, camera.position.y - 250);
+        backBtn = new Button("close.png", camera.position.x - 380, camera.position.y - 250, 1, 1);
+        arr_lBtn = new Button("arror_l.png", camera.position.x - 180, camera.position.y - 250, 1, 1);
+        arr_rBtn = new Button("arror_r.png", camera.position.x + 180, camera.position.y - 250, 1, 1);
         limitFPS();
 
     }
@@ -87,20 +87,20 @@ public class SelectLevel extends State {
                     for(int j = 0; j < LEVEL_COUNT/3; ++j) {
                         if((i*3+j + PAGE*10) <= LEVEL_OPENED) {
                             lvls.add(new Button("level.png", camera.position.x - 70 + j*70,
-                                    camera.position.y + 70 - i*70));
+                                    camera.position.y + 70 - i*70, 1, 1));
                         } else {
                             lvls.add(new Button("level_c.png", camera.position.x - 70 + j*70,
-                                    camera.position.y + 70 - i*70));
+                                    camera.position.y + 70 - i*70, 1, 1));
                         }
                         lvls.get(lvls.size-1).setScale(2);
                     }
                 }
                 if(LEVEL_COUNT + PAGE*10 <= LEVEL_OPENED) {
                     lvls.add(new Button("level.png", camera.position.x,
-                            camera.position.y - 210));
+                            camera.position.y - 210, 1, 1));
                 } else {
                     lvls.add(new Button("level_c.png", camera.position.x,
-                            camera.position.y - 210));
+                            camera.position.y - 210, 1, 1));
                 }
                 lvls.get(lvls.size-1).setScale(2);
             } else if(arr_lBtn.collide(vec.x, vec.y) && PAGE > 0) {
@@ -111,20 +111,20 @@ public class SelectLevel extends State {
                     for(int j = 0; j < LEVEL_COUNT/3; ++j) {
                         if((i*3+j + PAGE*10) <= LEVEL_OPENED) {
                             lvls.add(new Button("level.png", camera.position.x - 70 + j*70,
-                                    camera.position.y + 70 - i*70));
+                                    camera.position.y + 70 - i*70, 1, 1));
                         } else {
                             lvls.add(new Button("level_c.png", camera.position.x - 70 + j*70,
-                                    camera.position.y + 70 - i*70));
+                                    camera.position.y + 70 - i*70, 1, 1));
                         }
                         lvls.get(lvls.size-1).setScale(2);
                     }
                 }
                 if(LEVEL_COUNT + PAGE*10 <= LEVEL_OPENED) {
                     lvls.add(new Button("level.png", camera.position.x,
-                            camera.position.y - 210));
+                            camera.position.y - 210, 1, 1));
                 } else {
                     lvls.add(new Button("level_c.png", camera.position.x,
-                            camera.position.y - 210));
+                            camera.position.y - 210, 1, 1));
                 }
                 lvls.get(lvls.size-1).setScale(2);
             }

@@ -33,7 +33,7 @@ public class CardSetState extends State {
         super(gameStateMenager);
         cardNum = cn;
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        closeBtn = new Button("close.png", camera.position.x - 280, camera.position.y - 200);
+        closeBtn = new Button("close.png", camera.position.x - 280, camera.position.y - 200, 1, 1);
 
         tex = new Array<Texture>();
         sprite = new Array<Sprite>();
@@ -71,7 +71,7 @@ public class CardSetState extends State {
 
         buyBtns = new Array<Button>();
         for(int i = 0; i < 5; ++i) {
-            buyBtns.add(new Button("ok.png", camera.position.x + 280, camera.position.y + 150 - 70 * i));
+            buyBtns.add(new Button("ok.png", camera.position.x + 280, camera.position.y + 150 - 70 * i, 1, 1));
             sprite.get(i).setCenter(camera.position.x - 280, camera.position.y + 150 - 70 * i);
         }
         GameRunner.dm.setParam("coins");

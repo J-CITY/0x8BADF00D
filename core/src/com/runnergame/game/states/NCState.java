@@ -6,30 +6,26 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.runnergame.game.Colors;
-import com.runnergame.game.Constants;
 import com.runnergame.game.GameRunner;
-import com.runnergame.game.sprites.Block;
-import com.runnergame.game.sprites.BlockFinish;
-import com.runnergame.game.sprites.BlockFloor;
-import com.runnergame.game.sprites.BlockJump;
-import com.runnergame.game.sprites.BlockNeedle;
-import com.runnergame.game.sprites.Button;
 import com.runnergame.game.sprites.Coin;
 import com.runnergame.game.sprites.Player;
 
 public class NCState extends State {
-    public static final int BLOCK_SPACING = 64;
+    public static final int BLOCK_SPACING = 48;
     private Player player;
-
-    //Button pauseBtn;
-
     private Array<Coin> coins;
-
-    //int NYAN_CAT_MODE = 0;
-
-    //int BLOCK_COUNT;
     private SpriteBatch tb;
+
+    private void addCoins(float _x) {
+        int w = MathUtils.random(4, 5);
+        int h = MathUtils.random(2, 3);
+        float _y = (camera.position.y + MathUtils.random(-200, 200));
+        for(int i = 0; i < w; ++i) {
+            for(int j = 0; j < h; ++j) {
+                coins.add(new Coin(_x + i*BLOCK_SPACING, _y + j*BLOCK_SPACING, 0));
+            }
+        }
+    }
 
     public NCState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
@@ -38,30 +34,19 @@ public class NCState extends State {
         tb = new SpriteBatch();
         player = new Player(200, 232);
 
-        coins = new Array<Coin>();//!!!!!!!!
-        int coins_size = MathUtils.random(20, 40);
-        coins.add(new Coin(player.getPosition().x + 100, MathUtils.random(100, 550), 0));
+        coins = new Array<Coin>();
+        int coins_size = MathUtils.random(5, 10);
+        addCoins(player.getPosition().x + 200);
         for(int j = 1; j < coins_size; ++j) {
-            coins.add(new Coin(coins.get(coins.size-1).getPos().x+64, MathUtils.random(100, 550), 0));
+            addCoins(coins.get(coins.size-1).getPos().x + 200);
         }
 
-        //pauseBtn = new Button("Pause.png", camera.position.x - 280, camera.position.y + 150);
-        //pauseBtn.getBounds().setCenter(camera.position.x - 280, camera.position.y + 150);
     }
 
     @Override
     protected void hendleInput() {
-        if(Gdx.input.justTouched()) {
-            Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            //if(pauseBtn.collide(vec.x, vec.y)) {
-            //    gameStateMenager.push(new PauseState(gameStateMenager));
-            //}
-        }
         if(Gdx.input.isTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            //if(pauseBtn.collide(vec.x, vec.y)) {
-            //    gameStateMenager.push(new PauseState(gameStateMenager));
-            //}
             if(vec.y > player.getPosition().y) {
                 player.NCM(5);
             } else {
@@ -74,7 +59,7 @@ public class NCState extends State {
     public void update(float delta) {
         hendleInput();
 
-        for(int i = 0; i < coins.size; ++i) {//!!!!!!!!!!!!!!!!
+        for(int i = 0; i < coins.size; ++i) {
             Coin c = coins.get(i);
             c.update(delta, player.getPosition().x);
 
@@ -87,7 +72,7 @@ public class NCState extends State {
                 c.life = false;
             }
         }
-        for(int i = 0; i < coins.size; ++i) {//!!!!!!!!!!!!!!!!
+        for(int i = 0; i < coins.size; ++i) {
             Coin c = coins.get(i);
             if (camera.position.x - (camera.viewportWidth / 2) > c.getPos().x + c.getPos().x + 64) {
                 coins.get(i).dispose();
@@ -95,7 +80,8 @@ public class NCState extends State {
             }
         }
         if(coins.size == 0) {
-            gameStateMenager.set(new MetaGameState(gameStateMenager));
+            gameStateMenager.set(new MoonCityState(gameStateMenager));
+            //gameStateMenager.set(new MetaGameState(gameStateMenager));
         }
         camera.update();
     }
@@ -110,9 +96,9 @@ public class NCState extends State {
         for (Coin c : coins) {
             if (c.life) {
                 c.getSprite().draw(sb);
+                System.out.print(c.getPos().x+"\n");
             }
         }
-        //pauseBtn.getSprite().draw(sb);
         sb.end();
 
         tb.setProjectionMatrix(camera.combined.scl(0.5f));

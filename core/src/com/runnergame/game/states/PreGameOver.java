@@ -15,10 +15,10 @@ public class PreGameOver extends State {
     public PreGameOver(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x-200, camera.position.y);
-        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250);
-        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250);
-        endGameBtn = new Button("EndGame.png", camera.position.x+200, camera.position.y);
+        playBtn = new Button("Play.png", camera.position.x-200, camera.position.y, 1, 1);
+        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250, 1, 1);
+        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250, 1, 1);
+        endGameBtn = new Button("EndGame.png", camera.position.x+200, camera.position.y, 1, 1);
     }
 
     @Override

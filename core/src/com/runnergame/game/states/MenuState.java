@@ -16,9 +16,9 @@ public class MenuState extends State {
     public MenuState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x, camera.position.y);
-        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250);
-        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250);
+        playBtn = new Button("play_t.png", camera.position.x, camera.position.y, 1, 1);
+        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250, 1, 1);
+        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250, 1, 1);
     }
 
     @Override
@@ -28,7 +28,8 @@ public class MenuState extends State {
 
             if(playBtn.collide(vec.x, vec.y)) {
                 //gameStateMenager.set(new PlayState(gameStateMenager));
-                gameStateMenager.set(new MetaGameState(gameStateMenager));
+                gameStateMenager.set(new MoonCityState(gameStateMenager));
+                //gameStateMenager.set(new NCState(gameStateMenager));
             } else if(onSoundBtn.collide(vec.x, vec.y)) {
                 GameRunner.isPlay = !GameRunner.isPlay;
             }
@@ -39,6 +40,7 @@ public class MenuState extends State {
     @Override
     public void update(float delta) {
         hendleInput();
+        playBtn.update(delta);
     }
 
     @Override

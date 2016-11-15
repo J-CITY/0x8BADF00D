@@ -7,21 +7,18 @@ import com.badlogic.gdx.math.Vector3;
 import com.runnergame.game.GameRunner;
 import com.runnergame.game.sprites.Button;
 
-public class PauseState extends State {
-    private Button playBtn, onSoundBtn, offSoundBtn, restartBtn, exitBtn;
-    private String TITLE = "<< PAUSE >>";
+public class GameOverBoss extends State {
+    private Button playBtn, onSoundBtn, offSoundBtn, exitBtn;
+    private String TITLE = "<< GAME OVER >>";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
-    public static int whatGame = 0;
-
-    public PauseState(GameStateManager gameStateMenager) {
+    public GameOverBoss(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
         playBtn = new Button("Play.png", camera.position.x-200, camera.position.y, 1, 1);
-        restartBtn = new Button("Restart.png", camera.position.x+200, camera.position.y, 1, 1);
         onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250, 1, 1);
         offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250, 1, 1);
-        exitBtn = new Button("EndGame.png", camera.position.x-530, camera.position.y+250, 1, 1);
+        exitBtn = new Button("close.png", camera.position.x+200, camera.position.y, 1, 1);
     }
 
     @Override
@@ -29,18 +26,12 @@ public class PauseState extends State {
         if(Gdx.input.justTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             if(playBtn.collide(vec.x, vec.y)) {
-                gameStateMenager.pop();
+                gameStateMenager.set(new BossGameState(gameStateMenager));
             } else if(onSoundBtn.collide(vec.x, vec.y)) {
                 GameRunner.isPlay = !GameRunner.isPlay;
             } else if(exitBtn.collide(vec.x, vec.y)) {
+                //gameStateMenager.set(new MetaGameState(gameStateMenager));
                 gameStateMenager.set(new MoonCityState(gameStateMenager));
-            } else if(restartBtn.collide(vec.x, vec.y)) {
-                gameStateMenager.pop();
-                if(whatGame == 0) {
-                    gameStateMenager.set(new PlayState(gameStateMenager));
-                } else if(whatGame == 1) {
-                    gameStateMenager.set(new BossGameState(gameStateMenager));
-                }
             }
         }
     }
@@ -54,11 +45,11 @@ public class PauseState extends State {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
-
         GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
         playBtn.getSprite().draw(sb);
-        restartBtn.getSprite().draw(sb);
+        GameRunner.font.draw(sb, "PLAY AGAIN.", playBtn.getPos().x-30, playBtn.getPos().y + 70);
         exitBtn.getSprite().draw(sb);
+        GameRunner.font.draw(sb, "END GAME.", exitBtn.getPos().x-30, exitBtn.getPos().y + 70);
         if(GameRunner.isPlay) {
             onSoundBtn.getSprite().draw(sb);
         } else {
@@ -69,9 +60,8 @@ public class PauseState extends State {
 
     @Override
     public void dispose() {
+        playBtn.dispose();
         onSoundBtn.dispose();
         offSoundBtn.dispose();
-        playBtn.dispose();
-        restartBtn.dispose();
     }
 }

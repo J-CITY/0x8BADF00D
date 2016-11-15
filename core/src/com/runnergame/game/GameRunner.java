@@ -12,6 +12,7 @@ import com.runnergame.game.states.CoinsManager;
 import com.runnergame.game.states.DataManager;
 import com.runnergame.game.states.GameStateManager;
 import com.runnergame.game.states.MenuState;
+import com.runnergame.game.states.MoonCityState;
 import com.runnergame.game.states.RecordManager;
 
 public class GameRunner extends ApplicationAdapter {
@@ -66,19 +67,22 @@ public class GameRunner extends ApplicationAdapter {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 
 		font = new BitmapFont();
-		FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
+		FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("font2.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		parameter.size = 32;
 		font = fontGenerator.generateFont(parameter);
 		fontGenerator.dispose();
 
 		gsm.push(new MenuState(gsm));
+		//gsm.push(new MoonCityState(gsm));
 	}
 
 	float H = 0, S=31, V=99;
 	float dir = 1;
 	int inc=0, next = 1;
 	float Vmin, Vinc, Vdec;
+
+	public static float R, G, B;
 
 	@Override
 	public void render () {
@@ -96,27 +100,33 @@ public class GameRunner extends ApplicationAdapter {
 			Vdec = V - a;
 		}
 		if(H < 60) {
-			Gdx.gl.glClearColor( V * 1 / 255, Vinc * 1 / 255, Vmin * 1 / 255, 1 );
+			R = V * 1 / 255; G = Vinc * 1 / 255; B = Vmin * 1 / 255;
+			Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + V * 1 / 255 + "G: " + Vinc * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
 		}
 		if(H >= 60 && H < 120) {
-			Gdx.gl.glClearColor( Vdec * 1 / 255, V * 1 / 255, Vmin * 1 / 255, 1 );
+			R = Vdec * 1 / 255; G = V * 1 / 255; B = Vmin * 1 / 255;
+			Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " +  Vdec * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
 		}
 		if(H >= 120 && H < 180) {
-			Gdx.gl.glClearColor( Vmin * 1 / 255, V * 1 / 255, Vinc * 1 / 255, 1 );
+			R = Vmin * 1 / 255; G = V * 1 / 255; B = Vinc * 1 / 255;
+			Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + Vmin * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vinc * 1 / 255 + "\n");
 		}
 		if(H >= 180 && H < 240) {
-			Gdx.gl.glClearColor( Vmin * 1 / 255, Vdec * 1 / 255, V * 1 / 255, 1 );
+			R = Vmin * 1 / 255; G = Vdec * 1 / 255; B = V * 1 / 255;
+			Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + Vmin * 1 / 255 + "G: " + Vdec * 1 / 255 + "B: " + V * 1 / 255 + "\n");
 		}
 		if(H >= 240 && H < 300) {
-			Gdx.gl.glClearColor( Vinc * 1 / 255, Vmin * 1 / 255, V * 1 / 255, 1 );
+			R = Vinc * 1 / 255; G = Vmin * 1 / 255; B = V * 1 / 255;
+			Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + Vinc * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + V * 1 / 255 + "\n");
 		}
 		if(H >= 300 && H < 360) {
-			Gdx.gl.glClearColor( V * 1 / 255, Vmin * 1 / 255, Vdec * 1 / 255, 1 );
+			R = V * 1 / 255; G = Vmin * 1 / 255; B = Vdec * 1 / 255;
+			Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + V * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + Vdec * 1 / 255 + "\n");
 		}
 		inc++;

@@ -11,7 +11,7 @@ public class Levels {
         levels.add("22202220222");
         levels.add("222011102220111");
         levels.add("22111333213");
-        levels.add("1223412344");
+        levels.add("i1i352q12q");
 
         levels.add("45643637344");
         levels.add("1547635255164");

@@ -134,8 +134,10 @@ public class SelectLevel extends State {
                 if(b.collide(vec.x, vec.y)) {
                     if(i + PAGE*10 <= LEVEL_OPENED) {
                         if((i+1) % 10 == 0) {
-                            BossGameState.lvl = i+PAGE*10;
-                            gameStateMenager.set(new BossGameState(gameStateMenager));
+                            //BossGameState.lvl = i+PAGE*10;
+                            PlayState.lvl = i+PAGE*10;
+                            //gameStateMenager.set(new BossGameState(gameStateMenager));
+                            gameStateMenager.set(new PlayState(gameStateMenager));
                         } else {
                             PlayState.lvl = i+PAGE*10;
                             if(0 + PAGE*10 <= i && i <= 2 + PAGE*10) {

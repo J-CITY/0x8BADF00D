@@ -30,6 +30,11 @@ public class Button {
     public Vector2 getPos() {
         return pos;
     }
+    public void setPos(float x, float y) {
+        pos.x = x;
+        pos.y = y;
+        bounds.setCenter(x, y);
+    }
 
     public boolean collide(float x, float y) {
         return bounds.contains(x, y);

@@ -32,6 +32,7 @@ public class HouseBuild extends Building {
         sprite.setPosition(-80, -50);
         sprite.setCenter(-80, -50);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        cardSprite = new Sprite(new Texture("houseCard.png"));
     }
 
     @Override

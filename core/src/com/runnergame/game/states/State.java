@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 
 
 public abstract class State {
+    protected float speed = 600;
     protected OrthographicCamera camera;
     protected Vector3 projection;
     protected GameStateManager gameStateMenager;//будет управлять окнами игры

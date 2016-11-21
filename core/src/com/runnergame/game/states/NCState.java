@@ -23,6 +23,7 @@ public class NCState extends State {
         for(int i = 0; i < w; ++i) {
             for(int j = 0; j < h; ++j) {
                 coins.add(new Coin(_x + i*BLOCK_SPACING, _y + j*BLOCK_SPACING, 0));
+                coins.get(coins.size-1).speed = 600;
             }
         }
     }
@@ -32,7 +33,7 @@ public class NCState extends State {
 
         camera.setToOrtho(false, GameRunner.WIDTH / 2, GameRunner.HEIGHT / 2);
         tb = new SpriteBatch();
-        player = new Player(200, 232);
+        player = new Player(200, 232, "ncplayer.png", 3);
 
         coins = new Array<Coin>();
         int coins_size = MathUtils.random(5, 10);
@@ -58,7 +59,7 @@ public class NCState extends State {
     @Override
     public void update(float delta) {
         hendleInput();
-
+        player.animUpdate(delta);
         for(int i = 0; i < coins.size; ++i) {
             Coin c = coins.get(i);
             c.update(delta, player.getPosition().x);

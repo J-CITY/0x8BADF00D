@@ -77,7 +77,7 @@ public class GameRunner extends ApplicationAdapter {
 		//gsm.push(new MoonCityState(gsm));
 	}
 
-	float H = 0, S=31, V=99;
+	float H = 0, S=80, V=20;
 	float dir = 1;
 	int inc=0, next = 1;
 	float Vmin, Vinc, Vdec;
@@ -101,35 +101,40 @@ public class GameRunner extends ApplicationAdapter {
 		}
 		if(H < 60) {
 			R = V * 1 / 255; G = Vinc * 1 / 255; B = Vmin * 1 / 255;
-			Gdx.gl.glClearColor( R, G, B, 1 );
+			//Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + V * 1 / 255 + "G: " + Vinc * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
 		}
 		if(H >= 60 && H < 120) {
 			R = Vdec * 1 / 255; G = V * 1 / 255; B = Vmin * 1 / 255;
-			Gdx.gl.glClearColor( R, G, B, 1 );
+			//Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " +  Vdec * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
 		}
 		if(H >= 120 && H < 180) {
 			R = Vmin * 1 / 255; G = V * 1 / 255; B = Vinc * 1 / 255;
-			Gdx.gl.glClearColor( R, G, B, 1 );
+			//Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + Vmin * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vinc * 1 / 255 + "\n");
 		}
 		if(H >= 180 && H < 240) {
 			R = Vmin * 1 / 255; G = Vdec * 1 / 255; B = V * 1 / 255;
-			Gdx.gl.glClearColor( R, G, B, 1 );
+			//Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + Vmin * 1 / 255 + "G: " + Vdec * 1 / 255 + "B: " + V * 1 / 255 + "\n");
 		}
 		if(H >= 240 && H < 300) {
 			R = Vinc * 1 / 255; G = Vmin * 1 / 255; B = V * 1 / 255;
-			Gdx.gl.glClearColor( R, G, B, 1 );
+			//Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + Vinc * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + V * 1 / 255 + "\n");
 		}
 		if(H >= 300 && H < 360) {
 			R = V * 1 / 255; G = Vmin * 1 / 255; B = Vdec * 1 / 255;
-			Gdx.gl.glClearColor( R, G, B, 1 );
+			//Gdx.gl.glClearColor( R, G, B, 1 );
 			//System.out.print("R: " + V * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + Vdec * 1 / 255 + "\n");
 		}
 		inc++;
+		//Gdx.gl.glClearColor( R, G, B, 1 );
+		//Gdx.gl.glClearColor( 245/255f, 232/255f, 101/255f, 1 );
+		//Gdx.gl.glClearColor( 204/255f, 204/255f, 204/255f, 1 );
+		//Gdx.gl.glClearColor( 205/255f, 153/255f, 52/255f, 1 );
+		Gdx.gl.glClearColor(colors.grayBg.r, colors.grayBg.b, colors.grayBg.g, 1);
 
 		if(music.isPlaying() && !isPlay) {
 			music.stop();

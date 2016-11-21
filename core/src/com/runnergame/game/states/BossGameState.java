@@ -38,7 +38,7 @@ public class BossGameState extends State {
         tb = new SpriteBatch();
         bullet_tex = new Texture("bullet.png");
         bullets = new Array<Bullet>();
-        player = new Player((int)camera.position.x, (int)camera.position.y);
+        player = new Player((int)camera.position.x, (int)camera.position.y, "player.png", 1);
         player.setScale(0.5f);
 
         TIME = (int)(GameRunner.levels.levels.get(lvl).charAt(0)-48) * 10;

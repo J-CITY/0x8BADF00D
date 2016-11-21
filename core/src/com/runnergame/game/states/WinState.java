@@ -16,23 +16,21 @@ public class WinState extends State {
     private DataManager dm;
     int lvl;
 
+    private float pbtnY0 = 0, pbtnY = 400, cbtnY0 = 250, cbtnY = 400;
+    private float sbtnY0 = -250, sbtnY = -400;
+
     public WinState(GameStateManager gameStateMenager, int _lvl) {
         super(gameStateMenager);
         lvl =_lvl;
-        //dm = new DataManager("GameRunner");
-        //dm.setParam("star");
-        //dm.plusData(GameRunner.new_stars);
-
-        //GameRunner.dm.save(GameRunner.score);
         GameRunner.dm.setParam("star");
         GameRunner.dm.addData(GameRunner.new_stars);
         GameRunner.dm.setParam("coins");
         GameRunner.dm.addData(GameRunner.new_coins);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x, camera.position.y, 1, 1);
-        closeBtn = new Button("close.png", camera.position.x-530, camera.position.y+250, 1, 1);
-        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250, 1, 1);
-        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250, 1, 1);
+        playBtn = new Button("Play.png", camera.position.x, camera.position.y+cbtnY, 1, 1);
+        closeBtn = new Button("close.png", camera.position.x-530, camera.position.y+cbtnY, 1, 1);
+        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
+        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
     }
 
     @Override
@@ -59,6 +57,20 @@ public class WinState extends State {
     @Override
     public void update(float delta) {
         hendleInput();
+
+        if(pbtnY0 < pbtnY) {
+            pbtnY -= speed*delta;
+            playBtn.setPos(playBtn.getPos().x, camera.position.y + pbtnY);
+        }
+        if(cbtnY0 < cbtnY) {
+            cbtnY -= speed*delta;
+            closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
+        }
+        if(sbtnY0 > sbtnY) {
+            sbtnY += speed*delta;
+            offSoundBtn.setPos(offSoundBtn.getPos().x, camera.position.y + sbtnY);
+            onSoundBtn.setPos(onSoundBtn.getPos().x, camera.position.y + sbtnY);
+        }
     }
 
     @Override

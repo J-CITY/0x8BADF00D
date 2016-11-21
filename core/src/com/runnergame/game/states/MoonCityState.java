@@ -21,6 +21,11 @@ import com.runnergame.game.sprites.MetaGame.PoliceBuild;
 
 public class MoonCityState extends State implements GestureDetector.GestureListener
 {
+    boolean visibleCard = false;
+    Sprite cardSprite;
+    Button cardBtn;
+    int card = 0;
+
     boolean I_AM_HERE = true;
     private void sleep() {
         try {
@@ -66,6 +71,8 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         pauseBtn.setScale(0.5f);
         runnerPlayBtn = new Button("Play.png", cam_btn.position.x + 550, cam_btn.position.y + 320, 1, 1);
         runnerPlayBtn.setScale(0.5f);
+        cardBtn = new Button("infoBtn.png", cam_btn.position.x, cam_btn.position.y, 1, 1);
+        cardBtn.setScale(0.5f);
 
         ncBtn = new Button("nc.png", cam_btn.position.x + 550, cam_btn.position.y - 320, 1, 1);
         sleep();
@@ -134,6 +141,10 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
                     cam_btn.position.y - 350);
         }
         GameRunner.font.draw(tb, "COINS: " + GameRunner.new_coins + " STARS: " + GameRunner.new_stars, cam_btn.position.x - 680, cam_btn.position.y - 350);
+        if(visibleCard) {
+            cardSprite.draw(tb);
+            cardBtn.getSprite().draw(tb);
+        }
         tb.end();
 
     }
@@ -145,6 +156,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
+
         if(!I_AM_HERE)
             return false;
         Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -154,9 +166,22 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
             I_AM_HERE = false;
             gameStateMenager.set(new MenuState(gameStateMenager));
         }
+        if(cardBtn.collide(vec_btn.x, vec_btn.y) && visibleCard) {
+
+            I_AM_HERE = false;
+            gameStateMenager.set(new BuildingInfoState(gameStateMenager, builds.get(card)));
+        }
         if(runnerPlayBtn.collide(vec_btn.x, vec_btn.y)) {
             I_AM_HERE = false;
-            gameStateMenager.push(new SelectLevel(gameStateMenager));
+
+            PlayState.lvl = GameRunner.dm.load2("level");
+            if(PlayState.lvl >= 0 && PlayState.lvl <= 2) {
+                HelperState.lvl = PlayState.lvl;
+                gameStateMenager.set(new HelperState(gameStateMenager));
+            } else {
+                gameStateMenager.set(new PlayState(gameStateMenager));
+            }
+            //gameStateMenager.push(new SelectLevel(gameStateMenager));
         }
         timeNow = System.currentTimeMillis();
         if(timeNC < timeNow) {
@@ -167,14 +192,27 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
                 return true;
             }
         }
-
+        boolean flag = false;
+        card = 0;
+        int i = 0;
         for (Building b : builds) {
             isUpdate = true;
             if(b.collide(vec.x, vec.y)) {
-                I_AM_HERE = false;
-                gameStateMenager.set(new BuildingInfoState(gameStateMenager, b));
-                return true;
+                flag = true;
+                card = i;
+                cardSprite = b.getCardSprite();
+                cardSprite.setCenter(cam_btn.position.x, cam_btn.position.y);
+                cardBtn.setPos(cam_btn.position.x, cam_btn.position.y - 50);
+                //I_AM_HERE = false;
+                //gameStateMenager.set(new BuildingInfoState(gameStateMenager, b));
+                //return true;
             }
+            i++;
+        }
+        if(flag) {
+            visibleCard = true;
+        } else {
+            visibleCard = false;
         }
         return true;
     }

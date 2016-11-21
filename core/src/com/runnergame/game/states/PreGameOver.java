@@ -12,13 +12,17 @@ public class PreGameOver extends State {
     private String TITLE = "<< GAME OVER >>";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
+    private float pbtnY0 = 0, pbtnY = 400;
+    private float ebtnY0 = 0, ebtnY = -400;
+    private float sbtnY0 = -250, sbtnY = -400;
+
     public PreGameOver(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x-200, camera.position.y, 1, 1);
-        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250, 1, 1);
-        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250, 1, 1);
-        endGameBtn = new Button("EndGame.png", camera.position.x+200, camera.position.y, 1, 1);
+        playBtn = new Button("continue.png", camera.position.x-200, camera.position.y+pbtnY, 1, 1);
+        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
+        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
+        endGameBtn = new Button("EndGame.png", camera.position.x+200, camera.position.y+ebtnY, 1, 1);
     }
 
     @Override
@@ -43,6 +47,26 @@ public class PreGameOver extends State {
     @Override
     public void update(float delta) {
         hendleInput();
+
+        if(pbtnY0 < pbtnY) {
+            pbtnY -= speed*delta;
+        } else {
+            pbtnY = pbtnY0;
+        }
+        if(ebtnY0 > ebtnY) {
+            ebtnY += speed * delta;
+        } else {
+            ebtnY = ebtnY0;
+        }
+        if(sbtnY0 > sbtnY) {
+            sbtnY += speed*delta;
+        } else {
+            sbtnY = sbtnY0;
+        }
+        playBtn.setPos(playBtn.getPos().x, camera.position.y + pbtnY);
+        endGameBtn.setPos(endGameBtn.getPos().x, camera.position.y + ebtnY);
+        offSoundBtn.setPos(offSoundBtn.getPos().x, camera.position.y + sbtnY);
+        onSoundBtn.setPos(onSoundBtn.getPos().x, camera.position.y + sbtnY);
     }
 
     @Override
@@ -55,9 +79,9 @@ public class PreGameOver extends State {
         GameRunner.font.draw(sb, "COINS: " + GameRunner.dm.load(), GameRunner.WIDTH / 2 - 100, GameRunner.HEIGHT - 250);
         GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
         playBtn.getSprite().draw(sb);
-        GameRunner.font.draw(sb, "CONTINUE. 100 COINS.", playBtn.getPos().x-30, playBtn.getPos().y + 70);
+        //GameRunner.font.draw(sb, "CONTINUE. 100 COINS.", playBtn.getPos().x-30, playBtn.getPos().y + 70);
         endGameBtn.getSprite().draw(sb);
-        GameRunner.font.draw(sb, "END GAME.", endGameBtn.getPos().x-30, endGameBtn.getPos().y + 70);
+        //GameRunner.font.draw(sb, "END GAME.", endGameBtn.getPos().x-30, endGameBtn.getPos().y + 70);
         if(GameRunner.isPlay) {
             onSoundBtn.getSprite().draw(sb);
         } else {

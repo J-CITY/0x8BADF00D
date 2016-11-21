@@ -14,14 +14,19 @@ public class PauseState extends State {
 
     public static int whatGame = 0;
 
+    private float pbtnY0 = 0, pbtnY = 400;
+    private float ebtnY0 = 250, ebtnY = 400;
+    private float sbtnY0 = -250, sbtnY = -400;
+    private float rbtnY0 = 0, rbtnY = -400;
+
     public PauseState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x-200, camera.position.y, 1, 1);
-        restartBtn = new Button("Restart.png", camera.position.x+200, camera.position.y, 1, 1);
-        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y-250, 1, 1);
-        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y-250, 1, 1);
-        exitBtn = new Button("EndGame.png", camera.position.x-530, camera.position.y+250, 1, 1);
+        playBtn = new Button("Play.png", camera.position.x-200, camera.position.y+pbtnY, 1, 1);
+        restartBtn = new Button("Restart.png", camera.position.x+200, camera.position.y+rbtnY, 1, 1);
+        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
+        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
+        exitBtn = new Button("close.png", camera.position.x-530, camera.position.y+ebtnY, 1, 1);
     }
 
     @Override
@@ -48,6 +53,24 @@ public class PauseState extends State {
     @Override
     public void update(float delta) {
         hendleInput();
+
+        if(pbtnY0 < pbtnY) {
+            pbtnY -= speed*delta;
+            playBtn.setPos(playBtn.getPos().x, camera.position.y + pbtnY);
+        }
+        if(rbtnY0 > rbtnY) {
+            rbtnY += speed*delta;
+            restartBtn.setPos(restartBtn.getPos().x, camera.position.y + rbtnY);
+        }
+        if(ebtnY0 < ebtnY) {
+            ebtnY -= speed * delta;
+            exitBtn.setPos(exitBtn.getPos().x, camera.position.y + ebtnY);
+        }
+        if(sbtnY0 > sbtnY) {
+            sbtnY += speed*delta;
+            offSoundBtn.setPos(offSoundBtn.getPos().x, camera.position.y + sbtnY);
+            onSoundBtn.setPos(onSoundBtn.getPos().x, camera.position.y + sbtnY);
+        }
     }
 
     @Override

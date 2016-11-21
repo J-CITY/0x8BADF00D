@@ -15,6 +15,7 @@ public class Coin {
     protected Sprite sprite;
     protected Vector2 pos;
     protected Rectangle bounds;
+    public float speed = 400;
 
     public Coin(float x, float y, int type) {
         if(type == 0) {
@@ -35,7 +36,7 @@ public class Coin {
     }
 
     public void update(float delta, float _x) {
-        pos.add(-400 * delta, 0.0f);
+        pos.add(-speed * delta, 0.0f);
         sprite.setCenter(pos.x, pos.y);
         bounds.setPosition(pos.x, pos.y);
         bounds.setCenter(pos.x, pos.y);

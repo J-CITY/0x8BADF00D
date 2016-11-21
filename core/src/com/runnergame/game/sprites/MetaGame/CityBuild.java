@@ -25,6 +25,8 @@ public class CityBuild extends  Building {
         sprite.setPosition(300, 450);
         sprite.setCenter(300, 450);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+
+        cardSprite = new Sprite(new Texture("cityCard.png"));
     }
 
     @Override

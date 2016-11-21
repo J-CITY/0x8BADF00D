@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.runnergame.game.Constants;
 import com.runnergame.game.sprites.*;
 
 public class BlockJump extends com.runnergame.game.sprites.Blocks.Block {
@@ -44,7 +45,7 @@ public class BlockJump extends com.runnergame.game.sprites.Blocks.Block {
     @Override
     public boolean collide(Player player) {
         if (bounds.overlaps(player.getBounds())) {
-            if((pos.y + 10 > player.getPosition().y - 10) && (pos.x-10 > player.getPosition().x + 10)) {
+            if((pos.y + 5 > player.getPosition().y - 5) && (pos.x - 5 > player.getPosition().x + 5)) {
                 player.setLife(false);
                 player.jump(300);
                 return false;
@@ -52,7 +53,7 @@ public class BlockJump extends com.runnergame.game.sprites.Blocks.Block {
             if(color == player.color) {
                 player.jump(vel);
             } else  if(pos.y < player.getPosition().y) {
-                player.onFloor(pos.y+63);
+                player.onFloor(pos.y + player.getBounds().getHeight()/2 + Constants.BLOCK_H/2 - 1);
             }
             player.flag = false;
         }

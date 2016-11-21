@@ -19,8 +19,8 @@ public abstract class Block {
     protected Vector2 pos;
     protected Random rand;
     protected Rectangle bounds;
-    protected static float speed = 400;
-    protected static float speed0 = 400;
+    public static float speed = 400;
+    public static float speed0 = 400;
 
     public int color = 0;//0- def; 1- blue; 2- red
 
@@ -46,6 +46,8 @@ public abstract class Block {
             sprite.setColor(GameRunner.colors.blue);
         } else if(color == 2) {
             sprite.setColor(GameRunner.colors.red);
+        } else if(color == 3) {
+            sprite.setColor(GameRunner.colors.green);
         }
         sprite.setCenter(pos.x, pos.y);
         return sprite;

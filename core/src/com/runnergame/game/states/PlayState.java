@@ -1,7 +1,10 @@
 package com.runnergame.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -14,8 +17,11 @@ import com.runnergame.game.sprites.Background;
 import com.runnergame.game.sprites.Blocks.Block;
 import com.runnergame.game.sprites.Blocks.BlockBeam;
 import com.runnergame.game.sprites.Blocks.BlockBoost;
+import com.runnergame.game.sprites.Blocks.BlockBoss;
+import com.runnergame.game.sprites.Blocks.BlockBullet;
 import com.runnergame.game.sprites.Blocks.BlockFinish;
 import com.runnergame.game.sprites.Blocks.BlockFloor;
+import com.runnergame.game.sprites.Blocks.BlockGun;
 import com.runnergame.game.sprites.Blocks.BlockIce;
 import com.runnergame.game.sprites.Blocks.BlockJump;
 import com.runnergame.game.sprites.Blocks.BlockNeedle;
@@ -27,28 +33,38 @@ public class PlayState extends State {
     public static int lvl=0;
     public static final int BLOCK_SPACING = 64;
     public static final int BLOCKS_MAX_COUNT = 20;
+    private Color bgColor;
     private boolean GO = false;
     private Array<Block> blocks;
     private Array<Coin> coins;
 
     private Player player;
+    private Array<Sprite> playerTail;
+
+    private Array<Sprite> bgEffect;
     Button pauseBtn;
     Background bg;
+    private boolean IS_BOSS = false;
 
     private SpriteBatch tb;
     OrthographicCamera cam_btn;
+    //BOSS
+    BlockBoss boss;
+    Array<BlockBullet> bul;
+
+    private int colorSize;
 
     private void addBeam(float x) {
         int size = MathUtils.random(5, 10);
-        int color = MathUtils.random(1, 2);
+        int color = MathUtils.random(1, colorSize);
         int len;
         for(int i = 0; i < size; ++i) {
             len = MathUtils.random(3, 7);
             for(int j = 0; j < len; ++j) {
                 if(j == len-1) {
-                    blocks.add(new BlockBeam(x, Constants.Y0+64, Constants.B_FLOOR));
+                    blocks.add(new BlockBeam(x, Constants.Y0+Constants.BLOCK_H/2+16, Constants.B_FLOOR));
                     blocks.get(blocks.size-1).setColor(color);
-                    color = MathUtils.random(1, 2);
+                    color = MathUtils.random(1, colorSize);
                 }
                 blocks.add(new BlockFloor(x, Constants.Y0, Constants.B_FLOOR));
                 blocks.get(blocks.size-1).setColor(0);
@@ -58,7 +74,7 @@ public class PlayState extends State {
     }
 
     private void addIceBridge(float x) {
-        int c = MathUtils.random(1, 2);
+        int c = MathUtils.random(1, colorSize);
         blocks.add(new BlockBoost(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR, 200));
         blocks.get(blocks.size-1).setColor(c);
         x += BLOCK_SPACING;
@@ -71,7 +87,7 @@ public class PlayState extends State {
     }
 
     private void addHole(float x) {
-        int color = MathUtils.random(1, 2);
+        int color = MathUtils.random(1, colorSize);
         blocks.add(new BlockJump(x, Constants.Y0, Constants.B_FLOOR, 350));
         blocks.get(blocks.size-1).setColor(color);
         x += BLOCK_SPACING*3;
@@ -83,7 +99,8 @@ public class PlayState extends State {
 
     private void addPlatform2(float x) {
         int len = MathUtils.random(5, 10);
-        int platform_color = MathUtils.random(1, 2);
+        int platform_color1 = MathUtils.random(1, colorSize);
+        int platform_color2 = MathUtils.random(1, colorSize);
         int _floor = 0;
         float __x;
 
@@ -92,7 +109,7 @@ public class PlayState extends State {
         blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
         blocks.get(blocks.size-1).setColor(0);
         blocks.add(new BlockJump(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_JUMP, 500));
-        blocks.get(blocks.size-1).setColor(platform_color);
+        blocks.get(blocks.size-1).setColor(platform_color1);
         __x = blocks.get(blocks.size-1).getPos().x+Constants.BLOCK_W+192;
         //blocks.add(new BlockJump(x + BLOCK_SPACING*4, Constants.Y0+64, Constants.B_JUMP));
         //blocks.get(blocks.size-1).setColor(platform_color);
@@ -106,9 +123,9 @@ public class PlayState extends State {
         for (int i = 0; i < len; ++i) {
             coins.add(new Coin(__x, Constants.GROUND + 64*(_floor), 0));
             blocks.add(new BlockFloor(__x, Constants.Y0 + 64*_floor, Constants.B_FLOOR));
-            blocks.get(blocks.size-1).setColor(platform_color);
+            blocks.get(blocks.size-1).setColor(platform_color1);
             blocks.add(new BlockFloor(__x, Constants.Y0, Constants.B_FLOOR));
-            blocks.get(blocks.size-1).setColor(platform_color);
+            blocks.get(blocks.size-1).setColor(platform_color2);
             __x += 64;
         }
     }
@@ -127,7 +144,7 @@ public class PlayState extends State {
         __x = blocks.get(blocks.size-1).getPos().x+Constants.BLOCK_W;
 
         for (int i = 0; i < platform_count; ++i) {
-            platform_color = MathUtils.random(1, 2);
+            platform_color = MathUtils.random(1, colorSize);
             if (i == 0) {
                 blocks.add(new BlockJump(__x, Constants.Y0, Constants.B_JUMP, 330));
                 blocks.get(blocks.size-1).setColor(platform_color);
@@ -157,7 +174,7 @@ public class PlayState extends State {
     }
 
     private void addBridge(float x) {
-        int bridge_color = MathUtils.random(1, 2);
+        int bridge_color = MathUtils.random(1, colorSize);
         int size = MathUtils.random(8, 16);
 
         for (int i = 0; i < size; ++i) {
@@ -177,8 +194,8 @@ public class PlayState extends State {
     }
 
     private void addNeedle(float x) {
-        int needle_color = MathUtils.random(0, 2);
-        int jump_color = MathUtils.random(1, 2);
+        int needle_color = MathUtils.random(0, colorSize);
+        int jump_color = MathUtils.random(1, colorSize);
         int size = MathUtils.random(5, 10);
 
         for (int i = 0; i < size; ++i) {
@@ -188,7 +205,7 @@ public class PlayState extends State {
                 continue;
             }
             if (i == 4) {
-                blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, 148, Constants.B_NEEDLE));
+                blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0 + Constants.BLOCK_H/2 + 16, Constants.B_NEEDLE));
                 blocks.get(blocks.size-1).setColor(needle_color);
             }
             blocks.add(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, 0));
@@ -197,7 +214,7 @@ public class PlayState extends State {
     }
 
     private void addNeedleUp(float x) {
-        int needle_color = MathUtils.random(1, 2);
+        int needle_color = MathUtils.random(1, colorSize);
         int size = MathUtils.random(5, 10);
 
         blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
@@ -211,7 +228,7 @@ public class PlayState extends State {
             coins.add(new Coin(x + BLOCK_SPACING*1, Constants.GROUND, 1));
         }
         for (int i = 2; i < size-2; ++i) {
-            blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, 148, Constants.B_NEEDLE));
+            blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0 + Constants.BLOCK_H/2 + 16, Constants.B_NEEDLE));
             blocks.get(blocks.size-1).setColor(needle_color);
             blocks.add(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
             blocks.get(blocks.size-1).setColor(0);
@@ -223,8 +240,8 @@ public class PlayState extends State {
     }
 
     private void addNeedleDown(float x) {
-        int needle_color = MathUtils.random(0, 2);
-        int jump_color = MathUtils.random(1, 2);
+        int needle_color = MathUtils.random(0, colorSize);
+        int jump_color = MathUtils.random(1, colorSize);
         int addCoin = MathUtils.random(0, 20);
         if(addCoin > 15 && addCoin < 20) {
             coins.add(new Coin(x + BLOCK_SPACING*0, Constants.GROUND, 0));
@@ -248,8 +265,8 @@ public class PlayState extends State {
     }
 
     private void addBridgeDown(float x) {
-        int needle_color = MathUtils.random(1, 2);
-        int jump_color = MathUtils.random(1, 2);
+        int needle_color = MathUtils.random(1, colorSize);
+        int jump_color = MathUtils.random(1, colorSize);
         int size = MathUtils.random(5, 10);
 
         blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
@@ -263,7 +280,7 @@ public class PlayState extends State {
             coins.add(new Coin(x + BLOCK_SPACING*1, Constants.GROUND, 1));
         }
         for (int i = 2; i < size+2; ++i) {
-            blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0-16, Constants.B_NEEDLE));
+            blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0-Constants.BLOCK_W+Constants.BLOCK_H/2+16, Constants.B_NEEDLE));
             blocks.get(blocks.size-1).setColor(needle_color);
             blocks.add(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
             blocks.get(blocks.size-1).setColor(0);
@@ -280,7 +297,7 @@ public class PlayState extends State {
         blocks.get(blocks.size-1).setColor(0);
         blocks.add(new BlockFloor(x + BLOCK_SPACING*(size+7), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
         blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockNeedle(x + BLOCK_SPACING*(size+7), Constants.Y0-16, Constants.B_NEEDLE));
+        blocks.add(new BlockNeedle(x + BLOCK_SPACING*(size+7), Constants.Y0-Constants.BLOCK_W+Constants.BLOCK_H/2+16, Constants.B_NEEDLE));
         blocks.get(blocks.size-1).setColor(0);
 
         blocks.add(new BlockFloor(x + BLOCK_SPACING*(size+8), 100, 0));
@@ -305,8 +322,23 @@ public class PlayState extends State {
         }
     }
 
+    private void addBoss(float x) {
+        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        boss = new BlockBoss(x + BLOCK_SPACING*0, Constants.Y0+Constants.BLOCK_H/2+25, Constants.B_FLOOR, (lvl/10)*10 + 15);//18
+    }
+
+    private void addGun(float x) {
+        int color = MathUtils.random(1, colorSize);
+        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.add(new BlockJump(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR, 350));
+        blocks.get(blocks.size-1).setColor(color);
+        blocks.add(new BlockGun(x + BLOCK_SPACING*2, Constants.Y0 + 163, Constants.B_FLOOR));//100
+        blocks.add(new BlockFloor(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_FLOOR));
+        blocks.add(new BlockFloor(x + BLOCK_SPACING*3, Constants.Y0, Constants.B_FLOOR));
+    }
+
     private void addCoinJump(float x) {
-        int jump_color = MathUtils.random(1, 2);
+        int jump_color = MathUtils.random(1, colorSize);
 
         blocks.add(new BlockJump(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_JUMP, 350));
         blocks.get(blocks.size-1).setColor(jump_color);
@@ -325,18 +357,20 @@ public class PlayState extends State {
         blocks.get(blocks.size-1).setColor(0);
         blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
         blocks.get(blocks.size-1).setColor(0);
+        blocks.add(new BlockFinish(x + BLOCK_SPACING*2, Constants.Y0 + Constants.BLOCK_H/2 + Constants.BLOCK_W/2, Constants.B_FINISH));
+        blocks.get(blocks.size-1).setColor(0);
         blocks.add(new BlockFloor(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_FLOOR));
         blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFinish(x + BLOCK_SPACING*2, 148, Constants.B_FINISH));
-        blocks.get(blocks.size-1).setColor(0);
-
     }
 
     int BLOCK_COUNT_NOW = 0;
     int BLOCK_LEN = 0;
     public PlayState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
+        bgColor = GameRunner.colors.getBgColor();
         camera.setToOrtho(false, GameRunner.WIDTH / 2, GameRunner.HEIGHT / 2);
+        colorSize = GameRunner.levels.levels_colors.get(lvl);
+        Block.speed0 = Block.speed = GameRunner.levels.levels_speed.get(lvl);
 
         cam_btn = new OrthographicCamera(GameRunner.WIDTH, GameRunner.HEIGHT);
         cam_btn.update();
@@ -352,16 +386,33 @@ public class PlayState extends State {
 
         tb = new SpriteBatch();
 
-        player = new Player(200, 232);
-        coins = new Array<Coin>();
-        blocks = new Array<Block>();
+        player = new Player(200, 232, "player.png", 1);
+        player.colorSize = colorSize;
+        playerTail = new Array<Sprite>();
+        for(int i = 0; i < 10; ++i) {
+            playerTail.add(new Sprite(new Texture("tail.png")));
+            playerTail.get(playerTail.size-1).setCenter(player.getPosition().x - Constants.BLOCK_W/2 + i*20, player.getPosition().y);
+            playerTail.get(playerTail.size-1).setScale(MathUtils.random(0.5f, 1.5f));
+        }
+        bgEffect = new Array<Sprite>();
+        for(int i = 0; i < 70; ++i) {
+            bgEffect.add(new Sprite(new Texture("s.png")));
+            bgEffect.get(bgEffect.size-1).setCenter(cam_btn.position.x + 550  - Constants.BLOCK_W/2 - i*20, cam_btn.position.y + MathUtils.random(-290, 290));
+            bgEffect.get(bgEffect.size-1).setScale(MathUtils.random(0.5f, 1.5f));
+            bgEffect.get(bgEffect.size-1).setColor(1,1,1,MathUtils.random(0.5f, 1f));
+        }
+        coins = new Array<Coin>(30);
+        blocks = new Array<Block>(30);
         addFloor(0);
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 2; ++i) {
             addFloor(blocks.get(blocks.size-1).getPos().x + Constants.BLOCK_W);
         }
 
         pauseBtn = new Button("Pause.png", cam_btn.position.x - 560, cam_btn.position.y + 300, 1, 1);
         pauseBtn.setScale(0.5f);
+
+        //BOSS
+        bul = new Array<BlockBullet>();
     }
 
     @Override
@@ -383,8 +434,25 @@ public class PlayState extends State {
     public void update(float delta) {
         hendleInput();
         player.update(delta);
+        //player.isLife = true;
         if (player.getPosition().y <= -100) {
             gameStateMenager.set(new PreGameOver(gameStateMenager));
+        }
+        for(Sprite s : playerTail) {
+            if(s.getX() <= player.getPosition().x - 220) {
+                s.setCenter(player.getPosition().x, player.getPosition().y);
+                s.setScale(MathUtils.random(0.5f, 1.5f));
+            } else {
+                s.setX(s.getX() - Block.speed*delta);
+            }
+        }
+        for(Sprite s : bgEffect) {
+            if(s.getX() <= cam_btn.position.x-700) {
+                s.setCenter(cam_btn.position.x + 690, cam_btn.position.y + MathUtils.random(-290, 290));
+                s.setScale(MathUtils.random(0.5f, 1.5f));
+            } else {
+                s.setX(s.getX() - (Block.speed/4)*delta);
+            }
         }
         //if(!player.getLife()) {
         //    gameStateMenager.set(new PreGameOver(gameStateMenager));
@@ -394,14 +462,19 @@ public class PlayState extends State {
         for (int i = 0; i < blocks.size; ++i) {
             Block f = blocks.get(i);
             f.update(delta, player.getPosition().x);
+            if(player.gun == true) {
+                player.gun = false;
+                bul.add(new BlockBullet(player.getPosition().x, player.getPosition().y, 99, 1, boss.getPos().x, boss.getPos().y));
+            }
             if (player.getLife())
                 flag = f.collide(player);
             if (flag) {
                 gameStateMenager.set(new WinState(gameStateMenager, lvl));
             }
         }
-
-        camera.position.y = player.getPosition().y;
+        if(player.isLife)
+            camera.position.y = player.getPosition().y;
+        //camera.position.y = blocks.get(blocks.size-1).getPos().y;
         if(GO) {
             while (blocks.size < BLOCKS_MAX_COUNT && BLOCK_COUNT_NOW < BLOCK_LEN) {
                 char new_blocks = GameRunner.levels.levels.get(lvl).charAt(BLOCK_COUNT_NOW);
@@ -446,15 +519,50 @@ public class PlayState extends State {
                     case 'i':
                         addIceBridge(blocks.get(blocks.size - 1).getPos().x + Constants.BLOCK_W);
                         break;
+                    case 'B':
+                        addBoss(blocks.get(blocks.size - 1).getPos().x + Constants.BLOCK_W);
+                        IS_BOSS = true;
+                        break;
                 }
             }
-            if (BLOCK_COUNT_NOW == BLOCK_LEN) {
+            if(IS_BOSS) {
+                if(boss.HP <= 0) {
+                    IS_BOSS = false;
+                }
+                while (blocks.size < BLOCKS_MAX_COUNT) {
+                    int g = MathUtils.random(0, 20);
+                    if(g > 17) {
+                        addGun(blocks.get(blocks.size - 1).getPos().x + Constants.BLOCK_W);
+                    }
+                    addFloor(blocks.get(blocks.size - 1).getPos().x + Constants.BLOCK_W);
+                }
+                boss.update(delta, player.getPosition().x);
+                if(bul.size == 0) {
+                    if(MathUtils.random(0, 100) < 15) {
+                        bul.add(new BlockBullet(boss.getPos().x, boss.getPos().y, 99, -1, player.getPosition().x-600, player.getPosition().y));
+                        bul.get(bul.size-1).setColor(MathUtils.random(1,2));
+                    }
+                }
+                for (BlockBullet b : bul) {
+                    b.update(delta, player.getPosition().x);
+                    b.collide(player);
+                    if(b.getLife() && b.collideBoss(boss.getBounds())) {
+                        boss.HP -= 5;
+                    }
+                }
+                for (int i = 0; i < bul.size; ++i) {
+                    BlockBullet r = bul.get(i);
+                    if (!r.isLife) {
+                        bul.get(i).dispose();
+                        bul.removeIndex(i);
+                    }
+                }
+            }
+            if (BLOCK_COUNT_NOW == BLOCK_LEN && IS_BOSS == false) {
                 BLOCK_COUNT_NOW++;
                 addFinish(blocks.get(blocks.size - 1).getPos().x + Constants.BLOCK_W);
             }
 
-
-            BlockBoost.updateVel();
             if (player.flag) {
                 player.onFloor(Constants.GROUND);
                 player.on_floor = false;
@@ -501,12 +609,32 @@ public class PlayState extends State {
 
     @Override
     public void render(SpriteBatch sb) {
+        Gdx.gl.glClearColor(bgColor.r,
+                            bgColor.g,
+                            bgColor.b, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        tb.setProjectionMatrix(cam_btn.combined);
+        tb.begin();
+        for(Sprite sp : bgEffect) {
+            sp.draw(tb);
+        }
+        tb.end();
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         Sprite s = bg.getBgSprite();
-        s.setColor(GameRunner.R, GameRunner.G, GameRunner.B, 1);
-        s.draw(sb);
+        //s.setColor(GameRunner.R, GameRunner.G, GameRunner.B, 1);
+        //s.setColor(0.08f, 0.29f, 0.29f, 1);
+        //s.draw(sb);
 
+        for(Sprite sp : playerTail) {
+            if(player.color == 1)
+                sp.setColor(GameRunner.colors.blue);
+            else if (player.color == 2)
+                sp.setColor(GameRunner.colors.red);
+            else
+                sp.setColor(GameRunner.colors.green);
+            sp.draw(sb);
+        }
         player.getSprite().draw(sb);
         for (Block b : blocks) {
             b.getSprite(player.color).draw(sb);
@@ -516,13 +644,22 @@ public class PlayState extends State {
                 c.getSprite().draw(sb);
             }
         }
+
+        if(IS_BOSS) {
+            for (BlockBullet b : bul) {
+                b.getSprite(player.color).draw(sb);
+            }
+            boss.getSprite(player.color).draw(sb);
+            boss.getHpSprite().draw(sb);
+            boss.getHpBarSprite().draw(sb);
+        }
         sb.end();
 
         tb.setProjectionMatrix(cam_btn.combined);
         tb.begin();
         pauseBtn.getSprite().draw(tb);
         if(!GO) {
-            GameRunner.font.draw(tb, "TAP TO START" + GameRunner.new_stars, cam_btn.position.x - 100, cam_btn.position.y);
+            GameRunner.font.draw(tb, "TAP TO START", cam_btn.position.x - 100, cam_btn.position.y);
         }
         GameRunner.font.draw(tb, "COINS: " + GameRunner.new_coins + " STARS: " + GameRunner.new_stars, cam_btn.position.x - 560, cam_btn.position.y - 320);
         tb.end();

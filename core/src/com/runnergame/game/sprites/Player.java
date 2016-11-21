@@ -23,13 +23,27 @@ public class Player {
     private Sprite sprite;
 
     public boolean isLife = true;
+    public int colorSize = 2;
     public int color = 1;//1- blue; 2- red
     public boolean on_floor = false;
     public boolean flag;
     float floor = 163;
 
+    public boolean gun = false;
 
-    public Player(int x, int y) {
+    public Player(int x, int y, String path, int fc) {
+        position = new Vector3(x, y, 0);
+        velosity = new Vector3(0, 0, 0);
+
+        anim = new Animation(new TextureRegion(new Texture(path)), fc, 1);
+        sprite = anim.getSprite();
+        sprite.setCenter(x, y);
+        bound = new Rectangle(sprite.getBoundingRectangle());
+        sprite.setColor(GameRunner.colors.blue);
+    }
+
+
+    /*public Player(int x, int y) {
         position = new Vector3(x, y, 0);
         velosity = new Vector3(0, 0, 0);
 
@@ -38,10 +52,13 @@ public class Player {
         sprite.setCenter(x, y);
         bound = new Rectangle(sprite.getBoundingRectangle());
         sprite.setColor(GameRunner.colors.blue);
-    }
+    }*/
 
     public Vector3 getPosition() {
         return position;
+    }
+    public void animUpdate(float delta) {
+        anim.update(delta);
     }
     public void update(float delta) {
         SCL = 1;
@@ -69,8 +86,12 @@ public class Player {
         sprite = anim.getSprite();
         sprite.setCenter(position.x, position.y);
         sprite.setScale(sprite_scl);
-        if(color == 1) sprite.setColor(GameRunner.colors.blue);
-        if(color == 2) sprite.setColor(GameRunner.colors.red);
+        if(color == 1)
+            sprite.setColor(GameRunner.colors.blue);
+        else if(color == 2)
+            sprite.setColor(GameRunner.colors.red);
+        else if(color == 3)
+            sprite.setColor(GameRunner.colors.green);
         bound = sprite.getBoundingRectangle();
         return sprite;
     }
@@ -119,6 +140,6 @@ public class Player {
     }
 
     public void changeColor() {
-        color = color % 2 + 1;
+        color = color % colorSize + 1;
     }
 }

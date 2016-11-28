@@ -71,4 +71,19 @@ public abstract class Block {
 
     public abstract void dispose();
 
+    public static float getPlatformSpace() {
+        if(speed0 == 400) {
+            return 245;
+        } else if(speed0 == 450) {
+            return 280;
+        } else if(speed0 == 500) {
+            return 310;
+        } else if(speed0 == 550) {
+            return 360;
+        } else if(speed0 == 600) {
+            return 400;
+        }
+        return 250;
+    }
+
 }

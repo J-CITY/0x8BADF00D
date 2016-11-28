@@ -41,8 +41,8 @@ public class BossGameState extends State {
         player = new Player((int)camera.position.x, (int)camera.position.y, "player.png", 1);
         player.setScale(0.5f);
 
-        TIME = (int)(GameRunner.levels.levels.get(lvl).charAt(0)-48) * 10;
-        SPEED = (int)GameRunner.levels.levels.get(lvl).charAt(1)-48;
+        TIME = (int)(GameRunner.levels.levels.get(lvl).level.charAt(0)-48) * 10;
+        SPEED = (int)GameRunner.levels.levels.get(lvl).level.charAt(1)-48;
 
         time = TIME;
         pauseBtn = new Button("Pause.png", camera.position.x - 280, camera.position.y + 150, 1, 1);

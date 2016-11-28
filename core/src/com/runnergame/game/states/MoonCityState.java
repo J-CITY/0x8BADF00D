@@ -17,7 +17,9 @@ import com.runnergame.game.sprites.MetaGame.Building;
 import com.runnergame.game.sprites.MetaGame.CityBuild;
 import com.runnergame.game.sprites.MetaGame.HouseBuild;
 import com.runnergame.game.sprites.MetaGame.Map;
+import com.runnergame.game.sprites.MetaGame.MedBuild;
 import com.runnergame.game.sprites.MetaGame.PoliceBuild;
+import com.runnergame.game.sprites.MetaGame.StadiumBuild;
 
 public class MoonCityState extends State implements GestureDetector.GestureListener
 {
@@ -50,7 +52,11 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         builds.add(new CityBuild(0));
         builds.add(new HouseBuild(1));
         builds.add(new PoliceBuild(2));
+        builds.add(new MedBuild(3));
+        builds.add(new StadiumBuild(4));
     }
+
+    private Sprite headder = new Sprite(new Texture("headder.png"));
     public MoonCityState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         tb = new SpriteBatch();
@@ -78,6 +84,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         sleep();
 
         timeNC = GameRunner.dm.loadDataTime("NCMODE");
+        headder.setCenter(cam_btn.position.x, cam_btn.position.y-450);
     }
 
     @Override
@@ -89,6 +96,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
     int time = TIME;
     @Override
     public void update(float delta) {
+        //System.out.print(camera.position.x+" "+ camera.position.y+"\n");
         I_AM_HERE = true;
         camera.update();
         if(!onTime) {
@@ -126,6 +134,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
 
         tb.setProjectionMatrix(cam_btn.combined);
         tb.begin();
+        headder.draw(tb);
         pauseBtn.getSprite().draw(tb);
         runnerPlayBtn.getSprite().draw(tb);
         timeNow = System.currentTimeMillis();
@@ -174,14 +183,14 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         if(runnerPlayBtn.collide(vec_btn.x, vec_btn.y)) {
             I_AM_HERE = false;
 
-            PlayState.lvl = GameRunner.dm.load2("level");
+            /*PlayState.lvl = GameRunner.dm.load2("level");
             if(PlayState.lvl >= 0 && PlayState.lvl <= 2) {
                 HelperState.lvl = PlayState.lvl;
                 gameStateMenager.set(new HelperState(gameStateMenager));
             } else {
                 gameStateMenager.set(new PlayState(gameStateMenager));
-            }
-            //gameStateMenager.push(new SelectLevel(gameStateMenager));
+            }*/
+            gameStateMenager.push(new SelectLevel(gameStateMenager));
         }
         timeNow = System.currentTimeMillis();
         if(timeNC < timeNow) {
@@ -236,9 +245,16 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
     public boolean pan(float x, float y, float deltaX, float deltaY) {
         if(!I_AM_HERE)
             return false;
+        float _x = camera.position.x, _y = camera.position.y;
         Vector3 touchPos = new Vector3(x,y,0);
         camera.unproject(touchPos);
         camera.translate(-deltaX, deltaY);
+        if(camera.position.x < -1270 || camera.position.x > 1270) {
+            camera.position.x = _x;
+        }
+        if(camera.position.y < -1370 || camera.position.y > 1370) {
+            camera.position.y = _y;
+        }
         return true;
     }
 

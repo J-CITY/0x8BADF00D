@@ -12,14 +12,19 @@ public class CityBuild extends  Building {
         super(_t);
         name = "City";
         level = 0;
-        max_level = 1;
+        max_level = 4;
         price = 0;
         //GameRunner.dm.addData2("City_lvl", 0);
+        price = 0 + 100 * level_now;
         level_now = GameRunner.dm.load2("City_lvl");
         if(level_now == 0) {
             sprite = new Sprite(new Texture(Gdx.files.internal("meta/city_ic.png")));
-        } else {
-            sprite = new Sprite(new Texture(Gdx.files.internal("meta/city.png")));
+        } else if(level_now == 1) {
+            sprite = new Sprite(new Texture(Gdx.files.internal("meta/city1.png")));
+        } else if(level_now == 2) {
+            sprite = new Sprite(new Texture(Gdx.files.internal("meta/city2.png")));
+        } else if(level_now == 3) {
+            sprite = new Sprite(new Texture(Gdx.files.internal("meta/city3.png")));
         }
 
         sprite.setPosition(300, 450);

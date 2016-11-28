@@ -134,7 +134,7 @@ public class GameRunner extends ApplicationAdapter {
 		//Gdx.gl.glClearColor( 245/255f, 232/255f, 101/255f, 1 );
 		//Gdx.gl.glClearColor( 204/255f, 204/255f, 204/255f, 1 );
 		//Gdx.gl.glClearColor( 205/255f, 153/255f, 52/255f, 1 );
-		Gdx.gl.glClearColor(colors.grayBg.r, colors.grayBg.b, colors.grayBg.g, 1);
+		Gdx.gl.glClearColor(41/255f, 41/255f, 41/255f, 1);
 
 		if(music.isPlaying() && !isPlay) {
 			music.stop();

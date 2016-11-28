@@ -6,9 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.runnergame.game.GameRunner;
 
-/**
- * Created by 333da on 11.11.2016.
- */
+
 public class HouseBuild extends Building {
 
     public HouseBuild(int _t) {

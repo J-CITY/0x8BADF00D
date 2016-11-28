@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.runnergame.game.GameRunner;
 
 import java.util.Random;
 
@@ -28,6 +29,10 @@ public class Coin {
         bounds = new Rectangle(sprite.getBoundingRectangle());
         pos = new Vector2(x, y);
         sprite.setCenter(pos.x, pos.y);
+        sprite.setScale(0.5f);
+        sprite.setColor(GameRunner.colors.yellow.r,
+                GameRunner.colors.yellow.g,
+                GameRunner.colors.yellow.b, 1);
         bounds.setCenter(pos.x, pos.y);
     }
 

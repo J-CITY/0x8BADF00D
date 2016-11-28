@@ -101,7 +101,7 @@ public class Unit {
         }
         sprite = new Sprite(texture);
         if(type == 0 || type == 1) {
-            sprite.setColor(Colors.red);
+            //sprite.setColor(Colors.red);
         }
         sprite.setScale(0.5f);
         sprite.setCenter(x, y);

@@ -13,8 +13,15 @@ public class Background {
     Sprite sprite_bg;
     private Vector2 pos;
 
-    public Background(float x, float y) {
-        sprite_bg = new Sprite(new Texture("bg.png"));
+    public Background(float x, float y, int scheme) {
+        switch (scheme) {
+            case 0:
+                sprite_bg = new Sprite(new Texture("bgWall0.png"));
+                break;
+            case 1:
+                sprite_bg = new Sprite(new Texture("bgWall1.png"));
+                break;
+        }
         pos = new Vector2(x, y);
         sprite_bg.setCenter(x, y);
     }

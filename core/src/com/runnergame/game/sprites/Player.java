@@ -14,7 +14,8 @@ import com.runnergame.game.states.PreGameOver;
 public class Player {
     public int GRAVITY = -15;
     public int SCL = 1;
-    public float sprite_scl = 1;
+    public float sprite_scl = 0.5f;
+    public float sprite_rot = 0;
     private Vector3 position;
     private Vector3 velosity;
     private Rectangle bound;
@@ -31,9 +32,16 @@ public class Player {
 
     public boolean gun = false;
 
+    public float getRot() {
+        return sprite_rot;
+    }
+
     public Player(int x, int y, String path, int fc) {
         position = new Vector3(x, y, 0);
         velosity = new Vector3(0, 0, 0);
+        int _path = GameRunner.dm.load2("playerSkin");
+        System.out.print(_path);
+        path = GameRunner.colors.playerSkins.get(_path);
 
         anim = new Animation(new TextureRegion(new Texture(path)), fc, 1);
         sprite = anim.getSprite();
@@ -73,6 +81,8 @@ public class Player {
 
         velosity.scl(1/delta);
 
+        sprite_rot -= (180*delta)%360;
+
         //if (position.y <= -100) {
         //    isLife = false;
         //}
@@ -86,6 +96,7 @@ public class Player {
         sprite = anim.getSprite();
         sprite.setCenter(position.x, position.y);
         sprite.setScale(sprite_scl);
+        //sprite.setRotation(sprite_rot);
         if(color == 1)
             sprite.setColor(GameRunner.colors.blue);
         else if(color == 2)

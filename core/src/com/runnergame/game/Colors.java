@@ -2,40 +2,66 @@ package com.runnergame.game;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 
 public class Colors {
     public static int BLUE = 1;
     public static int RED = 2;
     public static int GRAY = 0;
 
-    public static Color blue = new Color(0.32f, 0.47f, 0.57f, 1f);
-    public static Color red = new Color(0.69f, 0.29f, 0.29f, 1f);
-    public static Color green = new Color(0.25f, 0.58f, 0.4f, 1f);
-    public static Color gray = new Color(0.43f, 0.43f, 0.43f, 1f);
+    public static int colorScheme=0;
+
+    public Color blue = new Color(57/255f, 225/255f, 205/255f, 1f);
+    public Color red = new Color(237/255f, 53/255f, 106/255f, 1f);
+    public Color green = new Color(72/255f, 210/255f, 57/255f, 1f);
+    public Color gray = new Color(216/255f, 216/255f, 216/255f, 1f);
+    public Color yellow = new Color(246/255f, 223/255f, 14/255f, 1f);
 
 
-    public static Color purpleBg = new Color(38/255f, 31/255f, 39/255f, 1f);
-    public static Color purple2Bg = new Color(75/255f, 58/255f, 66/255f, 1f);
-    public static Color yellowBg = new Color(0.8f, 0.6f, 0.2f, 1);
-    //public static Color yellow2Bg = new Color(243/255f, 230/255f, 122/255f, 1);
-    public static Color grayBg = new Color(41/255f, 41/255f, 41/255f, 1);
-    public static Color orangeBg = new Color(212/255f, 165/255f, 38/255f, 1);
-
-    public Color getBgColor() {
-        int c = MathUtils.random(0, 4);
-        switch (c) {
-            case 0:
-                return purpleBg;
-            case 1:
-                return purple2Bg;
-            case 2:
-                return yellowBg;
-            case 3:
-                return grayBg;
-            case 4:
-                return orangeBg;
-        }
-        return grayBg;
+    public Array<String> playerSkins = new Array<String>();
+    public Array<Integer> playerSkinsPrice = new Array<Integer>();
+    Colors() {
+        playerSkins.add("player_p.png");
+        playerSkinsPrice.add(0);
+        playerSkins.add("circle_p.png");
+        playerSkinsPrice.add(10);
+        playerSkins.add("circle2_p.png");
+        playerSkinsPrice.add(15);
+        playerSkins.add("3_p.png");
+        playerSkinsPrice.add(15);
+        playerSkins.add("5_p.png");
+        playerSkinsPrice.add(15);
+        playerSkins.add("6_p.png");
+        playerSkinsPrice.add(15);
+        playerSkins.add("7_p.png");
+        playerSkinsPrice.add(15);
+        playerSkins.add("8_p.png");
+        playerSkinsPrice.add(15);
+        playerSkins.add("9_p.png");
+        playerSkinsPrice.add(15);
+        playerSkins.add("10_p.png");
+        playerSkinsPrice.add(15);
     }
+    public void setScheme(int s) {
+        switch (s) {
+            case 0:
+                blue = new Color(57/255f, 225/255f, 205/255f, 1f);
+                red = new Color(237/255f, 53/255f, 106/255f, 1f);
+                green = new Color(72/255f, 210/255f, 57/255f, 1f);
+                gray = new Color(216/255f, 216/255f, 216/255f, 1f);
+                yellow = new Color(246/255f, 223/255f, 14/255f, 1f);
+                break;
+            case 1:
+                blue = new Color(89/255f, 109/255f, 161/255f, 1f);
+                red = new Color(161/255f, 89/255f, 139/255f, 1f);
+                green = new Color(89/255f, 175/255f, 86/255f, 1f);
+                gray = new Color(58/255f, 58/255f, 58/255f, 1f);
+                yellow = new Color(169/255f, 166/255f, 85/255f, 1f);
+                break;
+        }
+    }
+
+
+
 
 }

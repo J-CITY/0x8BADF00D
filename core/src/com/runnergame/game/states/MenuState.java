@@ -10,9 +10,10 @@ import com.runnergame.game.sprites.MetaGame.Building;
 
 public class MenuState extends State {
 
-    private Button playBtn, onSoundBtn, offSoundBtn;
+    private Button playBtn, onSoundBtn, offSoundBtn, shopBtn;
     private float pbtnY0 = 0, pbtnY = 400;
     private float sbtnY0 = -250, sbtnY = -400;
+    private float shbtnY0 = -150, shbtnY = -400;
     private String TITLE = "0x8BADF00D";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
@@ -22,6 +23,7 @@ public class MenuState extends State {
         playBtn = new Button("play_t.png", camera.position.x, camera.position.y+pbtnY, 1, 1);
         onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
         offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
+        shopBtn = new Button("btnShop.png", camera.position.x-530, camera.position.y+shbtnY, 1, 1);
     }
 
     @Override
@@ -35,6 +37,8 @@ public class MenuState extends State {
                 //gameStateMenager.set(new NCState(gameStateMenager));
             } else if(onSoundBtn.collide(vec.x, vec.y)) {
                 GameRunner.isPlay = !GameRunner.isPlay;
+            } else if(shopBtn.collide(vec.x, vec.y)) {
+                gameStateMenager.push(new ShopState(gameStateMenager));
             }
         }
     }
@@ -53,6 +57,10 @@ public class MenuState extends State {
             offSoundBtn.setPos(offSoundBtn.getPos().x, camera.position.y + sbtnY);
             onSoundBtn.setPos(onSoundBtn.getPos().x, camera.position.y + sbtnY);
         }
+        if(shbtnY0 > shbtnY) {
+            shbtnY += speed*delta;
+            shopBtn.setPos(shopBtn.getPos().x, camera.position.y + shbtnY);
+        }
         //System.out.print(pbtnY + "\n");
     }
 
@@ -63,6 +71,7 @@ public class MenuState extends State {
 
         GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
         playBtn.getSprite().draw(sb);
+        shopBtn.getSprite().draw(sb);
         if(GameRunner.isPlay) {
             onSoundBtn.getSprite().draw(sb);
         } else {

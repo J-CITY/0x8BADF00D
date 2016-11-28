@@ -81,6 +81,7 @@ public class NCState extends State {
             }
         }
         if(coins.size == 0) {
+            GameRunner.dm.addData2("coins", GameRunner.new_coins);
             gameStateMenager.set(new MoonCityState(gameStateMenager));
             //gameStateMenager.set(new MetaGameState(gameStateMenager));
         }

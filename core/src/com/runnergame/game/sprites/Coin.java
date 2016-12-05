@@ -22,7 +22,7 @@ public class Coin {
         if(type == 0) {
             tex = new Texture("coin.png");
         } else {
-            tex = new Texture("star.png");
+            tex = new Texture("metal.png");
         }
         TYPE = type;
         sprite = new Sprite(tex);

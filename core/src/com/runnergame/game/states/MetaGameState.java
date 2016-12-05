@@ -39,9 +39,9 @@ public class MetaGameState extends State {
 
         dm = new DataManager("GameRunner");
         dm.setParam("coins");
-        GameRunner.new_coins = dm.load();
+        GameRunner.now_coins = dm.load();
         dm.setParam("star");
-        GameRunner.new_stars = dm.load();
+        GameRunner.now_metal = dm.load();
 
         units = new Array<Unit>();
         for(int i = 0; i < UNIT_COUNT/4; ++i) {
@@ -77,8 +77,8 @@ public class MetaGameState extends State {
             if(timeNC < timeNow) {
                 if(ncBtn.collide(vec.x, vec.y)) {
                     //if(GameRunner.new_stars >= 5) {
-                        GameRunner.new_stars -= 5;
-                        dm.addData2("star", GameRunner.new_stars);
+                        GameRunner.now_metal -= 5;
+                        dm.addData2("star", GameRunner.now_metal);
                         dm.addDataTime("NCMODE", timeNow + 86400000);
                         gameStateMenager.set(new NCState(gameStateMenager));
                     //}
@@ -126,9 +126,9 @@ public class MetaGameState extends State {
                     if (time == 0) {
                         time = TIME;
                         dm.setParam("coins");
-                        GameRunner.new_coins = dm.load();
-                        dm.setParam("star");
-                        GameRunner.new_stars = dm.load();
+                        GameRunner.now_coins = dm.load();
+                        dm.setParam("metal");
+                        GameRunner.now_metal = dm.load();
                     }
                     onTime = !onTime;
                 }
@@ -183,7 +183,7 @@ public class MetaGameState extends State {
             GameRunner.font.draw(tb, "NCMode: " +  h + ":" + m + ":" + s, camera.position.x+680,
                     camera.position.y - 150);
         }
-        GameRunner.font.draw(tb, "COINS: " + GameRunner.new_coins + " STARS: " + GameRunner.new_stars +  " ENERGY: " + energy, camera.position.x - 280, camera.position.y - 160);
+        GameRunner.font.draw(tb, "COINS: " + GameRunner.now_coins + "  METAL: " + GameRunner.now_metal +  " ENERGY: " + energy, camera.position.x - 280, camera.position.y - 160);
         tb.end();
     }
 

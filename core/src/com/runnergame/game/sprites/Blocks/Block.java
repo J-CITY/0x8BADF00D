@@ -78,10 +78,6 @@ public abstract class Block {
             return 280;
         } else if(speed0 == 500) {
             return 310;
-        } else if(speed0 == 550) {
-            return 360;
-        } else if(speed0 == 600) {
-            return 400;
         }
         return 250;
     }

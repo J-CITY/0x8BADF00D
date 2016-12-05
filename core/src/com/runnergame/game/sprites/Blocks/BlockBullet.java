@@ -57,10 +57,11 @@ public class BlockBullet extends Block {
     @Override
     public boolean collide(Player player) {
         if(bounds.overlaps(player.getBounds()) &&
-                (color == Colors.GRAY || color == player.color) && DIR < 0) {
-            player.setLife(false);
-            player.jump(300);
+                (color == player.color) && DIR < 0) {
+            //player.setLife(false);
+            //player.jump(300);
             isLife = false;
+            return true;
         }
         return false;
     }

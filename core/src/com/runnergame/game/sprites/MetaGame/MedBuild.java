@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
+import com.runnergame.game.Constants;
 import com.runnergame.game.GameRunner;
 
 public class MedBuild extends Building {
@@ -21,14 +22,20 @@ public class MedBuild extends Building {
             sprite = new Sprite(new Texture(Gdx.files.internal("meta/med.png")));
         }
 
-        sprite.setPosition(200, -50);
-        sprite.setCenter(200, -50);
+        sprite.setPosition(-730, -200);
+        sprite.setCenter(-730, -200);
         bounds = new Rectangle(sprite.getBoundingRectangle());
-        cardSprite = new Sprite(new Texture("policeCard.png"));
+        cardSprite = new Sprite(new Texture("meta/medcard.png"));
     }
 
     @Override
-    public void update(float delta, float _x) {
-
+    public boolean update(int p) {
+        if(p == 0) {
+            if (GameRunner.dm.load2(Constants.CITI_PARAM) == 3 &&
+                    GameRunner.dm.load2(Constants.HOUSE_PARAM) >= 2) {
+                return true;
+            }
+        }
+        return false;
     }
 }

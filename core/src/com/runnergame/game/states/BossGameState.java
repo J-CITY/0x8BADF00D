@@ -76,7 +76,7 @@ public class BossGameState extends State {
                     time--;
                     if (time == 0) {
                         //time = TIME;
-                        GameRunner.new_coins += 100;
+                        GameRunner.now_coins += 100;
                         DataManager dm = new DataManager("GameRunner");
                         dm.setParam("level");
                         int l = dm.load();
@@ -131,7 +131,7 @@ public class BossGameState extends State {
         tb.setProjectionMatrix(camera.combined.scl(0.5f));
         tb.begin();
 
-        GameRunner.font.draw(tb, "COINS: " + GameRunner.new_coins + " STARS: " + GameRunner.new_stars, camera.position.x - 280, camera.position.y - 160);
+        GameRunner.font.draw(tb, "COINS: " + GameRunner.now_coins + " METAL: " + GameRunner.now_metal, camera.position.x - 280, camera.position.y - 160);
         tb.end();
     }
 

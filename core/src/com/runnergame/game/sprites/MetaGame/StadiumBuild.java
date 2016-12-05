@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
+import com.runnergame.game.Constants;
 import com.runnergame.game.GameRunner;
 
 public class StadiumBuild extends Building {
@@ -28,7 +29,13 @@ public class StadiumBuild extends Building {
     }
 
     @Override
-    public void update(float delta, float _x) {
-
+    public boolean update(int p) {
+        if(p == 0) {
+            if (GameRunner.dm.load2(Constants.CITI_PARAM) == 3 &&
+                    GameRunner.dm.load2(Constants.HOUSE_PARAM) == 3) {
+                return true;
+            }
+        }
+        return false;
     }
 }

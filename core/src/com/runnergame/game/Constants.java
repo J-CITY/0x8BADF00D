@@ -13,4 +13,10 @@ public class Constants {
     public static int B_NEEDLE = 1;
     public static int B_BEAM = 6;
 
+    //BUILDINGS PARAM
+    public static String CITI_PARAM = "City_lvl";
+    public static String HOUSE_PARAM = "House_lvl";
+    public static String MED_PARAM = "Med_lvl";
+    public static String POLICE_PARAM = "Police_lvl";
+
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.runnergame.game.GameRunner;
 
 public class Button {
 
@@ -13,6 +14,7 @@ public class Button {
     private Sprite sprite;
     private Vector2 pos;
     private float scl = 1;
+    private boolean isPress = false;
 
     public Button(String tex_path, float x, float y, int framesCount, float frameTime) {
         texture = new Texture(tex_path);
@@ -22,7 +24,9 @@ public class Button {
         bounds = new Rectangle(sprite.getBoundingRectangle());
         pos = new Vector2(x, y);
     }
-
+    public void setIsPress(boolean b) {
+        isPress = b;
+    }
     public void update(float delta) {
         anim.update(delta);
     }
@@ -35,15 +39,19 @@ public class Button {
         pos.y = y;
         bounds.setCenter(x, y);
     }
-
+    boolean playSound = false;
     public boolean collide(float x, float y) {
         return bounds.contains(x, y);
+
     }
 
     public Sprite getSprite() {
         sprite = anim.getSprite();
         sprite.setCenter(pos.x, pos.y);
         sprite.setScale(scl);
+        if(isPress) {
+            sprite.setColor(0,0,0,0.5f);
+        }
         return sprite;
     }
 

@@ -1,21 +1,25 @@
 package com.runnergame.game;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.runnergame.game.states.CoinsManager;
+import com.flurry.android.FlurryAgent;
+import com.runnergame.game.sprites.Background;
 import com.runnergame.game.states.DataManager;
 import com.runnergame.game.states.GameStateManager;
 import com.runnergame.game.states.MenuState;
-import com.runnergame.game.states.MoonCityState;
-import com.runnergame.game.states.RecordManager;
 
-public class GameRunner extends ApplicationAdapter {
+import java.util.HashMap;
+
+
+public class GameRunner implements ApplicationListener {
 	public static final int WIDTH = 1366;
 	public static final int HEIGHT = 768;
 	public static final String TITLE = "0x8BADF00D";
@@ -24,26 +28,36 @@ public class GameRunner extends ApplicationAdapter {
 	private SpriteBatch batch;
 
 	private Music music;
+	public static Sound soundPressBtn;
 	public static boolean isPlay = true;
 	public  static BitmapFont font;
 
-	//public static RecordManager rm;
-	//public static CoinsManager cm;
 	public static DataManager dm;
 	public static int score = 0;
-	public static int new_coins = 0;
-	public static int new_stars = 0;
+	public static int now_coins = 0;
+	public static int now_metal = 0;
 	public static boolean reborn = false;
 
 	public static Colors colors = new Colors();
-	public static Levels levels = new Levels();;
+	public static Levels levels = new Levels();
+	int firstRun=0;
+	public long timeStart, timeStop;
 
 	@Override
 	public void create () {
-		batch = new SpriteBatch();
-		//rm = new RecordManager("GameRunner");
-		//cm = new CoinsManager("GameRunner");
 		dm = new DataManager("GameRunner");
+
+		timeStart = System.currentTimeMillis();
+		//dm.addData2("firstRun", 0);
+		firstRun = dm.load2("firstRun");
+		if(firstRun == 0) {
+			FlurryAgent.logEvent("FIRST_RUN", true);
+		} else {
+			FlurryAgent.logEvent("SESSION_LENGTH", true);
+		}
+		/////////////////////////////////////////////
+		batch = new SpriteBatch();
+
 
 		/*DataManager dm = new DataManager("GameRunner");
 		for(int i=0; i<16; ++i) {
@@ -51,12 +65,9 @@ public class GameRunner extends ApplicationAdapter {
 			dm.addData(0);
 		}*/
 		//dm.addData2("level", 10);
-		dm.setParam("coins");
-		//					dm.addData(250);
-		new_coins = dm.load();
-		dm.setParam("star");
-		//dm.addData(250);
-		new_stars = dm.load();
+		//					dm.addData2("coins",500);
+		now_coins = dm.load2("coins");
+		now_metal = dm.load2("metal");
 
 
 		gsm = new GameStateManager();
@@ -64,6 +75,9 @@ public class GameRunner extends ApplicationAdapter {
 		music.setLooping(true);
 		music.setVolume(0.1f);
 		music.play();
+
+		soundPressBtn = Gdx.audio.newSound(Gdx.files.internal("soundPressBtn.wav"));
+
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 
 		font = new BitmapFont();
@@ -72,65 +86,30 @@ public class GameRunner extends ApplicationAdapter {
 		parameter.size = 32;
 		font = fontGenerator.generateFont(parameter);
 		fontGenerator.dispose();
-
+		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		gsm.push(new MenuState(gsm));
-		//gsm.push(new MoonCityState(gsm));
 	}
 
-	float H = 0, S=80, V=20;
-	float dir = 1;
-	int inc=0, next = 1;
-	float Vmin, Vinc, Vdec;
+	@Override
+	public void resize(int width, int height) {
 
-	public static float R, G, B;
-
+	}
+	int TIME = 5;
+	int time = TIME;
 	@Override
 	public void render () {
-		next = 0;
-		if(inc == 3) {
-			inc = 0;
-			if(H == 0)
-				dir = 1;
-			if(H == 360)
-				dir = -1;
-			H += dir;
-			Vmin = (100 - S) * V / 100;
-			float a = (V - Vmin) * (H % 60) / 60;
-			Vinc = Vmin + a;
-			Vdec = V - a;
-		}
-		if(H < 60) {
-			R = V * 1 / 255; G = Vinc * 1 / 255; B = Vmin * 1 / 255;
-			//Gdx.gl.glClearColor( R, G, B, 1 );
-			//System.out.print("R: " + V * 1 / 255 + "G: " + Vinc * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
-		}
-		if(H >= 60 && H < 120) {
-			R = Vdec * 1 / 255; G = V * 1 / 255; B = Vmin * 1 / 255;
-			//Gdx.gl.glClearColor( R, G, B, 1 );
-			//System.out.print("R: " +  Vdec * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vmin * 1 / 255 + "\n");
-		}
-		if(H >= 120 && H < 180) {
-			R = Vmin * 1 / 255; G = V * 1 / 255; B = Vinc * 1 / 255;
-			//Gdx.gl.glClearColor( R, G, B, 1 );
-			//System.out.print("R: " + Vmin * 1 / 255 + "G: " + V * 1 / 255 + "B: " + Vinc * 1 / 255 + "\n");
-		}
-		if(H >= 180 && H < 240) {
-			R = Vmin * 1 / 255; G = Vdec * 1 / 255; B = V * 1 / 255;
-			//Gdx.gl.glClearColor( R, G, B, 1 );
-			//System.out.print("R: " + Vmin * 1 / 255 + "G: " + Vdec * 1 / 255 + "B: " + V * 1 / 255 + "\n");
-		}
-		if(H >= 240 && H < 300) {
-			R = Vinc * 1 / 255; G = Vmin * 1 / 255; B = V * 1 / 255;
-			//Gdx.gl.glClearColor( R, G, B, 1 );
-			//System.out.print("R: " + Vinc * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + V * 1 / 255 + "\n");
-		}
-		if(H >= 300 && H < 360) {
-			R = V * 1 / 255; G = Vmin * 1 / 255; B = Vdec * 1 / 255;
-			//Gdx.gl.glClearColor( R, G, B, 1 );
-			//System.out.print("R: " + V * 1 / 255 + "G: " + Vmin * 1 / 255 + "B: " + Vdec * 1 / 255 + "\n");
-		}
-		inc++;
-		//Gdx.gl.glClearColor( R, G, B, 1 );
+		com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+			@Override
+			public void run() {
+				time--;
+				if (time == 0) {
+					time = TIME;
+					GameRunner.now_coins = GameRunner.dm.load2("coins");
+					GameRunner.now_metal = GameRunner.dm.load2("metal");
+				}
+			}
+		}, 1);
+
 		//Gdx.gl.glClearColor( 245/255f, 232/255f, 101/255f, 1 );
 		//Gdx.gl.glClearColor( 204/255f, 204/255f, 204/255f, 1 );
 		//Gdx.gl.glClearColor( 205/255f, 153/255f, 52/255f, 1 );
@@ -142,13 +121,57 @@ public class GameRunner extends ApplicationAdapter {
 			music.play();
 		}
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 		gsm.update(Gdx.graphics.getDeltaTime());
 		gsm.render(batch);
 	}
-	
+
+	private String getSessionTIme(long t) {
+		String seconds = new String();
+		if(t <= 30)
+			seconds = "0-30 sec";
+		if(t > 30 && t <= 60)
+			seconds = "30-60 sec";
+		if(t > 60 && t <= 300)
+			seconds = "1-5 min";
+		if(t > 300 && t <= 600)
+			seconds = "5-10 min";
+		if(t > 600 && t <= 900)
+			seconds = "10-15 min";
+		if(t > 900 && t <= 1800)
+			seconds = "15-30 min";
+		if(t > 1800 && t <= 3600)
+			seconds = "30-60 min";
+		if(t > 3600)
+			seconds = " > 60 min";
+		return seconds;
+	}
+
+	@Override
+	public void pause() {
+		timeStop = System.currentTimeMillis();
+		HashMap<String, String> parameters = new HashMap<String, String>();
+		parameters.put("TIME", getSessionTIme((timeStop-timeStart)/1000));
+		if(firstRun == 0) {
+			FlurryAgent.endTimedEvent("FIRST_RUN", parameters);
+			Gdx.app.debug("TAGGG", "FIRST___RUN "+parameters.get("TIME"));
+			dm.addData2("firstRun", 1);
+		} else {
+			FlurryAgent.endTimedEvent("SESSION_LENGTH", parameters);
+			Gdx.app.debug("TAGGG", "SESSION___RUN"+parameters.get("TIME"));
+		}
+	}
+
+	@Override
+	public void resume() {
+		timeStart = System.currentTimeMillis();
+	}
+
+
 	@Override
 	public void dispose () {
 		batch.dispose();
 		music.dispose();
+		soundPressBtn.dispose();
 	}
 }

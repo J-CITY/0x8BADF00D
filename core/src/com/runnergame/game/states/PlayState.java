@@ -1,7 +1,6 @@
 package com.runnergame.game.states;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
+import com.flurry.android.FlurryAgent;
 import com.runnergame.game.Colors;
 import com.runnergame.game.Constants;
 import com.runnergame.game.GameRunner;
@@ -29,30 +30,41 @@ import com.runnergame.game.sprites.Button;
 import com.runnergame.game.sprites.Coin;
 import com.runnergame.game.sprites.Player;
 
+import java.util.HashMap;
+
 public class PlayState extends State {
+    //CHEATS
+    public static boolean doNotDie=false;
+    public static boolean doNotCollige=false;
+
     public static int lvl=0;
+    private int colorSize;
     public static final int BLOCK_SPACING = 64;
     public static final int BLOCKS_MAX_COUNT = 20;
-    //private Color bgColor;
-    private boolean GO = false;
+
+    private boolean START_LEVEL = false;
     private Array<Block> blocks;
     private Array<Coin> coins;
 
     private Player player;
     private Array<Sprite> playerTail;
+    private Sprite helpColorChange = new Sprite(new Texture("halper.png"));
 
     private Array<Sprite> bgEffect;
-    Button pauseBtn;
     Background bg;
-    private boolean IS_BOSS = false;
+
+    boolean pauseBtnPress = false;
+    Button pauseBtn;
+    //REBORN
+    public static boolean reborn = false;
+    private boolean doReborn = true;
 
     private SpriteBatch tb;
     OrthographicCamera cam_btn;
     //BOSS
+    private boolean IS_BOSS = false;
     BlockBoss boss;
     Array<BlockBullet> bul;
-
-    private int colorSize;
 
     private void addBeam(float x) {
         int size = MathUtils.random(5, 10);
@@ -133,7 +145,7 @@ public class PlayState extends State {
     }
 
     private void addPlatform(float x) {
-        int platform_count = MathUtils.random(3, 8);
+        int platform_count = MathUtils.random(3, 5);
         int platform_color;
         int _floor = 0;
         float __x;
@@ -148,7 +160,7 @@ public class PlayState extends State {
         for (int i = 0; i < platform_count; ++i) {
             platform_color = MathUtils.random(1, colorSize);
             if (i == 0) {
-                blocks.add(new BlockJump(__x, Constants.Y0, Constants.B_JUMP, 335));
+                blocks.add(new BlockJump(__x, Constants.Y0, Constants.B_JUMP, 350));
                 blocks.get(blocks.size-1).setColor(platform_color);
                 __x += Block.getPlatformSpace();
                 continue;
@@ -163,10 +175,10 @@ public class PlayState extends State {
                 coins.add(new Coin(__x, Constants.GROUND + 32*_floor, 0));
             }
 
-            blocks.add(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 335));
+            blocks.add(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 350));
             blocks.get(blocks.size-1).setColor(platform_color);
             __x += 64;
-            blocks.add(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 335));
+            blocks.add(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 350));
             blocks.get(blocks.size-1).setColor(platform_color);
             __x += Block.getPlatformSpace();;
         }
@@ -369,26 +381,22 @@ public class PlayState extends State {
     int colorScheme = 0;
     public PlayState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("LEVEL", String.valueOf(lvl));
+        FlurryAgent.logEvent("START_LEVEL", parameters);
         colorScheme = GameRunner.levels.levels.get(lvl).color_scheme;
         GameRunner.colors.setScheme(colorScheme);
-        //bgColor = GameRunner.colors.getBgColor();
         colorSize = GameRunner.levels.levels.get(lvl).level_colors;
         Block.speed0 = Block.speed = GameRunner.levels.levels.get(lvl).level_speed;
         rot0 = rot1 = GameRunner.levels.levels.get(lvl).level_rot;
         rotSpeed = GameRunner.levels.levels.get(lvl).level_rot_speed;
+
         camera.setToOrtho(false, GameRunner.WIDTH / 2, GameRunner.HEIGHT / 2);
         camera.rotate(rot0);
         cam_btn = new OrthographicCamera(GameRunner.WIDTH, GameRunner.HEIGHT);
         cam_btn.update();
         bg = new Background(cam_btn.position.x, cam_btn.position.y, colorScheme);
         BLOCK_LEN = GameRunner.levels.levels.get(lvl).level.length();
-        if(GameRunner.reborn) {
-            GameRunner.reborn = false;
-            BLOCK_COUNT_NOW = BLOCK_LEN / 2;
-        } else {
-            GameRunner.score = 0;
-        }
-
 
         tb = new SpriteBatch();
 
@@ -409,28 +417,71 @@ public class PlayState extends State {
         }
         coins = new Array<Coin>(30);
         blocks = new Array<Block>(100);
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 15; ++i) {
             blocks.add(new BlockFloor(BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
             blocks.get(blocks.size-1).setColor(Colors.GRAY);
         }
 
         pauseBtn = new Button("Pause.png", cam_btn.position.x - 560, cam_btn.position.y + 300, 1, 1);
-        pauseBtn.setScale(0.5f);
-
+        pauseBtn.setScale(0.7f);
+        reborn = false;
         //BOSS
         bul = new Array<BlockBullet>();
     }
-
+    float time = 2;
     @Override
     protected void hendleInput() {
-        if(Gdx.input.justTouched()) {
-            if(!GO) {
-                GO = true;
+        boolean first = Gdx.input.isTouched(0);
+        boolean second = Gdx.input.isTouched(1);
+        boolean third = Gdx.input.isTouched(2);
+        if(first && second && third) {
+            gameStateMenager.push(new CheatState(gameStateMenager));
+        }
+        if(Gdx.input.isTouched()) {
+            Vector3 vec = cam_btn.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+            if(pauseBtn.collide(vec.x, vec.y) && pauseBtnPress) {
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        time--;
+                        if (time == 0) {
+                            pauseBtnPress = false;
+                            pauseBtn.setIsPress(false);
+                            time = 2;
+                        }
+                    }
+                }, 1);
+
             }
+        } else {
+            if(pauseBtnPress) {
+                pauseBtnPress = false;
+                pauseBtn.setIsPress(false);
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        time--;
+                        if (time <= 1) {
+                            time = 2;
+                            gameStateMenager.push(new PauseState(gameStateMenager));
+                        }
+                    }
+                }, 0.2f);
+            }
+        }
+        if(Gdx.input.justTouched()) {
             Vector3 vec = cam_btn.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             if(pauseBtn.collide(vec.x, vec.y)) {
-                PauseState.whatGame = 0;
-                gameStateMenager.push(new PauseState(gameStateMenager));
+                GameRunner.soundPressBtn.play(0.2f);
+                if(!pauseBtnPress) {
+                    pauseBtn.setIsPress(true);
+                    pauseBtnPress = true;
+                }
+                return;
+            }
+            if(!START_LEVEL) {
+                START_LEVEL = true;
+                return;
             }
             player.changeColor();
         }
@@ -439,10 +490,33 @@ public class PlayState extends State {
     @Override
     public void update(float delta) {
         hendleInput();
-        player.update(delta);
-        //player.isLife = true;
+        if(reborn && doReborn) {//REBORN
+            doReborn = false;
+            Array<Block> buf = new Array<Block>(100);
+            for (int i = 0; i < 15; ++i) {
+                buf.add(new BlockFloor(BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
+                buf.get(buf.size-1).setColor(Colors.GRAY);
+            }
+            float x_0 = (buf.size-1)*BLOCK_SPACING;
+            for(int i = 5; i < blocks.size; ++i) {
+                blocks.get(i).setPos(x_0+(i-5)*BLOCK_SPACING, blocks.get(i).getPos().y);
+            }
+            buf.addAll(blocks, 5, blocks.size-6);
+            blocks.clear();
+            blocks.addAll(buf);
+            player.setPositionX(200);
+            player.setPositionY(232);
+        }
+        if(!doNotCollige)
+            player.update(delta);
+        if(doNotDie)
+            player.isLife = true;
         if (player.getPosition().y <= -100) {
-            gameStateMenager.set(new PreGameOver(gameStateMenager));
+            HashMap<String, String> parameters = new HashMap<String, String>();
+            parameters.put("LEVEL", String.valueOf(lvl));
+            FlurryAgent.logEvent("LOSE_LEVEL", parameters);
+            gameStateMenager.push(new GameOver(gameStateMenager));
+            //gameStateMenager.set(new GameOver(gameStateMenager));
         }
         for(Sprite s : playerTail) {
             if(s.getX() <= player.getPosition().x - 220) {
@@ -460,9 +534,6 @@ public class PlayState extends State {
                 s.setX(s.getX() - (Block.speed/4)*delta);
             }
         }
-        //if(!player.getLife()) {
-        //    gameStateMenager.set(new PreGameOver(gameStateMenager));
-        //}
         boolean flag = false;
         player.flag = true;
         for (int i = 0; i < blocks.size; ++i) {
@@ -475,22 +546,22 @@ public class PlayState extends State {
             if (player.getLife())
                 flag = f.collide(player);
             if (flag) {
+                HashMap<String, String> parameters = new HashMap<String, String>();
+                parameters.put("LEVEL", String.valueOf(lvl));
+                FlurryAgent.logEvent("WON_LEVEL", parameters);
                 gameStateMenager.set(new WinState(gameStateMenager, lvl));
             }
         }
         if(player.isLife)
             camera.position.y = player.getPosition().y;
-        //camera.position.y = blocks.get(blocks.size-1).getPos().y;
-        if(GO) {
+        if(START_LEVEL) {
             while (blocks.size < BLOCKS_MAX_COUNT && BLOCK_COUNT_NOW < BLOCK_LEN) {
                 char new_blocks = GameRunner.levels.levels.get(lvl).level.charAt(BLOCK_COUNT_NOW);
                 BLOCK_COUNT_NOW++;
-                Constants.Y0 = blocks.get(blocks.size - 1).getPos().y;
-                //System.out.print(Constants.Y0+"\n");
                 switch (new_blocks) {
                     case '0':
                         if(BLOCK_COUNT_NOW == 1) {
-                            addFloor(blocks.size*BLOCK_SPACING);
+                            addFloor((blocks.size-1)*BLOCK_SPACING);
                         } else {
                             addFloor(blocks.get(blocks.size - 1).getPos().x + Constants.BLOCK_W);
                         }
@@ -564,7 +635,14 @@ public class PlayState extends State {
                 }
                 for (BlockBullet b : bul) {
                     b.update(delta, player.getPosition().x);
-                    b.collide(player);
+                    if(b.getLife() && b.collide(player)) {
+                        if(boss.HP < boss.HP0) {
+                            boss.HP += 5;
+                        } else {
+                            player.setLife(false);
+                            player.jump(300);
+                        }
+                    }
                     if(b.getLife() && b.collideBoss(boss.getBounds())) {
                         boss.HP -= 5;
                     }
@@ -591,9 +669,9 @@ public class PlayState extends State {
                 c.update(delta, player.getPosition().x);
                 if (c.collide(player.getBounds()) && c.life) {
                     if (c.TYPE == 0) {
-                        GameRunner.new_coins++;
+                        GameRunner.now_coins++;
                     } else {
-                        GameRunner.new_stars++;
+                        GameRunner.now_metal++;
                     }
                     c.life = false;
                 }
@@ -608,9 +686,9 @@ public class PlayState extends State {
             for (int i = 0; i < blocks.size; ++i) {
                 Block r = blocks.get(i);
                 if (camera.position.x - (camera.viewportWidth / 2) > r.getPos().x + r.getPos().x + 64) {
-                    if (r.TYPE == Constants.B_FLOOR || r.TYPE == Constants.B_JUMP) {
-                        GameRunner.score++;
-                    }
+                    //if (r.TYPE == Constants.B_FLOOR || r.TYPE == Constants.B_JUMP) {
+                    //    GameRunner.score++;
+                    //}
                     blocks.get(i).dispose();
                     blocks.removeIndex(i);
                 }
@@ -642,9 +720,6 @@ public class PlayState extends State {
 
     @Override
     public void render(SpriteBatch sb) {
-        //Gdx.gl.glClearColor(bgColor.r,
-         //                   bgColor.g,
-         //                   bgColor.b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         tb.setProjectionMatrix(cam_btn.combined);
         tb.begin();
@@ -655,10 +730,6 @@ public class PlayState extends State {
         tb.end();
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
-        //Sprite s = bg.getBgSprite();
-        //s.setColor(GameRunner.R, GameRunner.G, GameRunner.B, 1);
-        //s.setColor(0.08f, 0.29f, 0.29f, 1);
-        //s.draw(sb);
 
         for(Sprite sp : playerTail) {
             if(player.color == 1)
@@ -671,6 +742,7 @@ public class PlayState extends State {
         }
         Sprite sp = player.getSprite();
         sp.setRotation(player.getRot());
+        sp.setCenter(player.getPosition().x, player.getPosition().y + 2);
         sp.draw(sb);
 
         for (Block b : blocks) {
@@ -694,16 +766,46 @@ public class PlayState extends State {
 
         tb.setProjectionMatrix(cam_btn.combined);
         tb.begin();
+        helpColorChange.setColor(GameRunner.colors.blue.r, GameRunner.colors.blue.g, GameRunner.colors.blue.b, 1);
+        helpColorChange.setCenter(cam_btn.position.x - 600, cam_btn.position.y - 320);
+        if(player.color == 1) {
+            helpColorChange.setScale(1f);
+        } else {
+            helpColorChange.setScale(0.7f);
+        }
+        helpColorChange.draw(tb);
+        helpColorChange.setColor(GameRunner.colors.red.r, GameRunner.colors.red.g, GameRunner.colors.red.b, 1);
+        helpColorChange.setCenter(cam_btn.position.x - 555, cam_btn.position.y - 320);
+        if(player.color == 2) {
+            helpColorChange.setScale(1f);
+        } else {
+            helpColorChange.setScale(0.7f);
+        }
+        helpColorChange.draw(tb);
+        if(colorSize == 3) {
+            helpColorChange.setColor(GameRunner.colors.green.r, GameRunner.colors.green.g, GameRunner.colors.green.b, 1);
+            helpColorChange.setCenter(cam_btn.position.x - 530, cam_btn.position.y - 320);
+            if(player.color == 1) {
+                helpColorChange.setScale(1f);
+            } else {
+                helpColorChange.setScale(0.7f);
+            }
+            helpColorChange.draw(tb);
+        }
+
         pauseBtn.getSprite().draw(tb);
-        if(!GO) {
+        if(!START_LEVEL) {
             GameRunner.font.draw(tb, "TAP TO START", cam_btn.position.x - 100, cam_btn.position.y);
         }
-        GameRunner.font.draw(tb, "COINS: " + GameRunner.new_coins + " STARS: " + GameRunner.new_stars, cam_btn.position.x - 560, cam_btn.position.y - 320);
+        //GameRunner.font.draw(tb, "COINS: " + GameRunner.now_coins + "  METAL: " + GameRunner.now_metal, cam_btn.position.x - 520, cam_btn.position.y - 320);
         tb.end();
     }
 
     @Override
     public void dispose() {
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put("LEVEL", String.valueOf(lvl));
+        FlurryAgent.logEvent("STOP_LEVEL", parameters);
         player.dispose();
         pauseBtn.dispose();
         for(Block b : blocks) {

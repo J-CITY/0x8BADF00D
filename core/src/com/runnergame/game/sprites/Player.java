@@ -40,7 +40,6 @@ public class Player {
         position = new Vector3(x, y, 0);
         velosity = new Vector3(0, 0, 0);
         int _path = GameRunner.dm.load2("playerSkin");
-        System.out.print(_path);
         path = GameRunner.colors.playerSkins.get(_path);
 
         anim = new Animation(new TextureRegion(new Texture(path)), fc, 1);
@@ -49,18 +48,6 @@ public class Player {
         bound = new Rectangle(sprite.getBoundingRectangle());
         sprite.setColor(GameRunner.colors.blue);
     }
-
-
-    /*public Player(int x, int y) {
-        position = new Vector3(x, y, 0);
-        velosity = new Vector3(0, 0, 0);
-
-        anim = new Animation(new TextureRegion(new Texture("Player.png")), 1, 1);
-        sprite = anim.getSprite();
-        sprite.setCenter(x, y);
-        bound = new Rectangle(sprite.getBoundingRectangle());
-        sprite.setColor(GameRunner.colors.blue);
-    }*/
 
     public Vector3 getPosition() {
         return position;
@@ -74,6 +61,8 @@ public class Player {
             velosity.add(0, GRAVITY*SCL, 0);
         }
         velosity.scl(delta);
+        if(velosity.y < -5) velosity.y = -5;
+        //System.out.print(velosity.y+"\n");
         position.add(0, velosity.y, 0);
         if(on_floor) {
             position.y = floor;
@@ -82,10 +71,6 @@ public class Player {
         velosity.scl(1/delta);
 
         sprite_rot -= (180*delta)%360;
-
-        //if (position.y <= -100) {
-        //    isLife = false;
-        //}
     }
 
     public void setScale(float scl) {
@@ -140,8 +125,10 @@ public class Player {
     }
 
     public void onFloor(float _y) {
-        on_floor = true;
-        floor = _y;
+        if(velosity.y <=0) {
+            on_floor = true;
+            floor = _y;
+        }
     }
 
     public void NCM(int __y) {

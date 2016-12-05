@@ -24,7 +24,7 @@ public abstract class Building {
         type = _t;
     }
 
-    public abstract void update(float delta, float _x);
+    public abstract boolean update(int p);
 
     public Sprite getSprite()
     {

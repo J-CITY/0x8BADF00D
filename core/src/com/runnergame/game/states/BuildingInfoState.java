@@ -18,7 +18,7 @@ public class BuildingInfoState extends State {
     //private Sprite sprite;
 
     //private DataManager dm;
-
+    private Building building;
     int price;
     int coins;
     int cardNum = 0;
@@ -42,6 +42,7 @@ public class BuildingInfoState extends State {
         name = build.getName();
         layout = new GlyphLayout(GameRunner.font, name);
         param = build.getParam();
+        building = build;
     }
 
     @Override
@@ -50,14 +51,15 @@ public class BuildingInfoState extends State {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
             if(closeBtn.collide(vec.x, vec.y)) {
-                System.out.print("pop");
-                gameStateMenager.set(new MoonCityState(gameStateMenager));
-                //gameStateMenager.pop();
+                gameStateMenager.pop();
             } else if(buyBtn.collide(vec.x, vec.y) && price < coins && build_level < max_build_level && lvl <= player_level) {
                 int p = GameRunner.dm.load2(param);
-                GameRunner.dm.addData2(param, p+1);
-                GameRunner.dm.addData2("coins", coins-price);
-                gameStateMenager.set(new MoonCityState(gameStateMenager));
+                if(building.update(p)) {
+                    GameRunner.dm.addData2(param, p+1);
+                    GameRunner.dm.addData2("coins", coins-price);
+                    gameStateMenager.set(new MoonCityState(gameStateMenager));
+                }
+
             }
         }
     }
@@ -65,7 +67,6 @@ public class BuildingInfoState extends State {
     @Override
     public void update(float delta) {
         hendleInput();
-        //System.out.print(""+coins + " " + price + "\n");
     }
 
     @Override

@@ -11,7 +11,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.runnergame.game.GameRunner;
+import com.runnergame.game.Levels;
 import com.runnergame.game.sprites.Button;
 import com.runnergame.game.sprites.MetaGame.Building;
 import com.runnergame.game.sprites.MetaGame.CityBuild;
@@ -19,23 +21,19 @@ import com.runnergame.game.sprites.MetaGame.HouseBuild;
 import com.runnergame.game.sprites.MetaGame.Map;
 import com.runnergame.game.sprites.MetaGame.MedBuild;
 import com.runnergame.game.sprites.MetaGame.PoliceBuild;
+import com.runnergame.game.sprites.MetaGame.RocketBuild;
 import com.runnergame.game.sprites.MetaGame.StadiumBuild;
 
 public class MoonCityState extends State implements GestureDetector.GestureListener
 {
     boolean visibleCard = false;
+    boolean visibleCardBtn = false;
+    int priceTex;
     Sprite cardSprite;
     Button cardBtn;
     int card = 0;
 
     boolean I_AM_HERE = true;
-    private void sleep() {
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
     Map map;
 
     Button ncBtn, pauseBtn, runnerPlayBtn;
@@ -54,6 +52,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         builds.add(new PoliceBuild(2));
         builds.add(new MedBuild(3));
         builds.add(new StadiumBuild(4));
+        builds.add(new RocketBuild(5));
     }
 
     private Sprite headder = new Sprite(new Texture("headder.png"));
@@ -61,7 +60,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         super(gameStateMenager);
         tb = new SpriteBatch();
         map = new Map(camera.position.x, camera.position.y);
-        builds = new Array<Building>();
+        builds = new Array<Building>(10);
         loadBuilds();
 
         camera.setToOrtho(false, GameRunner.WIDTH / 2, GameRunner.HEIGHT / 2);
@@ -70,18 +69,17 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
 
         cam_btn = new OrthographicCamera(GameRunner.WIDTH, GameRunner.HEIGHT);
         cam_btn.update();
-
-        GameRunner.new_coins = GameRunner.dm.load2("coins");
-        GameRunner.new_stars = GameRunner.dm.load2("star");
+        GameRunner.now_coins = GameRunner.dm.load2("coins");
+        GameRunner.now_metal = GameRunner.dm.load2("metal");
         pauseBtn = new Button("Pause.png", cam_btn.position.x - 550, cam_btn.position.y + 320, 1, 1);
-        pauseBtn.setScale(0.5f);
+        pauseBtn.setScale(0.7f);
         runnerPlayBtn = new Button("Play.png", cam_btn.position.x + 550, cam_btn.position.y + 320, 1, 1);
-        runnerPlayBtn.setScale(0.5f);
-        cardBtn = new Button("infoBtn.png", cam_btn.position.x, cam_btn.position.y, 1, 1);
-        cardBtn.setScale(0.5f);
+        runnerPlayBtn.setScale(0.7f);
+        cardBtn = new Button("meta/infoBtn.png", cam_btn.position.x, cam_btn.position.y, 1, 1);
+        cardBtn.setScale(0.7f);
 
         ncBtn = new Button("nc.png", cam_btn.position.x + 550, cam_btn.position.y - 320, 1, 1);
-        sleep();
+        //sleep();
 
         timeNC = GameRunner.dm.loadDataTime("NCMODE");
         headder.setCenter(cam_btn.position.x, cam_btn.position.y-450);
@@ -91,30 +89,12 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
     protected void hendleInput() {
 
     }
-    boolean onTime = false;
-    int TIME = 10;
-    int time = TIME;
     @Override
     public void update(float delta) {
         //System.out.print(camera.position.x+" "+ camera.position.y+"\n");
         I_AM_HERE = true;
         camera.update();
-        if(!onTime) {
-            onTime = !onTime;
-            com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
 
-                @Override
-                public void run() {
-                    time--;
-                    if (time == 0) {
-                        time = TIME;
-                        GameRunner.new_coins = GameRunner.dm.load2("coins");
-                        GameRunner.new_stars = GameRunner.dm.load2("star");
-                    }
-                    onTime = !onTime;
-                }
-            }, 1);
-        }
         if(isUpdate) {
             isUpdate = false;
             builds.clear();
@@ -149,10 +129,13 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
             GameRunner.font.draw(tb, "NCMode: " +  h + ":" + m + ":" + s, cam_btn.position.x+80,
                     cam_btn.position.y - 350);
         }
-        GameRunner.font.draw(tb, "COINS: " + GameRunner.new_coins + " STARS: " + GameRunner.new_stars, cam_btn.position.x - 680, cam_btn.position.y - 350);
+        GameRunner.font.draw(tb, "COINS: " + GameRunner.now_coins + "  METAL: " + GameRunner.now_metal, cam_btn.position.x - 680, cam_btn.position.y - 350);
         if(visibleCard) {
             cardSprite.draw(tb);
-            cardBtn.getSprite().draw(tb);
+            if(visibleCardBtn) {
+                cardBtn.getSprite().draw(tb);
+                GameRunner.font.draw(tb, "PRICE: " + priceTex, cardBtn.getPos().x, cardBtn.getPos().y - 50);
+            }
         }
         tb.end();
 
@@ -162,10 +145,9 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
     public void dispose() {
 
     }
-
+    int activeB;
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-
         if(!I_AM_HERE)
             return false;
         Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -176,19 +158,30 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
             gameStateMenager.set(new MenuState(gameStateMenager));
         }
         if(cardBtn.collide(vec_btn.x, vec_btn.y) && visibleCard) {
-
             I_AM_HERE = false;
-            gameStateMenager.set(new BuildingInfoState(gameStateMenager, builds.get(card)));
+            int price = builds.get(activeB).getPrice();
+            int metal = GameRunner.dm.load2("metal");
+            if(price <= metal && builds.get(activeB).getLevel_now() < builds.get(activeB).getMax_level()) {
+                int p = GameRunner.dm.load2(builds.get(activeB).getParam());
+                if (builds.get(activeB).update(p)) {
+                    GameRunner.dm.addData2(builds.get(activeB).getParam(), p + 1);
+                    GameRunner.dm.addData2("metal", metal - price);
+                    //gameStateMenager.set(new MoonCityState(gameStateMenager));
+                }
+            }
+            //gameStateMenager.push(new BuildingInfoState(gameStateMenager, builds.get(card)));
         }
         if(runnerPlayBtn.collide(vec_btn.x, vec_btn.y)) {
             I_AM_HERE = false;
-
-            /*PlayState.lvl = GameRunner.dm.load2("level");
-            if(PlayState.lvl >= 0 && PlayState.lvl <= 2) {
-                HelperState.lvl = PlayState.lvl;
-                gameStateMenager.set(new HelperState(gameStateMenager));
-            } else {
-                gameStateMenager.set(new PlayState(gameStateMenager));
+            /*int _lvl = dm.load2("level");
+            if(_lvl < Levels.levels.size) {
+                PlayState.lvl = _lvl;
+                if (PlayState.lvl >= 0 && PlayState.lvl <= 2) {
+                    HelperState.lvl = PlayState.lvl;
+                    gameStateMenager.set(new HelperState(gameStateMenager));
+                } else {
+                    gameStateMenager.set(new PlayState(gameStateMenager));
+                }
             }*/
             gameStateMenager.push(new SelectLevel(gameStateMenager));
         }
@@ -209,9 +202,16 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
             if(b.collide(vec.x, vec.y)) {
                 flag = true;
                 card = i;
+                activeB = i;
                 cardSprite = b.getCardSprite();
                 cardSprite.setCenter(cam_btn.position.x, cam_btn.position.y);
                 cardBtn.setPos(cam_btn.position.x, cam_btn.position.y - 50);
+                if(b.getLevel_now() < b.getMax_level()) {
+                    visibleCardBtn = true;
+                    priceTex = b.getPrice();
+                } else {
+                    visibleCardBtn = false;
+                }
                 //I_AM_HERE = false;
                 //gameStateMenager.set(new BuildingInfoState(gameStateMenager, b));
                 //return true;
@@ -267,10 +267,13 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
     public boolean zoom(float initialDistance, float distance) {
         if(!I_AM_HERE)
             return false;
+        System.out.print(camera.zoom+"\n");
         if (initialDistance >= distance) {
-            camera.zoom += 0.02;
+            if(camera.zoom < 3)
+                camera.zoom += 0.02;
         } else {
-            camera.zoom -= 0.02;
+            if(camera.zoom > 0.5)
+                camera.zoom -= 0.02;
         }
         return true;
     }

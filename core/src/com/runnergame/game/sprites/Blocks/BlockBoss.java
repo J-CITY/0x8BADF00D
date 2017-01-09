@@ -38,7 +38,7 @@ public class BlockBoss extends Block {
     public void update(float delta, float _x) {
         animOn.update(delta);
         animOff.update(delta);
-        if(pos.x > 450) {
+        if(pos.x > 550) {
             pos.add(-speed * delta, 0.0f);
         }
         bounds.setPosition(pos.x, pos.y);

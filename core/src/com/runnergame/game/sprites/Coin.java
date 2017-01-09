@@ -21,8 +21,10 @@ public class Coin {
     public Coin(float x, float y, int type) {
         if(type == 0) {
             tex = new Texture("coin.png");
-        } else {
+        } else if(type == 1) {
             tex = new Texture("metal.png");
+        } else {
+            tex = new Texture("blocks/timer.png");
         }
         TYPE = type;
         sprite = new Sprite(tex);

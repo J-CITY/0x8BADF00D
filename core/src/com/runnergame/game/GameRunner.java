@@ -4,22 +4,27 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.utils.I18NBundle;
+import com.badlogic.gdx.utils.XmlReader;
 import com.flurry.android.FlurryAgent;
 import com.runnergame.game.sprites.Background;
+import com.runnergame.game.sprites.Coin;
+import com.runnergame.game.states.BonusState;
 import com.runnergame.game.states.DataManager;
 import com.runnergame.game.states.GameStateManager;
 import com.runnergame.game.states.MenuState;
-
 import java.util.HashMap;
 
 
 public class GameRunner implements ApplicationListener {
+	final String FONT_CHARS = "абвгдежзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
 	public static final int WIDTH = 1366;
 	public static final int HEIGHT = 768;
 	public static final String TITLE = "0x8BADF00D";
@@ -29,7 +34,10 @@ public class GameRunner implements ApplicationListener {
 
 	private Music music;
 	public static Sound soundPressBtn;
+	public static float soundVol = 0.5f;
 	public static boolean isPlay = true;
+	public static boolean updateMusic = false;
+	public static int playMusic=0;
 	public  static BitmapFont font;
 
 	public static DataManager dm;
@@ -43,10 +51,30 @@ public class GameRunner implements ApplicationListener {
 	int firstRun=0;
 	public long timeStart, timeStop;
 
+	public static boolean adMobFlag = false;
+	final AdMob adMob;
+
+	float width;
+	float height;
+
+	private AnLauncher context;
+
+	public GameRunner(AdMob adMob, AnLauncher context) {
+		this.adMob = adMob;
+		this.context = context;
+	}
+
+	//SHOP
+	public static boolean buyBtn100coins = false;
+	public static boolean buyBtn500coins = false;
+	public static boolean buyBtn1000coins = false;
+	//SHOP_END
+
 	@Override
 	public void create () {
 		dm = new DataManager("GameRunner");
 
+		//GameRunner.dm.addData2("helperMetaLevel", 0);
 		timeStart = System.currentTimeMillis();
 		//dm.addData2("firstRun", 0);
 		firstRun = dm.load2("firstRun");
@@ -57,7 +85,8 @@ public class GameRunner implements ApplicationListener {
 		}
 		/////////////////////////////////////////////
 		batch = new SpriteBatch();
-
+		Gdx.input.setCatchBackKey(true);
+		Gdx.input.setCatchMenuKey(true);
 
 		/*DataManager dm = new DataManager("GameRunner");
 		for(int i=0; i<16; ++i) {
@@ -71,18 +100,21 @@ public class GameRunner implements ApplicationListener {
 
 
 		gsm = new GameStateManager();
-		music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+		music = Gdx.audio.newMusic(Gdx.files.internal(Constants.Music+0+".mp3"));
 		music.setLooping(true);
 		music.setVolume(0.1f);
 		music.play();
 
 		soundPressBtn = Gdx.audio.newSound(Gdx.files.internal("soundPressBtn.wav"));
+		width = Gdx.graphics.getWidth();
+		height = Gdx.graphics.getHeight();
 
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 
 		font = new BitmapFont();
-		FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("font2.ttf"));
+		FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		parameter.characters = FONT_CHARS;
 		parameter.size = 32;
 		font = fontGenerator.generateFont(parameter);
 		fontGenerator.dispose();
@@ -114,16 +146,62 @@ public class GameRunner implements ApplicationListener {
 		//Gdx.gl.glClearColor( 204/255f, 204/255f, 204/255f, 1 );
 		//Gdx.gl.glClearColor( 205/255f, 153/255f, 52/255f, 1 );
 		Gdx.gl.glClearColor(41/255f, 41/255f, 41/255f, 1);
-
+		if(updateMusic) {
+			updateMusic = false;
+			music.stop();
+			music.dispose();
+			music = Gdx.audio.newMusic(Gdx.files.internal(Constants.Music+playMusic+".mp3"));
+			music.setLooping(true);
+			music.setVolume(0.1f);
+			music.play();
+		}
 		if(music.isPlaying() && !isPlay) {
 			music.stop();
 		} else if(!music.isPlaying() && isPlay) {
 			music.play();
 		}
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+		if(buyBtn100coins) {
+			buyBtn100coins = false;
+			context.onBuyButtonClicked(0);
+		}
+		if(buyBtn500coins) {
+			buyBtn500coins = false;
+			context.onBuyButtonClicked(1);
+		}
+		if(buyBtn1000coins) {
+			buyBtn1000coins = false;
+			context.onBuyButtonClicked(2);
+		}
+		if(context.getInfoBuyCoins(0)) {
+			context.setInfoBuyCoins(0,false);
+			dm.addData2("coins", dm.load2("coins") + 100);
+		}
+		if(context.getInfoBuyCoins(1)) {
+			context.setInfoBuyCoins(1,false);
+			dm.addData2("coins", dm.load2("coins") + 500);
+		}
+		if(context.getInfoBuyCoins(2)) {
+			context.setInfoBuyCoins(2,false);
+			dm.addData2("coins", dm.load2("coins") + 1000);
+		}
 		gsm.update(Gdx.graphics.getDeltaTime());
 		gsm.render(batch);
+
+		boolean escapePressed = Gdx.input.isKeyPressed( Input.Keys.ESCAPE );
+		boolean backPressed   = Gdx.input.isKeyPressed( Input.Keys.BACK );
+		if ( escapePressed || backPressed ) {
+			Gdx.app.exit();
+		}
+		if(adMobFlag)
+			adMob.show();
+		else
+			adMob.hide();
+		//if ( Gdx.input.justTouched() ) {
+		//	float x = Gdx.input.getX();
+		//	float y = Gdx.input.getY();
+		//adMob.show();
+		//}
 	}
 
 	private String getSessionTIme(long t) {

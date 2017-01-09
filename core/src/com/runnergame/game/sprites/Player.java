@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.runnergame.game.GameRunner;
-import com.runnergame.game.states.PreGameOver;
 
 public class Player {
     public int GRAVITY = -15;

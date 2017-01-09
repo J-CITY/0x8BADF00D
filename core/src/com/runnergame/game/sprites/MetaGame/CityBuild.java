@@ -31,15 +31,7 @@ public class CityBuild extends  Building {
         sprite.setPosition(-100, 1050);
         sprite.setCenter(-100, 1050);
         bounds = new Rectangle(sprite.getBoundingRectangle());
-        if(level_now == 0) {
-            cardSprite = new Sprite(new Texture(Gdx.files.internal("meta/city1card.png")));
-        } else if(level_now == 1) {
-            cardSprite = new Sprite(new Texture(Gdx.files.internal("meta/city2card.png")));
-        } else if(level_now == 2) {
-            cardSprite = new Sprite(new Texture(Gdx.files.internal("meta/city3card.png")));
-        } else if(level_now == 3) {
-            cardSprite = new Sprite(new Texture(Gdx.files.internal("meta/city3card.png")));
-        }
+
         //cardSprite = new Sprite(new Texture("cityCard.png"));
     }
 

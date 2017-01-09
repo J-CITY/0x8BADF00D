@@ -11,7 +11,6 @@ import com.runnergame.game.sprites.Button;
 
 public class PauseState extends State {
     private Button playBtn, onSoundBtn, offSoundBtn, restartBtn, exitBtn;
-    boolean playBtnPress = false, onSoundBtnPress = false, restartBtnPress = false, exitBtnPress=false;
     private String TITLE = "<< PAUSE >>";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
@@ -25,12 +24,13 @@ public class PauseState extends State {
 
     public PauseState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
+        GameRunner.adMobFlag = true;
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x-200, camera.position.y+pbtnY, 1, 1);
-        restartBtn = new Button("Restart.png", camera.position.x+200, camera.position.y+rbtnY, 1, 1);
-        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
-        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
-        exitBtn = new Button("close.png", camera.position.x-530, camera.position.y+ebtnY, 1, 1);
+        playBtn = new Button("button/play", camera.position.x-200, camera.position.y+pbtnY);
+        restartBtn = new Button("button/restart", camera.position.x+200, camera.position.y+rbtnY);
+        onSoundBtn = new Button("button/musicOn", camera.position.x-530, camera.position.y+sbtnY);
+        offSoundBtn = new Button("button/musicOff", camera.position.x-530, camera.position.y+sbtnY);
+        exitBtn = new Button("button/close", camera.position.x-530, camera.position.y+ebtnY);
         bg = new Background(camera.position.x, camera.position.y, 0);
     }
     float time = 2;
@@ -38,59 +38,13 @@ public class PauseState extends State {
     protected void hendleInput() {
         if(Gdx.input.isTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if(playBtn.collide(vec.x, vec.y) && playBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            playBtnPress = false;
-                            playBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            } else if(exitBtn.collide(vec.x, vec.y) && exitBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            exitBtnPress = false;
-                            exitBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            } else if(restartBtn.collide(vec.x, vec.y) && restartBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            restartBtnPress = false;
-                            restartBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            } else if(onSoundBtn.collide(vec.x, vec.y) && onSoundBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            onSoundBtnPress = false;
-                            onSoundBtn.setIsPress(false);
-                            offSoundBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            }
+            playBtn.updatePress(vec.x, vec.y);
+            exitBtn.updatePress(vec.x, vec.y);
+            restartBtn.updatePress(vec.x, vec.y);
+            onSoundBtn.updatePress(vec.x, vec.y);
+            offSoundBtn.updatePress(vec.x, vec.y);
         } else {
-            if(playBtnPress) {
-                playBtnPress = false;
+            if(playBtn.getIsPress()) {
                 playBtn.setIsPress(false);
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -103,8 +57,7 @@ public class PauseState extends State {
                     }
                 }, 0.1f);
             }
-            if(exitBtnPress) {
-                exitBtnPress = false;
+            if(exitBtn.getIsPress()) {
                 exitBtn.setIsPress(false);
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -118,8 +71,7 @@ public class PauseState extends State {
                 }, 0.1f);
 
             }
-            if(restartBtnPress) {
-                restartBtnPress = false;
+            if(restartBtn.getIsPress()) {
                 restartBtn.setIsPress(false);
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -132,8 +84,7 @@ public class PauseState extends State {
                     }
                 }, 0.1f);
             }
-            if(onSoundBtnPress) {
-                onSoundBtnPress = false;
+            if(onSoundBtn.getIsPress()) {
                 onSoundBtn.setIsPress(false);
                 offSoundBtn.setIsPress(false);
                 GameRunner.isPlay = !GameRunner.isPlay;
@@ -142,35 +93,11 @@ public class PauseState extends State {
         }
         if(Gdx.input.justTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if(playBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if(!playBtnPress) {
-                    playBtn.setIsPress(true);
-                    playBtnPress = true;
-                }
-            }
-            if(restartBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if(!restartBtnPress) {
-                    restartBtn.setIsPress(true);
-                    restartBtnPress = true;
-                }
-            }
-            if(exitBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if(!exitBtnPress) {
-                    exitBtn.setIsPress(true);
-                    exitBtnPress = true;
-                }
-            }
-            if(onSoundBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if(!onSoundBtnPress) {
-                    onSoundBtn.setIsPress(true);
-                    offSoundBtn.setIsPress(true);
-                    onSoundBtnPress = true;
-                }
-            }
+            playBtn.setPress(vec.x, vec.y);
+            restartBtn.setPress(vec.x, vec.y);
+            exitBtn.setPress(vec.x, vec.y);
+            onSoundBtn.setPress(vec.x, vec.y);
+            offSoundBtn.setPress(vec.x, vec.y);
         }
     }
 

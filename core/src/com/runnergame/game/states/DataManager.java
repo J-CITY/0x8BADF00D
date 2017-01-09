@@ -41,6 +41,14 @@ public class DataManager {
         return prefs.getLong(str, 0);
     }
 
+    public void addDataString(String par, String data) {
+        prefs.putString(par, data);
+        prefs.flush();
+    }
+    public String loadDataString(String str) {
+        return prefs.getString(str, "");
+    }
+
     public int load() {
         return prefs.getInteger(param, 0);
     }

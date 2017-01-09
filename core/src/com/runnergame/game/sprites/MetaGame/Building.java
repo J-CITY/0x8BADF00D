@@ -17,7 +17,7 @@ public abstract class Building {
     int price;
     protected Rectangle bounds;
     protected Animation anim;
-    protected Sprite sprite, cardSprite;
+    protected Sprite sprite;
     protected Vector2 pos;
 
     public Building(int _t) {
@@ -53,10 +53,6 @@ public abstract class Building {
     }
     public Vector2 getPos() {
         return pos;
-    }
-
-    public Sprite getCardSprite() {
-        return cardSprite;
     }
 
     public boolean collide(float x, float y) {

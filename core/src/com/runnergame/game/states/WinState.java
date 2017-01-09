@@ -12,11 +12,9 @@ import com.runnergame.game.sprites.Button;
 
 public class WinState extends State {
     private Button playBtn, closeBtn, onSoundBtn, offSoundBtn;
-    private boolean playBtnPress = false, closeBtnPress = false, onSoundBtnPress = false;
     private String TITLE = "<< WIN >>";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
-    private DataManager dm;
     int lvl;
 
     private float pbtnY0 = 0, pbtnY = 400, cbtnY0 = 250, cbtnY = 400;
@@ -24,14 +22,15 @@ public class WinState extends State {
     Background bg;
     public WinState(GameStateManager gameStateMenager, int _lvl) {
         super(gameStateMenager);
+        GameRunner.adMobFlag = false;
         lvl =_lvl;
         GameRunner.dm.addData2("metal", GameRunner.now_metal+100);
         GameRunner.dm.addData2("coins", GameRunner.now_coins);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        playBtn = new Button("Play.png", camera.position.x, camera.position.y+cbtnY, 1, 1);
-        closeBtn = new Button("close.png", camera.position.x-530, camera.position.y+cbtnY, 1, 1);
-        onSoundBtn = new Button("SoundOn.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
-        offSoundBtn = new Button("SoundOff.png", camera.position.x-530, camera.position.y+sbtnY, 1, 1);
+        playBtn = new Button("button/next", camera.position.x, camera.position.y+cbtnY);
+        closeBtn = new Button("button/close", camera.position.x-530, camera.position.y+cbtnY);
+        onSoundBtn = new Button("button/musicOn", camera.position.x-530, camera.position.y+sbtnY);
+        offSoundBtn = new Button("button/musicOff", camera.position.x-530, camera.position.y+sbtnY);
         bg = new Background(camera.position.x, camera.position.y, 0);
     }
     float time = 2;
@@ -39,47 +38,12 @@ public class WinState extends State {
     protected void hendleInput() {
         if(Gdx.input.isTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if(playBtn.collide(vec.x, vec.y) && playBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            playBtnPress = false;
-                            playBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            } else if(onSoundBtn.collide(vec.x, vec.y) && onSoundBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            onSoundBtnPress = false;
-                            onSoundBtn.setIsPress(false);
-                            offSoundBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            } else if(closeBtn.collide(vec.x, vec.y) && closeBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            closeBtnPress = false;
-                            closeBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            }
+            playBtn.updatePress(vec.x, vec.y);
+            offSoundBtn.updatePress(vec.x, vec.y);
+            onSoundBtn.updatePress(vec.x, vec.y);
+            closeBtn.updatePress(vec.x, vec.y);
         } else {
-            if(playBtnPress) {
-                playBtnPress = false;
+            if(playBtn.getIsPress()) {
                 playBtn.setIsPress(false);
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -101,15 +65,13 @@ public class WinState extends State {
                     }
                 }, 0.1f);
             }
-            if(onSoundBtnPress) {
-                onSoundBtnPress = false;
+            if(onSoundBtn.getIsPress()) {
                 onSoundBtn.setIsPress(false);
                 offSoundBtn.setIsPress(false);
                 GameRunner.isPlay = !GameRunner.isPlay;
 
             }
-            if(closeBtnPress) {
-                closeBtnPress = false;
+            if(closeBtn.getIsPress()) {
                 closeBtn.setIsPress(false);
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -125,28 +87,10 @@ public class WinState extends State {
         }
         if(Gdx.input.justTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if(playBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if(!playBtnPress) {
-                    playBtn.setIsPress(true);
-                    playBtnPress = true;
-                }
-            }
-            if(closeBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if(!closeBtnPress) {
-                    closeBtn.setIsPress(true);
-                    closeBtnPress = true;
-                }
-            }
-            if(onSoundBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if(!onSoundBtnPress) {
-                    onSoundBtn.setIsPress(true);
-                    offSoundBtn.setIsPress(true);
-                    onSoundBtnPress = true;
-                }
-            }
+            playBtn.setPress(vec.x, vec.y);
+            closeBtn.setPress(vec.x, vec.y);
+            onSoundBtn.setPress(vec.x, vec.y);
+            offSoundBtn.setPress(vec.x, vec.y);
         }
     }
 
@@ -157,15 +101,21 @@ public class WinState extends State {
         if(pbtnY0 < pbtnY) {
             pbtnY -= speed*delta;
             playBtn.setPos(playBtn.getPos().x, camera.position.y + pbtnY);
+        } else {
+            pbtnY = pbtnY0;
         }
         if(cbtnY0 < cbtnY) {
             cbtnY -= speed*delta;
             closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
+        } else {
+            cbtnY = cbtnY0;
         }
         if(sbtnY0 > sbtnY) {
             sbtnY += speed*delta;
             offSoundBtn.setPos(offSoundBtn.getPos().x, camera.position.y + sbtnY);
             onSoundBtn.setPos(onSoundBtn.getPos().x, camera.position.y + sbtnY);
+        } else {
+            sbtnY = sbtnY0;
         }
     }
 

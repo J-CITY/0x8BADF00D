@@ -25,7 +25,6 @@ public class StadiumBuild extends Building {
         sprite.setPosition(1000, -50);
         sprite.setCenter(1000, -50);
         bounds = new Rectangle(sprite.getBoundingRectangle());
-        cardSprite = new Sprite(new Texture("policeCard.png"));
     }
 
     @Override

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Queue;
 import com.badlogic.gdx.utils.Timer;
 import com.flurry.android.FlurryAgent;
 import com.runnergame.game.Colors;
@@ -43,7 +44,7 @@ public class PlayState extends State {
     public static final int BLOCKS_MAX_COUNT = 20;
 
     private boolean START_LEVEL = false;
-    private Array<Block> blocks;
+    private Queue<Block> blocks;
     private Array<Coin> coins;
 
     private Player player;
@@ -65,6 +66,14 @@ public class PlayState extends State {
     private boolean IS_BOSS = false;
     BlockBoss boss;
     Array<BlockBullet> bul;
+    boolean heat = false;
+    float timeHeat = 2;
+
+    //TIME LEVEL
+    boolean TIME_LEVEL=false;
+    float timer;
+    boolean CAN_ADD_TIMER=true;
+    float addTime = 10;
 
     private void addBeam(float x) {
         int size = MathUtils.random(5, 10);
@@ -74,12 +83,16 @@ public class PlayState extends State {
             len = MathUtils.random(3, 7);
             for(int j = 0; j < len; ++j) {
                 if(j == len-1) {
-                    blocks.add(new BlockBeam(x, Constants.Y0+Constants.BLOCK_H/2+16, Constants.B_FLOOR));
-                    blocks.get(blocks.size-1).setColor(color);
+                    blocks.addLast(new BlockBeam(x, Constants.Y0+Constants.BLOCK_H/2+16, Constants.B_FLOOR));
+                    blocks.last().setColor(color);
                     color = MathUtils.random(1, colorSize);
                 }
-                blocks.add(new BlockFloor(x, Constants.Y0, Constants.B_FLOOR));
-                blocks.get(blocks.size-1).setColor(0);
+                if(CAN_ADD_TIMER && TIME_LEVEL && timer < addTime) {
+                    coins.add(new Coin(x, Constants.Y0+32, 2));
+                    CAN_ADD_TIMER = false;
+                }
+                blocks.addLast(new BlockFloor(x, Constants.Y0, Constants.B_FLOOR));
+                blocks.last().setColor(0);
                 x += 64;
             }
         }
@@ -87,25 +100,29 @@ public class PlayState extends State {
 
     private void addIceBridge(float x) {
         int c = MathUtils.random(1, colorSize);
-        blocks.add(new BlockBoost(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR, 200));
-        blocks.get(blocks.size-1).setColor(c);
+        blocks.addLast(new BlockBoost(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR, 200));
+        blocks.last().setColor(c);
         x += BLOCK_SPACING;
         //for (int i = 0; i < 2; ++i) {
-        blocks.add(new BlockIce(x + BLOCK_SPACING, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(Colors.GRAY);
-        blocks.add(new BlockIce(x + BLOCK_SPACING*4, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(Colors.GRAY);
+        blocks.addLast(new BlockIce(x + BLOCK_SPACING, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(Colors.GRAY);
+        blocks.addLast(new BlockIce(x + BLOCK_SPACING*4, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(Colors.GRAY);
+        if(CAN_ADD_TIMER && TIME_LEVEL && timer < addTime) {
+            coins.add(new Coin(x + BLOCK_SPACING, Constants.Y0+32, 2));
+            CAN_ADD_TIMER = false;
+        }
         //}
     }
 
     private void addHole(float x) {
         int color = MathUtils.random(1, colorSize);
-        blocks.add(new BlockJump(x, Constants.Y0, Constants.B_FLOOR, 350));
-        blocks.get(blocks.size-1).setColor(color);
+        blocks.addLast(new BlockJump(x, Constants.Y0, Constants.B_FLOOR, 350));
+        blocks.last().setColor(color);
         x += BLOCK_SPACING*3;
         for (int i = 0; i < 4; ++i) {
-            blocks.add(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
-            blocks.get(blocks.size-1).setColor(Colors.GRAY);
+            blocks.addLast(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
+            blocks.last().setColor(Colors.GRAY);
         }
     }
 
@@ -116,30 +133,34 @@ public class PlayState extends State {
         int _floor = 0;
         float __x;
 
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockJump(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_JUMP, 500));
-        blocks.get(blocks.size-1).setColor(platform_color1);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockJump(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_JUMP, 500));
+        blocks.last().setColor(platform_color1);
         __x = blocks.get(blocks.size-1).getPos().x+Constants.BLOCK_W+192;
         //blocks.add(new BlockJump(x + BLOCK_SPACING*4, Constants.Y0+64, Constants.B_JUMP));
         //blocks.get(blocks.size-1).setColor(platform_color);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*3, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*4, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*5, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*3, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*4, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*5, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
         _floor = 2;
         for (int i = 0; i < len; ++i) {
             if (MathUtils.random(0, 20) >= 16) {
                 coins.add(new Coin(__x, Constants.GROUND + 32*_floor, 0));
             }
-            blocks.add(new BlockFloor(__x, Constants.Y0 + 64*_floor, Constants.B_FLOOR));
-            blocks.get(blocks.size-1).setColor(platform_color1);
-            blocks.add(new BlockFloor(__x, Constants.Y0, Constants.B_FLOOR));
-            blocks.get(blocks.size-1).setColor(platform_color2);
+            blocks.addLast(new BlockFloor(__x, Constants.Y0 + 64*_floor, Constants.B_FLOOR));
+            blocks.last().setColor(platform_color1);
+            blocks.addLast(new BlockFloor(__x, Constants.Y0, Constants.B_FLOOR));
+            blocks.last().setColor(platform_color2);
+            if(CAN_ADD_TIMER && TIME_LEVEL && timer < addTime) {
+                coins.add(new Coin(__x, Constants.Y0+32, 2));
+                CAN_ADD_TIMER = false;
+            }
             __x += 64;
         }
     }
@@ -150,18 +171,18 @@ public class PlayState extends State {
         int _floor = 0;
         float __x;
 
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
 
-        __x = blocks.get(blocks.size-1).getPos().x+Constants.BLOCK_W;
+        __x = blocks.last().getPos().x+Constants.BLOCK_W;
 
         for (int i = 0; i < platform_count; ++i) {
             platform_color = MathUtils.random(1, colorSize);
             if (i == 0) {
-                blocks.add(new BlockJump(__x, Constants.Y0, Constants.B_JUMP, 350));
-                blocks.get(blocks.size-1).setColor(platform_color);
+                blocks.addLast(new BlockJump(__x, Constants.Y0, Constants.B_JUMP, 350));
+                blocks.last().setColor(platform_color);
                 __x += Block.getPlatformSpace();
                 continue;
             }
@@ -175,11 +196,15 @@ public class PlayState extends State {
                 coins.add(new Coin(__x, Constants.GROUND + 32*_floor, 0));
             }
 
-            blocks.add(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 350));
-            blocks.get(blocks.size-1).setColor(platform_color);
+            blocks.addLast(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 350));
+            blocks.last().setColor(platform_color);
+            if(CAN_ADD_TIMER && TIME_LEVEL && timer < addTime) {
+                coins.add(new Coin(__x, Constants.Y0 + 32*_floor+32, 2));
+                CAN_ADD_TIMER = false;
+            }
             __x += 64;
-            blocks.add(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 350));
-            blocks.get(blocks.size-1).setColor(platform_color);
+            blocks.addLast(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 350));
+            blocks.last().setColor(platform_color);
             __x += Block.getPlatformSpace();;
         }
     }
@@ -192,11 +217,11 @@ public class PlayState extends State {
             if (MathUtils.random(0, 20) == 20) {
                 coins.add(new Coin(x + BLOCK_SPACING*i, Constants.GROUND, 0));
             }
-            blocks.add(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
+            blocks.addLast(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
             if(i == 0 || i == 1 || i == size-1 || i == size-2) {
-                blocks.get(blocks.size-1).setColor(0);
+                blocks.last().setColor(0);
             } else {
-                blocks.get(blocks.size-1).setColor(bridge_color);
+                blocks.last().setColor(bridge_color);
             }
         }
     }
@@ -208,16 +233,16 @@ public class PlayState extends State {
 
         for (int i = 0; i < size; ++i) {
             if (i == 2 && needle_color == 0) {
-                blocks.add(new BlockJump(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_JUMP, 350));
-                blocks.get(blocks.size-1).setColor(jump_color);
+                blocks.addLast(new BlockJump(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_JUMP, 350));
+                blocks.last().setColor(jump_color);
                 continue;
             }
             if (i == 4) {
-                blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0 + Constants.BLOCK_H/2 + 16, Constants.B_NEEDLE));
-                blocks.get(blocks.size-1).setColor(needle_color);
+                blocks.addLast(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0 + Constants.BLOCK_H/2 + 16, Constants.B_NEEDLE));
+                blocks.last().setColor(needle_color);
             }
-            blocks.add(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, 0));
-            blocks.get(blocks.size-1).setColor(0);
+            blocks.addLast(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, 0));
+            blocks.last().setColor(0);
         }
     }
 
@@ -225,23 +250,27 @@ public class PlayState extends State {
         int needle_color = MathUtils.random(1, colorSize);
         int size = MathUtils.random(5, 10);
 
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
         if (MathUtils.random(0, 20) == 20) {
             coins.add(new Coin(x + BLOCK_SPACING, Constants.GROUND, 0));
         }
         for (int i = 2; i < size-2; ++i) {
-            blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0 + Constants.BLOCK_H/2 + 16, Constants.B_NEEDLE));
-            blocks.get(blocks.size-1).setColor(needle_color);
-            blocks.add(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
-            blocks.get(blocks.size-1).setColor(0);
+            blocks.addLast(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0 + Constants.BLOCK_H/2 + 16, Constants.B_NEEDLE));
+            blocks.last().setColor(needle_color);
+            blocks.addLast(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
+            blocks.last().setColor(0);
+            if(CAN_ADD_TIMER && TIME_LEVEL && timer < addTime) {
+                coins.add(new Coin(x + BLOCK_SPACING*i, Constants.Y0, 2));
+                CAN_ADD_TIMER = false;
+            }
         }
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*(size-2), Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*(size-1), Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*(size-2), Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*(size-1), Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
     }
 
     private void addNeedleDown(float x) {
@@ -250,20 +279,24 @@ public class PlayState extends State {
         if (MathUtils.random(0, 20) == 20) {
             coins.add(new Coin(x + BLOCK_SPACING, Constants.GROUND, 0));
         }
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockJump(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_JUMP, 350));
-        blocks.get(blocks.size-1).setColor(jump_color);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockJump(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_JUMP, 350));
+        blocks.last().setColor(jump_color);
         for (int i = 3; i < 5; ++i) {
-            blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_NEEDLE));
-            blocks.get(blocks.size-1).setColor(needle_color);
+            blocks.addLast(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_NEEDLE));
+            blocks.last().setColor(needle_color);
+            if(CAN_ADD_TIMER && TIME_LEVEL && timer < addTime) {
+                coins.add(new Coin(x + BLOCK_SPACING*i, Constants.Y0, 2));
+                CAN_ADD_TIMER = false;
+            }
         }
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*5, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*6, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*5, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*6, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
     }
 
     private void addBridgeDown(float x) {
@@ -271,38 +304,42 @@ public class PlayState extends State {
         int jump_color = MathUtils.random(1, colorSize);
         int size = MathUtils.random(5, 10);
 
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
         if (MathUtils.random(0, 20) == 20) {
             coins.add(new Coin(x + BLOCK_SPACING, Constants.GROUND, 0));
         }
         for (int i = 2; i < size+2; ++i) {
-            blocks.add(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0-Constants.BLOCK_W+Constants.BLOCK_H/2+16, Constants.B_NEEDLE));
-            blocks.get(blocks.size-1).setColor(needle_color);
-            blocks.add(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
-            blocks.get(blocks.size-1).setColor(0);
+            blocks.addLast(new BlockNeedle(x + BLOCK_SPACING*i, Constants.Y0-Constants.BLOCK_W+Constants.BLOCK_H/2+16, Constants.B_NEEDLE));
+            blocks.last().setColor(needle_color);
+            blocks.addLast(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
+            blocks.last().setColor(0);
         }
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*(size+2), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*(size+3), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*(size+4), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockJump(x + BLOCK_SPACING*(size+5), Constants.Y0-Constants.BLOCK_W, Constants.B_JUMP, 350));
-        blocks.get(blocks.size-1).setColor(jump_color);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*(size+6), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*(size+7), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockNeedle(x + BLOCK_SPACING*(size+7), Constants.Y0-Constants.BLOCK_W+Constants.BLOCK_H/2+16, Constants.B_NEEDLE));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*(size+2), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*(size+3), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*(size+4), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        if(CAN_ADD_TIMER && TIME_LEVEL && timer < addTime) {
+            coins.add(new Coin(x + BLOCK_SPACING*(size+4), Constants.Y0-Constants.BLOCK_W, 2));
+            CAN_ADD_TIMER = false;
+        }
+        blocks.addLast(new BlockJump(x + BLOCK_SPACING*(size+5), Constants.Y0-Constants.BLOCK_W, Constants.B_JUMP, 350));
+        blocks.last().setColor(jump_color);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*(size+6), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*(size+7), Constants.Y0-Constants.BLOCK_W, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockNeedle(x + BLOCK_SPACING*(size+7), Constants.Y0-Constants.BLOCK_W+Constants.BLOCK_H/2+16, Constants.B_NEEDLE));
+        blocks.last().setColor(0);
 
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*(size+8), Constants.Y0, 0));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*(size+9), Constants.Y0, 0));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*(size+8), Constants.Y0, 0));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*(size+9), Constants.Y0, 0));
+        blocks.last().setColor(0);
 
     }
 
@@ -310,53 +347,52 @@ public class PlayState extends State {
         int size = MathUtils.random(3, 6);
 
         for (int i = 0; i < size; ++i) {
-            /*int addCoin = MathUtils.random(0, 20);
-            if(addCoin > 15 && addCoin < 20) {
-                coins.add(new Coin(x + BLOCK_SPACING*i, 163, 0));
-            } else if (addCoin == 20) {
-                coins.add(new Coin(x + BLOCK_SPACING*i, 163, 1));
-            }*/
-            blocks.add(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
-            blocks.get(blocks.size-1).setColor(Colors.GRAY);
+            blocks.addLast(new BlockFloor(x + BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
+            blocks.last().setColor(Colors.GRAY);
         }
     }
 
     private void addBoss(float x) {
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
         boss = new BlockBoss(x + BLOCK_SPACING*0, Constants.Y0+Constants.BLOCK_H/2+18, Constants.B_FLOOR, (lvl/10)*10 + 15);//25
     }
 
     private void addGun(float x) {
         int color = MathUtils.random(1, colorSize);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
-        blocks.add(new BlockJump(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR, 350));
-        blocks.get(blocks.size-1).setColor(color);
-        blocks.add(new BlockGun(x + BLOCK_SPACING*2, Constants.Y0 + 100, Constants.B_FLOOR));//163
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_FLOOR));
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*3, Constants.Y0, Constants.B_FLOOR));
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.addLast(new BlockJump(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR, 350));
+        blocks.last().setColor(color);
+        blocks.addLast(new BlockGun(x + BLOCK_SPACING*2, Constants.Y0 + 100, Constants.B_FLOOR));//163
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_FLOOR));
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*3, Constants.Y0, Constants.B_FLOOR));
     }
 
     private void addCoinJump(float x) {
         int jump_color = MathUtils.random(1, colorSize);
 
-        blocks.add(new BlockJump(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_JUMP, 350));
-        blocks.get(blocks.size-1).setColor(jump_color);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockJump(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_JUMP, 350));
+        blocks.last().setColor(jump_color);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
         if (MathUtils.random(0, 20) == 20) {
             coins.add(new Coin(x + BLOCK_SPACING*1, 227, 0));
         }
     }
 
     private void addFinish(float x) {
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFinish(x + BLOCK_SPACING*2, Constants.Y0 + Constants.BLOCK_H/2 + Constants.BLOCK_W/2, Constants.B_FINISH));
-        blocks.get(blocks.size-1).setColor(0);
-        blocks.add(new BlockFloor(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_FLOOR));
-        blocks.get(blocks.size-1).setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFinish(x + BLOCK_SPACING*2, Constants.Y0 + 64, Constants.B_FINISH));
+        blocks.last().setColor(0);
+        blocks.addLast(new BlockFloor(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_FLOOR));
+        blocks.last().setColor(0);
+    }
+
+    private void addTiemr() {
+        TIME_LEVEL = true;
+        timer = 10;
     }
 
     private void rotLeft() {
@@ -381,6 +417,7 @@ public class PlayState extends State {
     int colorScheme = 0;
     public PlayState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
+        GameRunner.adMobFlag = false;
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put("LEVEL", String.valueOf(lvl));
         FlurryAgent.logEvent("START_LEVEL", parameters);
@@ -416,17 +453,19 @@ public class PlayState extends State {
             bgEffect.get(bgEffect.size-1).setColor(1,1,1,MathUtils.random(0.5f, 1f));
         }
         coins = new Array<Coin>(30);
-        blocks = new Array<Block>(100);
+        blocks = new Queue<Block>(100);
         for (int i = 0; i < 15; ++i) {
-            blocks.add(new BlockFloor(BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
-            blocks.get(blocks.size-1).setColor(Colors.GRAY);
+            blocks.addLast(new BlockFloor(BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
+            blocks.last().setColor(Colors.GRAY);
         }
 
-        pauseBtn = new Button("Pause.png", cam_btn.position.x - 560, cam_btn.position.y + 300, 1, 1);
+        pauseBtn = new Button("button/bar", cam_btn.position.x - 560, cam_btn.position.y + 300);
         pauseBtn.setScale(0.7f);
         reborn = false;
         //BOSS
         bul = new Array<BlockBullet>();
+        GameRunner.playMusic = MathUtils.random(1, 4);
+        GameRunner.updateMusic = true;
     }
     float time = 2;
     @Override
@@ -439,23 +478,9 @@ public class PlayState extends State {
         }
         if(Gdx.input.isTouched()) {
             Vector3 vec = cam_btn.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if(pauseBtn.collide(vec.x, vec.y) && pauseBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            pauseBtnPress = false;
-                            pauseBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-
-            }
+            pauseBtn.updatePress(vec.x, vec.y);
         } else {
-            if(pauseBtnPress) {
-                pauseBtnPress = false;
+            if(pauseBtn.getIsPress()) {
                 pauseBtn.setIsPress(false);
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -471,14 +496,7 @@ public class PlayState extends State {
         }
         if(Gdx.input.justTouched()) {
             Vector3 vec = cam_btn.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if(pauseBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if(!pauseBtnPress) {
-                    pauseBtn.setIsPress(true);
-                    pauseBtnPress = true;
-                }
-                return;
-            }
+            pauseBtn.setPress(vec.x, vec.y);
             if(!START_LEVEL) {
                 START_LEVEL = true;
                 return;
@@ -486,26 +504,57 @@ public class PlayState extends State {
             player.changeColor();
         }
     }
-
+    boolean onTime = false;
     @Override
     public void update(float delta) {
+        GameRunner.adMobFlag = false;
         hendleInput();
+        if(TIME_LEVEL) {
+            if(!onTime) {
+                onTime = !onTime;
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        timer--;
+                        if (timer == 0) {
+                            gameStateMenager.push(new GameOver(gameStateMenager));
+                        }
+                        onTime = !onTime;
+                    }
+                }, 1);
+            }
+        }
         if(reborn && doReborn) {//REBORN
+            if(TIME_LEVEL)
+                timer += 10;
             doReborn = false;
-            Array<Block> buf = new Array<Block>(100);
+            for(int i = 0; i < 5; ++i) {
+                blocks.removeFirst();
+            }
             for (int i = 0; i < 15; ++i) {
-                buf.add(new BlockFloor(BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
-                buf.get(buf.size-1).setColor(Colors.GRAY);
+                if(i==13) {
+                    blocks.addFirst(new BlockJump(BLOCK_SPACING*(14-i), Constants.Y0, Constants.B_JUMP, 350));
+                }
+                blocks.addFirst(new BlockFloor(BLOCK_SPACING*(14-i), Constants.Y0, Constants.B_FLOOR));
+                blocks.first().setColor(Colors.GRAY);
             }
-            float x_0 = (buf.size-1)*BLOCK_SPACING;
-            for(int i = 5; i < blocks.size; ++i) {
-                blocks.get(i).setPos(x_0+(i-5)*BLOCK_SPACING, blocks.get(i).getPos().y);
+            int i = 0;
+            float _x = 0;
+            for(Block b : blocks) {
+                if(Math.abs(_x-b.getPos().x) >= 10 ) {
+                    _x = b.getPos().x;
+                    if(Math.abs(_x-b.getPos().x) >= 40)
+                        i++;
+                    if(Math.abs(_x-b.getPos().x) >= 80)
+                        i++;
+                    ++i;
+                }
+                b.setPos(i*BLOCK_SPACING, b.getPos().y);
             }
-            buf.addAll(blocks, 5, blocks.size-6);
-            blocks.clear();
-            blocks.addAll(buf);
             player.setPositionX(200);
             player.setPositionY(232);
+            player.setLife(true);
+            camera.position.y = player.getPosition().y;
         }
         if(!doNotCollige)
             player.update(delta);
@@ -536,21 +585,23 @@ public class PlayState extends State {
         }
         boolean flag = false;
         player.flag = true;
-        for (int i = 0; i < blocks.size; ++i) {
-            Block f = blocks.get(i);
-            f.update(delta, player.getPosition().x);
+        for (Block b : blocks) {
+            b.update(delta, player.getPosition().x);
             if(player.gun == true) {
                 player.gun = false;
                 bul.add(new BlockBullet(player.getPosition().x, player.getPosition().y, 99, 1, boss.getPos().x, boss.getPos().y));
             }
             if (player.getLife())
-                flag = f.collide(player);
-            if (flag) {
-                HashMap<String, String> parameters = new HashMap<String, String>();
-                parameters.put("LEVEL", String.valueOf(lvl));
-                FlurryAgent.logEvent("WON_LEVEL", parameters);
-                gameStateMenager.set(new WinState(gameStateMenager, lvl));
+                flag = b.collide(player);
+            if(flag) {
+                break;
             }
+        }
+        if (flag) {
+            HashMap<String, String> parameters = new HashMap<String, String>();
+            parameters.put("LEVEL", String.valueOf(lvl));
+            FlurryAgent.logEvent("WON_LEVEL", parameters);
+            gameStateMenager.set(new WinState(gameStateMenager, lvl));
         }
         if(player.isLife)
             camera.position.y = player.getPosition().y;
@@ -613,9 +664,24 @@ public class PlayState extends State {
                     case 'd':
                         rotDef();
                         break;
+                    case 't':
+                        addTiemr();
+                        break;
                 }
             }
             if(IS_BOSS) {
+                if(heat) {
+                    Timer.schedule(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            timeHeat--;
+                            if (timeHeat == 0) {
+                                heat = false;
+                                timeHeat = 2;
+                            }
+                        }
+                    }, 1);
+                }
                 if(boss.HP <= 0) {
                     IS_BOSS = false;
                 }
@@ -628,7 +694,7 @@ public class PlayState extends State {
                 }
                 boss.update(delta, player.getPosition().x);
                 if(bul.size == 0) {
-                    if(MathUtils.random(0, 100) < 15) {
+                    if(MathUtils.random(0, 100) < 15 && !heat) {
                         bul.add(new BlockBullet(boss.getPos().x, boss.getPos().y, 99, -1, player.getPosition().x-600, player.getPosition().y));
                         bul.get(bul.size-1).setColor(MathUtils.random(1,2));
                     }
@@ -636,6 +702,7 @@ public class PlayState extends State {
                 for (BlockBullet b : bul) {
                     b.update(delta, player.getPosition().x);
                     if(b.getLife() && b.collide(player)) {
+                        heat = true;
                         if(boss.HP < boss.HP0) {
                             boss.HP += 5;
                         } else {
@@ -670,14 +737,20 @@ public class PlayState extends State {
                 if (c.collide(player.getBounds()) && c.life) {
                     if (c.TYPE == 0) {
                         GameRunner.now_coins++;
-                    } else {
+                    } else if(c.TYPE == 1) {
                         GameRunner.now_metal++;
+                    } else if(c.TYPE == 2) {
+                        timer += 5;
+                        CAN_ADD_TIMER = true;
                     }
                     c.life = false;
                 }
             }
             for (int i = 0; i < coins.size; ++i) {
                 Coin c = coins.get(i);
+                if(c.TYPE == 2) {
+                    System.out.print(""+c.getPos().x);
+                }
                 if (camera.position.x - (camera.viewportWidth / 2) > c.getPos().x + c.getPos().x + 64) {
                     coins.get(i).dispose();
                     coins.removeIndex(i);
@@ -694,10 +767,9 @@ public class PlayState extends State {
                 }
             }
         } else {
-            for (int i = 0; i < blocks.size; ++i) {
-                Block r = blocks.get(i);
-                if (camera.position.x - (camera.viewportWidth / 2) > r.getPos().x + r.getPos().x + 64) {
-                    r.setPos(blocks.size * BLOCK_SPACING + r.getPos().x, Constants.Y0);
+            for (Block b : blocks) {
+                if (camera.position.x - (camera.viewportWidth / 2) > b.getPos().x + b.getPos().x + 64) {
+                    b.setPos(blocks.size * BLOCK_SPACING + b.getPos().x, Constants.Y0);
                 }
             }
         }
@@ -796,6 +868,9 @@ public class PlayState extends State {
         pauseBtn.getSprite().draw(tb);
         if(!START_LEVEL) {
             GameRunner.font.draw(tb, "TAP TO START", cam_btn.position.x - 100, cam_btn.position.y);
+        }
+        if(TIME_LEVEL) {
+            GameRunner.font.draw(tb, ""+timer, cam_btn.position.x, cam_btn.position.y+50);
         }
         //GameRunner.font.draw(tb, "COINS: " + GameRunner.now_coins + "  METAL: " + GameRunner.now_metal, cam_btn.position.x - 520, cam_btn.position.y - 320);
         tb.end();

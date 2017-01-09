@@ -26,7 +26,6 @@ public class RocketBuild extends Building {
         sprite.setPosition(-1030, -1200);
         sprite.setCenter(-1030, -1200);
         bounds = new Rectangle(sprite.getBoundingRectangle());
-        cardSprite = new Sprite(new Texture("meta/rocketcard.png"));
     }
 
     @Override

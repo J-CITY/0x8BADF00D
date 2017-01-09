@@ -25,7 +25,6 @@ public class PoliceBuild extends Building {
         sprite.setPosition(730, -200);
         sprite.setCenter(730, -200);
         bounds = new Rectangle(sprite.getBoundingRectangle());
-        cardSprite = new Sprite(new Texture("meta/policecard.png"));
     }
 
     @Override

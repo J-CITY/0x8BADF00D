@@ -67,6 +67,7 @@ public abstract class Block {
     public void setPos(float _x, float _y) {
         pos.x = _x;
         pos.y = _y;
+        bounds.setCenter(pos.x, pos.y);
     }
 
     public abstract void dispose();

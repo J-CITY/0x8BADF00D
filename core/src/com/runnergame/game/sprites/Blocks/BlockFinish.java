@@ -13,8 +13,8 @@ public class BlockFinish extends com.runnergame.game.sprites.Blocks.Block {
     public BlockFinish(float x, float y, int type) {
         super(x, type);
         color = 0;
-        animOn = new Animation(new TextureRegion(new Texture("finish.png")), 1, 1);
-        animOff = new Animation(new TextureRegion(new Texture("finish.png")), 1, 1);
+        animOn = new Animation(new TextureRegion(new Texture("blocks/finish1.png")), 1, 1);
+        animOff = new Animation(new TextureRegion(new Texture("blocks/finish1.png")), 1, 1);
         sprite = animOn.getSprite();
         sprite.setCenter(x, y);
         bounds = new Rectangle(sprite.getBoundingRectangle());

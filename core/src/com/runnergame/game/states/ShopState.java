@@ -22,7 +22,6 @@ public class ShopState extends State {
     private Array<Button> buttons;
 
     private Button backBtn, buyBtn, setBtn;
-    boolean backBtnPress=false, buyBtnPress=false, setBtnPress=false;
     private int pref=-1;
     private int price=-1;
     private int numSkin = 0;
@@ -39,11 +38,11 @@ public class ShopState extends State {
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
         cam_btn = new OrthographicCamera(GameRunner.WIDTH, GameRunner.HEIGHT);
         cam_btn.update();
-        backBtn = new Button("close.png", cam_btn.position.x-550, cam_btn.position.y+340, 1, 1);
+        backBtn = new Button("button/close", cam_btn.position.x-550, cam_btn.position.y+340);
         backBtn.setScale(0.8f);
-        buyBtn = new Button("btnBuy.png", cam_btn.position.x+530, cam_btn.position.y-100, 1, 1);
+        buyBtn = new Button("button/buy", cam_btn.position.x+530, cam_btn.position.y-100);
         //buyBtn.setScale(0.5f);
-        setBtn = new Button("btnSet.png", cam_btn.position.x+530, cam_btn.position.y-100, 1, 1);
+        setBtn = new Button("button/set", cam_btn.position.x+530, cam_btn.position.y-100);
         bg = new Background(cam_btn.position.x, cam_btn.position.y, 0);
 
         buttons = new Array<Button>(5);
@@ -54,7 +53,8 @@ public class ShopState extends State {
         float _x = camera.position.x-dx;
         float _y = camera.position.y+dy;
         for(int i = 0; i < GameRunner.colors.playerSkins.size; ++i) {
-            buttons.add(new Button(GameRunner.colors.playerSkins.get(i), _x, _y, 1, 1));
+            buttons.add(new Button("button/b", _x, _y));
+            buttons.get(buttons.size-1).setTexture(GameRunner.colors.playerSkins.get(i));
             _x+=d;
             if(_x >= camera.position.x + dx-300) {
                 _y -= d;
@@ -68,46 +68,11 @@ public class ShopState extends State {
     protected void hendleInput() {
         if (Gdx.input.isTouched()) {
             Vector3 vec = cam_btn.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if (backBtn.collide(vec.x, vec.y) && backBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            backBtnPress = false;
-                            backBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            } else if (buyBtn.collide(vec.x, vec.y) && buyBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            buyBtnPress = false;
-                            buyBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            } else if (setBtn.collide(vec.x, vec.y) && setBtnPress) {
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        time--;
-                        if (time == 0) {
-                            setBtnPress = false;
-                            setBtn.setIsPress(false);
-                            time = 2;
-                        }
-                    }
-                }, 1);
-            }
+            backBtn.updatePress(vec.x, vec.y);
+            buyBtn.updatePress(vec.x, vec.y);
+            setBtn.updatePress(vec.x, vec.y);
         } else {
-            if (backBtnPress) {
-                backBtnPress = false;
+            if (backBtn.getIsPress()) {
                 backBtn.setIsPress(false);
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -120,8 +85,7 @@ public class ShopState extends State {
                     }
                 }, 0.1f);
             }
-            if (buyBtnPress) {
-                buyBtnPress = false;
+            if (buyBtn.getIsPress()) {
                 buyBtn.setIsPress(false);
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -140,8 +104,7 @@ public class ShopState extends State {
                 }, 0.1f);
 
             }
-            if (setBtnPress) {
-                setBtnPress = false;
+            if (setBtn.getIsPress()) {
                 setBtn.setIsPress(false);
                 Timer.schedule(new Timer.Task() {
                     @Override
@@ -157,26 +120,11 @@ public class ShopState extends State {
         }
         if (Gdx.input.justTouched()) {
             Vector3 vec = vec = cam_btn.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            if (backBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if (!backBtnPress) {
-                    backBtn.setIsPress(true);
-                    backBtnPress = true;
-                }
-            }
-            if (buyBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if (!buyBtnPress) {
-                    buyBtn.setIsPress(true);
-                    buyBtnPress = true;
-                }
-            }
-            if (setBtn.collide(vec.x, vec.y)) {
-                GameRunner.soundPressBtn.play(0.2f);
-                if (!setBtnPress) {
-                    setBtn.setIsPress(true);
-                    setBtnPress = true;
-                }
+            backBtn.setPress(vec.x, vec.y);
+            if(pref != 0) {
+                setBtn.setPress(vec.x, vec.y);
+            } else {
+                buyBtn.setPress(vec.x, vec.y);
             }
 
             vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));

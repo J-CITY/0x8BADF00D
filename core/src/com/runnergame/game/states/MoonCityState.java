@@ -36,28 +36,35 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
     boolean I_AM_HERE = true;
     Map map;
 
-    Button ncBtn, pauseBtn, runnerPlayBtn;
+    Button ncBtn, pauseBtn, runnerPlayBtn, metaGameBtn;
     private DataManager dm;
     private SpriteBatch tb;
     private long timeNC, timeNow;
     boolean isUpdate = false;
     private Array<Building> builds;
-
     OrthographicCamera cam_btn;
 
     GestureDetector gestureDetector;
+
     private void loadBuilds() {
         builds.add(new CityBuild(0));
+        //GameRunner.dm.addData2(builds.get(builds.size-1).getParam(), 0);
         builds.add(new HouseBuild(1));
+        //GameRunner.dm.addData2(builds.get(builds.size-1).getParam(), 0);
         builds.add(new PoliceBuild(2));
+        //GameRunner.dm.addData2(builds.get(builds.size-1).getParam(), 0);
         builds.add(new MedBuild(3));
+        //GameRunner.dm.addData2(builds.get(builds.size-1).getParam(), 0);
         builds.add(new StadiumBuild(4));
+        //GameRunner.dm.addData2(builds.get(builds.size-1).getParam(), 0);
         builds.add(new RocketBuild(5));
+        //GameRunner.dm.addData2(builds.get(builds.size-1).getParam(), 0);
     }
 
     private Sprite headder = new Sprite(new Texture("headder.png"));
     public MoonCityState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
+        GameRunner.adMobFlag = false;
         tb = new SpriteBatch();
         map = new Map(camera.position.x, camera.position.y);
         builds = new Array<Building>(10);
@@ -71,31 +78,45 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         cam_btn.update();
         GameRunner.now_coins = GameRunner.dm.load2("coins");
         GameRunner.now_metal = GameRunner.dm.load2("metal");
-        pauseBtn = new Button("Pause.png", cam_btn.position.x - 550, cam_btn.position.y + 320, 1, 1);
-        pauseBtn.setScale(0.7f);
-        runnerPlayBtn = new Button("Play.png", cam_btn.position.x + 550, cam_btn.position.y + 320, 1, 1);
-        runnerPlayBtn.setScale(0.7f);
-        cardBtn = new Button("meta/infoBtn.png", cam_btn.position.x, cam_btn.position.y, 1, 1);
-        cardBtn.setScale(0.7f);
+        pauseBtn = new Button("button/bar", cam_btn.position.x - 580, cam_btn.position.y + 320);
+        //pauseBtn.setScale(0.7f);
+        runnerPlayBtn = new Button("button/play", cam_btn.position.x + 580, cam_btn.position.y - 320);
+        //runnerPlayBtn.setScale(0.7f);
+        //cardBtn = new Button("meta/infoBtn.png", cam_btn.position.x, cam_btn.position.y);
+        //cardBtn.setScale(0.7f);
 
-        ncBtn = new Button("nc.png", cam_btn.position.x + 550, cam_btn.position.y - 320, 1, 1);
-        //sleep();
+        ncBtn = new Button("button/box", cam_btn.position.x - 560, cam_btn.position.y - 100);
+        //ncBtn.setScale(0.5f);
+        metaGameBtn = new Button("button/info", cam_btn.position.x - 580, cam_btn.position.y - 320);
 
         timeNC = GameRunner.dm.loadDataTime("NCMODE");
-        headder.setCenter(cam_btn.position.x, cam_btn.position.y-450);
+        headder.setCenter(cam_btn.position.x, cam_btn.position.y-430);
+        if(GameRunner.playMusic != 0) {
+            GameRunner.playMusic = 0;
+            GameRunner.updateMusic = true;
+        }
     }
 
     @Override
     protected void hendleInput() {
 
     }
+    int helperMetaLvl = GameRunner.dm.load2("helperMetaLevel");
+    int metaLvl = GameRunner.dm.load2("metaGameLevel");
     @Override
     public void update(float delta) {
+        GameRunner.adMobFlag = false;
+        if(helperMetaLvl == metaLvl) {
+            helperMetaLvl++;
+            gameStateMenager.push(new HelperMetaState(gameStateMenager));
+        }
         //System.out.print(camera.position.x+" "+ camera.position.y+"\n");
         I_AM_HERE = true;
         camera.update();
 
         if(isUpdate) {
+            helperMetaLvl = GameRunner.dm.load2("helperMetaLevel");
+            metaLvl = GameRunner.dm.load2("metaGameLevel");
             isUpdate = false;
             builds.clear();
             loadBuilds();
@@ -117,6 +138,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         headder.draw(tb);
         pauseBtn.getSprite().draw(tb);
         runnerPlayBtn.getSprite().draw(tb);
+        metaGameBtn.getSprite().draw(tb);
         timeNow = System.currentTimeMillis();
         if(timeNC < timeNow) {
             ncBtn.getSprite().draw(tb);
@@ -126,10 +148,10 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
             long h = seconds / 3600;
             long m = (seconds - 3600*h) / 60;
             long s = (seconds - 3600*h - 60*m);
-            GameRunner.font.draw(tb, "NCMode: " +  h + ":" + m + ":" + s, cam_btn.position.x+80,
+            GameRunner.font.draw(tb, "NCMode: " +  h + ":" + m + ":" + s, cam_btn.position.x-480,
                     cam_btn.position.y - 350);
         }
-        GameRunner.font.draw(tb, "COINS: " + GameRunner.now_coins + "  METAL: " + GameRunner.now_metal, cam_btn.position.x - 680, cam_btn.position.y - 350);
+        GameRunner.font.draw(tb, "COINS: " + GameRunner.now_coins + "  METAL: " + GameRunner.now_metal, cam_btn.position.x - 530, cam_btn.position.y + 350);
         if(visibleCard) {
             cardSprite.draw(tb);
             if(visibleCardBtn) {
@@ -155,9 +177,10 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
 
         if(pauseBtn.collide(vec_btn.x, vec_btn.y)) {
             I_AM_HERE = false;
+            GameRunner.soundPressBtn.play(GameRunner.soundVol);
             gameStateMenager.set(new MenuState(gameStateMenager));
         }
-        if(cardBtn.collide(vec_btn.x, vec_btn.y) && visibleCard) {
+        /*if(cardBtn.collide(vec_btn.x, vec_btn.y) && visibleCard) {
             I_AM_HERE = false;
             int price = builds.get(activeB).getPrice();
             int metal = GameRunner.dm.load2("metal");
@@ -170,7 +193,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
                 }
             }
             //gameStateMenager.push(new BuildingInfoState(gameStateMenager, builds.get(card)));
-        }
+        }*/
         if(runnerPlayBtn.collide(vec_btn.x, vec_btn.y)) {
             I_AM_HERE = false;
             /*int _lvl = dm.load2("level");
@@ -183,19 +206,28 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
                     gameStateMenager.set(new PlayState(gameStateMenager));
                 }
             }*/
+            GameRunner.soundPressBtn.play(GameRunner.soundVol);
             gameStateMenager.push(new SelectLevel(gameStateMenager));
+        }
+        if(metaGameBtn.collide(vec_btn.x, vec_btn.y)) {
+            I_AM_HERE = false;
+            isUpdate = true;
+            GameRunner.soundPressBtn.play(GameRunner.soundVol);
+            gameStateMenager.push(new MetaTasksState(gameStateMenager));
         }
         timeNow = System.currentTimeMillis();
         if(timeNC < timeNow) {
             if(ncBtn.collide(vec_btn.x, vec_btn.y)) {
                 I_AM_HERE = false;
                 GameRunner.dm.addDataTime("NCMODE", timeNow + 86400000);
-                gameStateMenager.set(new NCState(gameStateMenager));
+                GameRunner.soundPressBtn.play(GameRunner.soundVol);
+                //gameStateMenager.set(new NCState(gameStateMenager));
+                gameStateMenager.push(new BonusState(gameStateMenager));
                 return true;
             }
         }
         boolean flag = false;
-        card = 0;
+        /*card = 0;
         int i = 0;
         for (Building b : builds) {
             isUpdate = true;
@@ -222,7 +254,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
             visibleCard = true;
         } else {
             visibleCard = false;
-        }
+        }*/
         return true;
     }
 

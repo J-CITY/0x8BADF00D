@@ -19,11 +19,11 @@ public class CheatState extends State {
     public CheatState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
-        closeBtn = new Button("close.png", camera.position.x-530, camera.position.y + 250, 1, 1);
-        doNotDieBtn = new Button("dndbtn.png", camera.position.x-330, camera.position.y, 1, 1);
-        doNotColBtn = new Button("dncbtn.png", camera.position.x-330, camera.position.y+100, 1, 1);
-        add100CoinsBtn = new Button("add100coinbtn.png", camera.position.x-330, camera.position.y-100, 1, 1);
-        add100MetalBtn = new Button("add100metalbtn.png", camera.position.x-330, camera.position.y-200, 1, 1);
+        closeBtn = new Button("button/close", camera.position.x-530, camera.position.y + 250);
+        doNotDieBtn = new Button("button/b", camera.position.x-330, camera.position.y);
+        doNotColBtn = new Button("button/b", camera.position.x-330, camera.position.y+100);
+        add100CoinsBtn = new Button("button/b", camera.position.x-330, camera.position.y-100);
+        add100MetalBtn = new Button("button/b", camera.position.x-330, camera.position.y-200);
     }
 
     @Override

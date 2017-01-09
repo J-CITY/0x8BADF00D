@@ -31,15 +31,7 @@ public class HouseBuild extends Building {
         sprite.setPosition(1000, 200);
         sprite.setCenter(1000, 200);
         bounds = new Rectangle(sprite.getBoundingRectangle());
-        if(level_now == 0) {
-            cardSprite = new Sprite(new Texture(Gdx.files.internal("meta/house1card.png")));
-        } else if(level_now == 1) {
-            cardSprite = new Sprite(new Texture(Gdx.files.internal("meta/house2card.png")));
-        } else if(level_now == 2) {
-            cardSprite = new Sprite(new Texture(Gdx.files.internal("meta/house3card.png")));
-        } else if(level_now == 3) {
-            cardSprite = new Sprite(new Texture(Gdx.files.internal("meta/house3card.png")));
-        }
+
         //cardSprite = new Sprite(new Texture("houseCard.png"));
     }
 

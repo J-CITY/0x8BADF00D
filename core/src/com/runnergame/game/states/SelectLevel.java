@@ -23,7 +23,7 @@ public class SelectLevel extends State {
 
     int LEVEL_COUNT = 9;
     int PAGE = 0;
-    int MAX_PAGE = 1;
+    int MAX_PAGE = 9;
     int LEVEL_OPENED = 0;
     private DataManager dm;
 

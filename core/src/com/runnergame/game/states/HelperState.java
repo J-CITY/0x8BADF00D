@@ -19,7 +19,7 @@ public class HelperState extends State {
         GameRunner.adMobFlag = true;
         camera.setToOrtho(false, GameRunner.WIDTH / 2, GameRunner.HEIGHT / 2);
 
-        okBtn = new Button("button/ok", camera.position.x + 280, camera.position.y - 150);
+        okBtn = new Button("button/ok", camera.position.x + 180, camera.position.y + 150);
 
         if(lvl == 0) {
             tex = new Texture("lvl0.png");

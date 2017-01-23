@@ -1,7 +1,9 @@
 package com.runnergame.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
@@ -11,13 +13,13 @@ import com.runnergame.game.sprites.Button;
 
 public class PauseState extends State {
     private Button playBtn, onSoundBtn, offSoundBtn, restartBtn, exitBtn;
-    private String TITLE = "<< PAUSE >>";
+    private String TITLE = " PAUSE ";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
-
+    private Sprite headder = new Sprite(new Texture("headder.png"));
     public static int whatGame = 0;
 
     private float pbtnY0 = 0, pbtnY = 400;
-    private float ebtnY0 = 250, ebtnY = 400;
+    private float ebtnY0 = 340, ebtnY = 400;
     private float sbtnY0 = -250, sbtnY = -400;
     private float rbtnY0 = 0, rbtnY = -400;
     Background bg;
@@ -27,11 +29,15 @@ public class PauseState extends State {
         GameRunner.adMobFlag = true;
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
         playBtn = new Button("button/play", camera.position.x-200, camera.position.y+pbtnY);
+        playBtn.setScale(2);
         restartBtn = new Button("button/restart", camera.position.x+200, camera.position.y+rbtnY);
+        restartBtn.setScale(2);
         onSoundBtn = new Button("button/musicOn", camera.position.x-530, camera.position.y+sbtnY);
         offSoundBtn = new Button("button/musicOff", camera.position.x-530, camera.position.y+sbtnY);
         exitBtn = new Button("button/close", camera.position.x-530, camera.position.y+ebtnY);
         bg = new Background(camera.position.x, camera.position.y, 0);
+        headder.setCenter(camera.position.x, camera.position.y+330);
+        headder.setScale(1, 0.5f);
     }
     float time = 2;
     @Override
@@ -137,7 +143,8 @@ public class PauseState extends State {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         bg.getBgSprite().draw(sb);
-        GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
+        headder.draw(sb);
+        GameRunner.font.draw(sb, TITLE, camera.position.x - 400, camera.position.y + 350);
         playBtn.getSprite().draw(sb);
         restartBtn.getSprite().draw(sb);
         exitBtn.getSprite().draw(sb);

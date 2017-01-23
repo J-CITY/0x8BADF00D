@@ -40,11 +40,13 @@ public class Button {
             }, 1);
         }
     }
-    public void setPress(float x, float y) {
+    public boolean setPress(float x, float y) {
         if(collide(x, y)) {
             GameRunner.soundPressBtn.play(GameRunner.soundVol);
             isPress = true;
+            return  true;
         }
+        return false;
     }
     public void setIsPress(boolean b) {
         isPress = b;

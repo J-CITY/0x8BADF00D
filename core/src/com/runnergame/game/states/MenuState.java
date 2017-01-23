@@ -1,7 +1,9 @@
 package com.runnergame.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
@@ -21,8 +23,11 @@ public class MenuState extends State {
     private float stbtnY0 = 250, stbtnY = 400;
     private String TITLE = "0x8BADF00D";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
+    private Sprite CCS = new Sprite( new Texture("CC.png"));
+    private Sprite Loading = new Sprite( new Texture("loading.png"));
+    private boolean LOADING_bool = false;
     Background bg;
-    Button GB;
+    //Button GB;
     public MenuState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         GameRunner.adMobFlag = true;
@@ -39,9 +44,11 @@ public class MenuState extends State {
         offSoundBtn = new Button("button/musicOff", camera.position.x-530, camera.position.y+sbtnY);
         shopBtn = new Button("button/shoppingCart", camera.position.x-530, camera.position.y+shbtnY);
         settingsBtn = new Button("button/settings", camera.position.x-530, camera.position.y+stbtnY);
-        GB = new Button("button/shoppingCart", camera.position.x+530, camera.position.y);
+        //GB = new Button("button/shoppingCart", camera.position.x+530, camera.position.y);
 
         bg = new Background(camera.position.x, camera.position.y, 0);
+        CCS.setCenter(camera.position.x, camera.position.y+250);
+        Loading.setCenter(camera.position.x, camera.position.y);
     }
     private boolean onSoundBtnPress=false, playBtnPress=false, shopBtnPress=false, settingsBtnPress = false;
     float time = 2;
@@ -65,6 +72,7 @@ public class MenuState extends State {
                         time--;
                         if (time <= 2) {
                             time = 2;
+                            LOADING_bool = false;
                             gameStateMenager.set(new MoonCityState(gameStateMenager));
                         }
                     }
@@ -104,15 +112,17 @@ public class MenuState extends State {
         }
         if(Gdx.input.justTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            playBtn.setPress(vec.x, vec.y);
+            if (playBtn.setPress(vec.x, vec.y)) {
+                LOADING_bool = true;
+            }
             settingsBtn.setPress(vec.x, vec.y);
             shopBtn.setPress(vec.x, vec.y);
             onSoundBtn.setPress(vec.x, vec.y);
             offSoundBtn.setPress(vec.x, vec.y);
 
-            if(GB.collide(vec.x, vec.y)) {
-                gameStateMenager.push(new InAppBillingState(gameStateMenager));
-            }
+            //if(GB.collide(vec.x, vec.y)) {
+             //   gameStateMenager.push(new InAppBillingState(gameStateMenager));
+            //}
         }
     }
 
@@ -153,15 +163,19 @@ public class MenuState extends State {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         bg.getBgSprite().draw(sb);
-        GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
+        CCS.draw(sb);
+        //GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
         playBtn.getSprite().draw(sb);
         shopBtn.getSprite().draw(sb);
         settingsBtn.getSprite().draw(sb);
-        GB.getSprite().draw(sb);
+        //GB.getSprite().draw(sb);
         if(GameRunner.isPlay) {
             onSoundBtn.getSprite().draw(sb);
         } else {
             offSoundBtn.getSprite().draw(sb);
+        }
+        if (LOADING_bool) {
+           Loading.draw(sb);
         }
         sb.end();
     }

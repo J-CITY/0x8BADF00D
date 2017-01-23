@@ -10,16 +10,15 @@ import com.runnergame.game.GameRunner;
 
 public class HouseBuild extends Building {
 
-    public HouseBuild(int _t) {
+    public HouseBuild(int _t, float x, float y) {
         super(_t);
         name = "House";
         level = 10;
         max_level = 3;
-        //GameRunner.dm.addData2("House_lvl", 0);
         level_now = GameRunner.dm.load2("House_lvl");
         price = 100 * level_now + 100;
         if(level_now == 0) {
-            sprite = new Sprite(new Texture(Gdx.files.internal("meta/house_ic.png")));
+            sprite = new Sprite(new Texture(Gdx.files.internal("meta/tree1.png")));
         } else if(level_now == 1) {
             sprite = new Sprite(new Texture(Gdx.files.internal("meta/house1.png")));
         } else if(level_now == 2) {
@@ -27,12 +26,8 @@ public class HouseBuild extends Building {
         } else if(level_now == 3) {
             sprite = new Sprite(new Texture(Gdx.files.internal("meta/house3.png")));
         }
-
-        sprite.setPosition(1000, 200);
-        sprite.setCenter(1000, 200);
+        sprite.setCenter(2616-__x, __y-491);
         bounds = new Rectangle(sprite.getBoundingRectangle());
-
-        //cardSprite = new Sprite(new Texture("houseCard.png"));
     }
 
     @Override

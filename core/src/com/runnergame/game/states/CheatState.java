@@ -58,6 +58,10 @@ public class CheatState extends State {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
+        GameRunner.font.draw(sb, "not collide", camera.position.x+100, camera.position.y+100);
+        GameRunner.font.draw(sb, "not die", camera.position.x+100, camera.position.y);
+        GameRunner.font.draw(sb, "+100 coins", camera.position.x+100, camera.position.y-100);
+        GameRunner.font.draw(sb, "+100 metal", camera.position.x+100, camera.position.y-200);
         closeBtn.getSprite().draw(sb);
         doNotColBtn.getSprite().draw(sb);
         doNotDieBtn.getSprite().draw(sb);

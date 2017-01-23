@@ -1,7 +1,9 @@
 package com.runnergame.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
@@ -13,13 +15,16 @@ import com.runnergame.game.sprites.Button;
 
 public class SettingsState extends State {
     private Button lenguageLBtn, lenguageRBtn, closeBtn, onSoundBtn, offSoundBtn, onMusicBtn, offMusicBtn;
-    private String TITLE = "<< SETTINGS >>";
+    private String TITLE = " SETTINGS ";
     private String Language = "";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
 
-    private float lbtnY0 = 0, lbtnY = 400, cbtnY0 = 250, cbtnY = 400;
+    private float lbtnY0 = 0, lbtnY = 400, cbtnY0 = 340, cbtnY = 400;
     private float sbtnY0 = -150, sbtnY = -400;
+
+    private Sprite headder = new Sprite(new Texture("headder.png"));
+
     Background bg;
     public SettingsState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
@@ -33,12 +38,15 @@ public class SettingsState extends State {
 
         lenguageLBtn = new Button("button/arrL", camera.position.x-200, camera.position.y+lbtnY);
         lenguageRBtn = new Button("button/arrR", camera.position.x+200, camera.position.y+lbtnY);
-        closeBtn = new Button("button/close", camera.position.x-530, camera.position.y+cbtnY);
+        closeBtn = new Button("button/close", camera.position.x-550, camera.position.y+cbtnY);
         onSoundBtn = new Button("button/audioOn", camera.position.x-200, camera.position.y+sbtnY);
         offSoundBtn = new Button("button/audioOff", camera.position.x-200, camera.position.y+sbtnY);
         onMusicBtn = new Button("button/musicOn", camera.position.x+200, camera.position.y+sbtnY);
         offMusicBtn = new Button("button/musicOff", camera.position.x+200, camera.position.y+sbtnY);
         bg = new Background(camera.position.x, camera.position.y, 0);
+
+        headder.setCenter(camera.position.x, camera.position.y+330);
+        headder.setScale(1, 0.5f);
     }
     float time = 2;
     @Override
@@ -138,13 +146,26 @@ public class SettingsState extends State {
             lbtnY -= speed*delta;
             lenguageLBtn.setPos(lenguageLBtn.getPos().x, camera.position.y + lbtnY);
             lenguageRBtn.setPos(lenguageRBtn.getPos().x, camera.position.y + lbtnY);
+        } else {
+            lbtnY = lbtnY0;
+            lenguageLBtn.setPos(lenguageLBtn.getPos().x, camera.position.y + lbtnY);
+            lenguageRBtn.setPos(lenguageRBtn.getPos().x, camera.position.y + lbtnY);
         }
         if(cbtnY0 < cbtnY) {
             cbtnY -= speed*delta;
             closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
+        } else {
+            cbtnY = cbtnY0;
+            closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
         }
         if(sbtnY0 > sbtnY) {
             sbtnY += speed*delta;
+            offSoundBtn.setPos(offSoundBtn.getPos().x, camera.position.y + sbtnY);
+            onSoundBtn.setPos(onSoundBtn.getPos().x, camera.position.y + sbtnY);
+            offMusicBtn.setPos(offMusicBtn.getPos().x, camera.position.y + sbtnY);
+            onMusicBtn.setPos(onMusicBtn.getPos().x, camera.position.y + sbtnY);
+        } else {
+            sbtnY = sbtnY0;
             offSoundBtn.setPos(offSoundBtn.getPos().x, camera.position.y + sbtnY);
             onSoundBtn.setPos(onSoundBtn.getPos().x, camera.position.y + sbtnY);
             offMusicBtn.setPos(offMusicBtn.getPos().x, camera.position.y + sbtnY);
@@ -157,11 +178,10 @@ public class SettingsState extends State {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         bg.getBgSprite().draw(sb);
-        //GameRunner.font.draw(sb, "SCORE: " + GameRunner.score, GameRunner.WIDTH / 2, GameRunner.HEIGHT - 150);
-        //GameRunner.font.draw(sb, "RECORD: " + GameRunner.rm.load(), GameRunner.WIDTH / 2, GameRunner.HEIGHT - 200);
-        GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
-        GameRunner.font.draw(sb, Language, camera.position.x - 100, camera.position.y);
-        GameRunner.font.draw(sb, "Music: http://www.bensound.com", camera.position.x - 100, camera.position.y-200);
+        headder.draw(sb);
+        GameRunner.font.draw(sb, TITLE, camera.position.x - 400, camera.position.y + 350);
+        GameRunner.font.draw(sb, Language, camera.position.x - 100, camera.position.y+5);
+        GameRunner.font.draw(sb, "Music: http://www.bensound.com", camera.position.x - 250, camera.position.y-200);
         System.out.print(Language+"\n");
         lenguageLBtn.getSprite().draw(sb);
         lenguageRBtn.getSprite().draw(sb);

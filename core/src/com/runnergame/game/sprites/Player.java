@@ -69,7 +69,7 @@ public class Player {
 
         velosity.scl(1/delta);
 
-        sprite_rot -= (180*delta)%360;
+        //sprite_rot -= (180*delta)%360;
     }
 
     public void setScale(float scl) {

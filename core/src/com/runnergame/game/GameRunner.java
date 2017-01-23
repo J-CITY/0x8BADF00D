@@ -27,7 +27,7 @@ public class GameRunner implements ApplicationListener {
 	final String FONT_CHARS = "абвгдежзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
 	public static final int WIDTH = 1366;
 	public static final int HEIGHT = 768;
-	public static final String TITLE = "0x8BADF00D";
+	public static final String TITLE = "Change Color";
 
 	private GameStateManager gsm;
 	private SpriteBatch batch;
@@ -93,7 +93,7 @@ public class GameRunner implements ApplicationListener {
 			dm.setParam("Unit" + i);
 			dm.addData(0);
 		}*/
-		//dm.addData2("level", 10);
+		//dm.addData2("level", 100);
 		//					dm.addData2("coins",500);
 		now_coins = dm.load2("coins");
 		now_metal = dm.load2("metal");

@@ -2,7 +2,9 @@ package com.runnergame.game.states;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -15,7 +17,7 @@ import com.runnergame.game.sprites.Button;
 
 public class MetaTasksState extends State {
     private Button doBtn, closeBtn;
-    private float dbtnY0 = 0, dbtnY = 400, cbtnY0 = 250, cbtnY = 400;
+    private float dbtnY0 = 0, dbtnY = 400, cbtnY0 = 340, cbtnY = 400;
     private GlyphLayout layout;
 
     public MetaLevels metaLevels;
@@ -27,6 +29,8 @@ public class MetaTasksState extends State {
     private float prize;
     private float price;
     float metal;
+    private Sprite headder = new Sprite(new Texture("headder.png"));
+    //private Sprite bgs = new Sprite(new Texture("meta/helper/lvl.png"));
 
     public MetaTasksState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
@@ -40,7 +44,7 @@ public class MetaTasksState extends State {
         if(metaLevels.levels.size == metaLevels.level) {
             TITLE = "No tasks";
         } else {
-            TITLE = "Level" + metaLevels.level;
+            TITLE = "Level " + metaLevels.level;
             TASK = metaLevels.levels.get(metaLevels.level).discription + " Price: " + metaLevels.levels.get(metaLevels.level).price;
             prize = metaLevels.levels.get(metaLevels.level).prize;
             price = metaLevels.levels.get(metaLevels.level).price;
@@ -57,6 +61,9 @@ public class MetaTasksState extends State {
         closeBtn = new Button("button/close", camera.position.x-530, camera.position.y+cbtnY);
 
         bg = new Background(camera.position.x, camera.position.y, 0);
+        headder.setCenter(camera.position.x, camera.position.y+330);
+        headder.setScale(1, 0.5f);
+        //bgs.setCenter(camera.position.x, camera.position.y);
     }
     float time = 2;
 
@@ -122,6 +129,9 @@ public class MetaTasksState extends State {
         if(cbtnY0 < cbtnY) {
             cbtnY -= speed*delta;
             closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
+        } else {
+            cbtnY = cbtnY0;
+            closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
         }
     }
 
@@ -130,9 +140,12 @@ public class MetaTasksState extends State {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         bg.getBgSprite().draw(sb);
-        GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
-        GameRunner.font.draw(sb, TASK,  camera.position.x-400, camera.position.y);
+        //bgs.draw(sb);
+        headder.draw(sb);
+        //bg.getBgSprite().draw(sb);
+        GameRunner.font.draw(sb, TITLE, camera.position.x - 400, camera.position.y + 350);
         if(metaLevels.levels.size > metaLevels.level) {
+            GameRunner.font.draw(sb, TASK,  camera.position.x-500, camera.position.y);
             doBtn.getSprite().draw(sb);
         }
         closeBtn.getSprite().draw(sb);

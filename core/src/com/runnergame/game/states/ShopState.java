@@ -25,7 +25,7 @@ public class ShopState extends State {
     private int pref=-1;
     private int price=-1;
     private int numSkin = 0;
-    private String TITLE = "<< SHOP >>";
+    private String TITLE = " SHOP ";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
     private Sprite headder = new Sprite(new Texture("headder.png"));
@@ -39,7 +39,6 @@ public class ShopState extends State {
         cam_btn = new OrthographicCamera(GameRunner.WIDTH, GameRunner.HEIGHT);
         cam_btn.update();
         backBtn = new Button("button/close", cam_btn.position.x-550, cam_btn.position.y+340);
-        backBtn.setScale(0.8f);
         buyBtn = new Button("button/buy", cam_btn.position.x+530, cam_btn.position.y-100);
         //buyBtn.setScale(0.5f);
         setBtn = new Button("button/set", cam_btn.position.x+530, cam_btn.position.y-100);
@@ -61,7 +60,8 @@ public class ShopState extends State {
                 _x = camera.position.x-dx;
             }
         }
-        headder.setCenter(cam_btn.position.x, cam_btn.position.y+450);
+        headder.setCenter(cam_btn.position.x, cam_btn.position.y+330);
+        headder.setScale(1, 0.5f);
     }
     float time = 2;
     @Override
@@ -176,11 +176,11 @@ public class ShopState extends State {
         tb.setProjectionMatrix(cam_btn.combined);
         tb.begin();
         headder.draw(tb);
-        GameRunner.font.draw(tb, TITLE + "  COINS: " + GameRunner.now_coins, cam_btn.position.x - 400, cam_btn.position.y + 350);
+        GameRunner.font.draw(tb, TITLE + "            COINS: " + GameRunner.now_coins, cam_btn.position.x - 400, cam_btn.position.y + 350);
         if(pref != 0 && price >= 0) {
             setBtn.getSprite().draw(tb);
         } else if(pref == 0 && price >= 0) {
-            GameRunner.font.draw(tb, "PRICE: " + price, cam_btn.position.x + 400, cam_btn.position.y);
+            GameRunner.font.draw(tb, "  PRICE: " + price, cam_btn.position.x + 420, cam_btn.position.y);
             buyBtn.getSprite().draw(tb);
         }
 

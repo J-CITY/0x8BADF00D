@@ -10,6 +10,8 @@ import com.runnergame.game.states.DataManager;
 
 public abstract class Building {
     String name = new String();
+    protected float __x = 1160;
+    protected float __y = 1327;
     int level;
     int level_now;
     int max_level;

@@ -2,8 +2,10 @@ package com.runnergame.game.states;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
@@ -13,12 +15,12 @@ import com.runnergame.game.sprites.Button;
 
 public class GameOver extends State {
     private Button playBtn, rebornBtn, onSoundBtn, offSoundBtn, exitBtn;
-    private String TITLE = "<< GAME OVER >>";
+    private String TITLE = " GAME OVER ";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
-
-    private float rbtnY0 = 0, rbtnY = 400;
-    private float pbtnY0 = -70, pbtnY = 400;
-    private float ebtnY0 = 250, ebtnY = 400;
+    private Sprite headder = new Sprite(new Texture("headder.png"));
+    private float rbtnY0 = 100, rbtnY = 400;
+    private float pbtnY0 = -100, pbtnY = 400;
+    private float ebtnY0 = 340, ebtnY = 400;
     private float sbtnY0 = -250, sbtnY = -400;
     Background bg;
     public GameOver(GameStateManager gameStateMenager) {
@@ -26,11 +28,15 @@ public class GameOver extends State {
         GameRunner.adMobFlag = true;
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
         playBtn = new Button("button/playAgain", camera.position.x, camera.position.y+pbtnY);
+        playBtn.setScale(2);
         rebornBtn = new Button("button/continue", camera.position.x, camera.position.y+rbtnY);
+        rebornBtn.setScale(2);
         onSoundBtn = new Button("button/musicOn", camera.position.x-530, camera.position.y+sbtnY);
         offSoundBtn = new Button("button/musicOff", camera.position.x-530, camera.position.y+sbtnY);
         exitBtn = new Button("button/close", camera.position.x-530, camera.position.y+ebtnY);
         bg = new Background(camera.position.x, camera.position.y, 0);
+        headder.setCenter(camera.position.x, camera.position.y+330);
+        headder.setScale(1, 0.5f);
     }
     float time = 2;
     @Override
@@ -139,7 +145,8 @@ public class GameOver extends State {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         bg.getBgSprite().draw(sb);
-        GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
+        headder.draw(sb);
+        GameRunner.font.draw(sb, TITLE + "            COINS: " + GameRunner.now_coins, camera.position.x - 400, camera.position.y + 350);
         playBtn.getSprite().draw(sb);
         exitBtn.getSprite().draw(sb);
         rebornBtn.getSprite().draw(sb);

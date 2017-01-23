@@ -1,7 +1,9 @@
 package com.runnergame.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
@@ -19,9 +21,9 @@ public class InAppBillingState extends State {
     private String TITLE = "SHOP";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
+    private Sprite headder = new Sprite(new Texture("headder.png"));
 
-
-    private float b1btnY0 = 0, b1btnY = 400, cbtnY0 = 250, cbtnY = 400;
+    private float b1btnY0 = 0, b1btnY = 400, cbtnY0 = 340, cbtnY = 400;
     Background bg;
     public InAppBillingState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
@@ -30,8 +32,11 @@ public class InAppBillingState extends State {
         buy1Btn = new Button("button/buy", camera.position.x-400, camera.position.y+cbtnY);
         buy2Btn = new Button("button/buy", camera.position.x, camera.position.y+cbtnY);
         buy3Btn = new Button("button/buy", camera.position.x+400, camera.position.y+cbtnY);
-        closeBtn = new Button("button/close", camera.position.x-530, camera.position.y+cbtnY);
+        closeBtn = new Button("button/close", camera.position.x-550, camera.position.y+cbtnY);
         bg = new Background(camera.position.x, camera.position.y, 0);
+
+        headder.setCenter(camera.position.x, camera.position.y+330);
+        headder.setScale(1, 0.5f);
     }
     float time = 2;
     @Override
@@ -116,12 +121,16 @@ public class InAppBillingState extends State {
             buy3Btn.setPos(buy3Btn.getPos().x, camera.position.y + b1btnY);
         } else {
             b1btnY = b1btnY0;
+            buy1Btn.setPos(buy1Btn.getPos().x, camera.position.y + b1btnY);
+            buy2Btn.setPos(buy2Btn.getPos().x, camera.position.y + b1btnY);
+            buy3Btn.setPos(buy3Btn.getPos().x, camera.position.y + b1btnY);
         }
         if(cbtnY0 < cbtnY) {
             cbtnY -= speed*delta;
             closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
         } else {
             cbtnY = cbtnY0;
+            closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
         }
     }
 
@@ -130,7 +139,11 @@ public class InAppBillingState extends State {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
         bg.getBgSprite().draw(sb);
-        GameRunner.font.draw(sb, TITLE, (GameRunner.WIDTH - layout.width) / 2, GameRunner.HEIGHT - 100);
+        headder.draw(sb);
+        GameRunner.font.draw(sb, TITLE, camera.position.x - 400, camera.position.y + 350);
+        GameRunner.font.draw(sb, "100 Coins", camera.position.x-450, camera.position.y+100);
+        GameRunner.font.draw(sb, "500 Coins", camera.position.x-60, camera.position.y+100);
+        GameRunner.font.draw(sb, "1000 Coins", camera.position.x+330, camera.position.y+100);
         buy1Btn.getSprite().draw(sb);
         buy2Btn.getSprite().draw(sb);
         buy3Btn.getSprite().draw(sb);

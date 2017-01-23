@@ -17,13 +17,11 @@ public class PoliceBuild extends Building {
         level_now = GameRunner.dm.load2("Police_lvl");
         price = 100;
         if(level_now == 0) {
-            sprite = new Sprite(new Texture(Gdx.files.internal("meta/police_ic.png")));
+            sprite = new Sprite(new Texture(Gdx.files.internal("meta/tree1.png")));
         } else {
             sprite = new Sprite(new Texture(Gdx.files.internal("meta/police.png")));
         }
-
-        sprite.setPosition(730, -200);
-        sprite.setCenter(730, -200);
+        sprite.setCenter(1406-__x, __y-1065);
         bounds = new Rectangle(sprite.getBoundingRectangle());
     }
 

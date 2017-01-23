@@ -151,7 +151,7 @@ public class PlayState extends State {
         _floor = 2;
         for (int i = 0; i < len; ++i) {
             if (MathUtils.random(0, 20) >= 16) {
-                coins.add(new Coin(__x, Constants.GROUND + 32*_floor, 0));
+                coins.add(new Coin(__x, Constants.GROUND + 32, 0));
             }
             blocks.addLast(new BlockFloor(__x, Constants.Y0 + 64*_floor, Constants.B_FLOOR));
             blocks.last().setColor(platform_color1);
@@ -203,7 +203,7 @@ public class PlayState extends State {
                 CAN_ADD_TIMER = false;
             }
             __x += 64;
-            blocks.addLast(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 350));
+            blocks.addLast(new BlockJump(__x, Constants.Y0 + 32*_floor, 4, 310));
             blocks.last().setColor(platform_color);
             __x += Block.getPlatformSpace();;
         }
@@ -354,7 +354,7 @@ public class PlayState extends State {
 
     private void addBoss(float x) {
         blocks.addLast(new BlockFloor(x + BLOCK_SPACING*0, Constants.Y0, Constants.B_FLOOR));
-        boss = new BlockBoss(x + BLOCK_SPACING*0, Constants.Y0+Constants.BLOCK_H/2+18, Constants.B_FLOOR, (lvl/10)*10 + 15);//25
+        boss = new BlockBoss(x + BLOCK_SPACING*0, Constants.Y0+Constants.BLOCK_H/2+18, Constants.B_FLOOR, (lvl/25)*5 + 15);//25
     }
 
     private void addGun(float x) {
@@ -460,7 +460,7 @@ public class PlayState extends State {
         }
 
         pauseBtn = new Button("button/bar", cam_btn.position.x - 560, cam_btn.position.y + 300);
-        pauseBtn.setScale(0.7f);
+
         reborn = false;
         //BOSS
         bul = new Array<BlockBullet>();
@@ -496,7 +496,9 @@ public class PlayState extends State {
         }
         if(Gdx.input.justTouched()) {
             Vector3 vec = cam_btn.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            pauseBtn.setPress(vec.x, vec.y);
+            if (pauseBtn.setPress(vec.x, vec.y)) {
+                return;
+            }
             if(!START_LEVEL) {
                 START_LEVEL = true;
                 return;
@@ -532,7 +534,7 @@ public class PlayState extends State {
                 blocks.removeFirst();
             }
             for (int i = 0; i < 15; ++i) {
-                if(i==13) {
+                if(i==12) {
                     blocks.addFirst(new BlockJump(BLOCK_SPACING*(14-i), Constants.Y0, Constants.B_JUMP, 350));
                 }
                 blocks.addFirst(new BlockFloor(BLOCK_SPACING*(14-i), Constants.Y0, Constants.B_FLOOR));
@@ -571,6 +573,7 @@ public class PlayState extends State {
             if(s.getX() <= player.getPosition().x - 220) {
                 s.setCenter(player.getPosition().x-20, player.getPosition().y);
                 s.setScale(MathUtils.random(0.1f, 0.25f));
+                s.setRotation(MathUtils.random(0f, 359f));
             } else {
                 s.setX(s.getX() - Block.speed*delta);
             }
@@ -813,8 +816,8 @@ public class PlayState extends State {
             sp.draw(sb);
         }
         Sprite sp = player.getSprite();
-        sp.setRotation(player.getRot());
-        sp.setCenter(player.getPosition().x, player.getPosition().y + 2);
+        //sp.setRotation(player.getRot());
+        //sp.setCenter(player.getPosition().x, player.getPosition().y + 2);
         sp.draw(sb);
 
         for (Block b : blocks) {
@@ -839,7 +842,7 @@ public class PlayState extends State {
         tb.setProjectionMatrix(cam_btn.combined);
         tb.begin();
         helpColorChange.setColor(GameRunner.colors.blue.r, GameRunner.colors.blue.g, GameRunner.colors.blue.b, 1);
-        helpColorChange.setCenter(cam_btn.position.x - 600, cam_btn.position.y - 320);
+        helpColorChange.setCenter(cam_btn.position.x + 530, cam_btn.position.y + 320);
         if(player.color == 1) {
             helpColorChange.setScale(1f);
         } else {
@@ -847,7 +850,7 @@ public class PlayState extends State {
         }
         helpColorChange.draw(tb);
         helpColorChange.setColor(GameRunner.colors.red.r, GameRunner.colors.red.g, GameRunner.colors.red.b, 1);
-        helpColorChange.setCenter(cam_btn.position.x - 555, cam_btn.position.y - 320);
+        helpColorChange.setCenter(cam_btn.position.x + 560, cam_btn.position.y + 320);
         if(player.color == 2) {
             helpColorChange.setScale(1f);
         } else {
@@ -856,8 +859,8 @@ public class PlayState extends State {
         helpColorChange.draw(tb);
         if(colorSize == 3) {
             helpColorChange.setColor(GameRunner.colors.green.r, GameRunner.colors.green.g, GameRunner.colors.green.b, 1);
-            helpColorChange.setCenter(cam_btn.position.x - 530, cam_btn.position.y - 320);
-            if(player.color == 1) {
+            helpColorChange.setCenter(cam_btn.position.x + 590, cam_btn.position.y + 320);
+            if(player.color == 3) {
                 helpColorChange.setScale(1f);
             } else {
                 helpColorChange.setScale(0.7f);

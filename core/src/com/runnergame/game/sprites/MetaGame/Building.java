@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.runnergame.game.GameRunner;
 import com.runnergame.game.sprites.Animation;
 import com.runnergame.game.states.DataManager;
 
@@ -24,6 +25,7 @@ public abstract class Building {
 
     public Building(int _t) {
         type = _t;
+        pos = new Vector2();
     }
 
     public abstract boolean update(int p);
@@ -55,6 +57,14 @@ public abstract class Building {
     }
     public Vector2 getPos() {
         return pos;
+    }
+
+    public boolean updateBuild() {
+        int lvl = GameRunner.dm.load2(name+"_lvl");
+        if(lvl != level_now) {
+            return true;
+        }
+        return false;
     }
 
     public boolean collide(float x, float y) {

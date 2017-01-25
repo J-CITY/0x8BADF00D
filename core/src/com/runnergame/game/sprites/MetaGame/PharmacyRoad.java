@@ -22,6 +22,8 @@ public class PharmacyRoad extends Building {
         }
         sprite.setCenter(2624-__x, __y-869);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

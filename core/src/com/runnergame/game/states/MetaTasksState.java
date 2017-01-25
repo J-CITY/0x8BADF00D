@@ -17,7 +17,7 @@ import com.runnergame.game.sprites.Button;
 
 public class MetaTasksState extends State {
     private Button doBtn, closeBtn;
-    private float dbtnY0 = 0, dbtnY = 400, cbtnY0 = 340, cbtnY = 400;
+    private float dbtnY0 = -100, dbtnY = 400, cbtnY0 = 340, cbtnY = 400;
     private GlyphLayout layout;
 
     public MetaLevels metaLevels;
@@ -143,9 +143,9 @@ public class MetaTasksState extends State {
         //bgs.draw(sb);
         headder.draw(sb);
         //bg.getBgSprite().draw(sb);
-        GameRunner.font.draw(sb, TITLE, camera.position.x - 400, camera.position.y + 350);
+        GameRunner.font.draw(sb, TITLE+ "            METAL: " + metal, camera.position.x - 400, camera.position.y + 350);
         if(metaLevels.levels.size > metaLevels.level) {
-            GameRunner.font.draw(sb, TASK,  camera.position.x-500, camera.position.y);
+            GameRunner.font.draw(sb, TASK + " metal.",  camera.position.x-500, camera.position.y);
             doBtn.getSprite().draw(sb);
         }
         closeBtn.getSprite().draw(sb);

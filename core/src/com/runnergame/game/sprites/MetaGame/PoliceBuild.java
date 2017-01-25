@@ -23,6 +23,8 @@ public class PoliceBuild extends Building {
         }
         sprite.setCenter(1406-__x, __y-1065);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

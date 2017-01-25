@@ -55,10 +55,16 @@ public class SettingsState extends State {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             lenguageLBtn.updatePress(vec.x, vec.y);
             lenguageRBtn.updatePress(vec.x, vec.y);
-            onMusicBtn.updatePress(vec.x, vec.y);
-            offMusicBtn.updatePress(vec.x, vec.y);
-            onSoundBtn.updatePress(vec.x, vec.y);
-            offSoundBtn.updatePress(vec.x, vec.y);
+            if(GameRunner.isPlay) {
+                onMusicBtn.updatePress(vec.x, vec.y);
+            } else {
+                offMusicBtn.updatePress(vec.x, vec.y);
+            }
+            if(GameRunner.isPlay) {
+                onSoundBtn.updatePress(vec.x, vec.y);
+            } else {
+                offSoundBtn.updatePress(vec.x, vec.y);
+            }
             closeBtn.updatePress(vec.x, vec.y);
         } else {
             if(lenguageLBtn.getIsPress()) {
@@ -101,16 +107,21 @@ public class SettingsState extends State {
             }
             if(onSoundBtn.getIsPress()) {
                 onSoundBtn.setIsPress(false);
+                if(GameRunner.soundVol == 0) GameRunner.soundVol = 0.5f;
+                else GameRunner.soundVol = 0;
+            }
+            if(offSoundBtn.getIsPress()) {
                 offSoundBtn.setIsPress(false);
                 if(GameRunner.soundVol == 0) GameRunner.soundVol = 0.5f;
                 else GameRunner.soundVol = 0;
-
             }
             if(onMusicBtn.getIsPress()) {
-                onMusicBtn.setIsPress(false);
-                offMusicBtn.setIsPress(false);
+                onSoundBtn.setIsPress(false);
                 GameRunner.isPlay = !GameRunner.isPlay;
-
+            }
+            if(offMusicBtn.getIsPress()) {
+                offSoundBtn.setIsPress(false);
+                GameRunner.isPlay = !GameRunner.isPlay;
             }
             if(closeBtn.getIsPress()) {
                 closeBtn.setIsPress(false);

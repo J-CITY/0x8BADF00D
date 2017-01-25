@@ -47,8 +47,11 @@ public class PauseState extends State {
             playBtn.updatePress(vec.x, vec.y);
             exitBtn.updatePress(vec.x, vec.y);
             restartBtn.updatePress(vec.x, vec.y);
-            onSoundBtn.updatePress(vec.x, vec.y);
-            offSoundBtn.updatePress(vec.x, vec.y);
+            if(GameRunner.isPlay) {
+                onSoundBtn.updatePress(vec.x, vec.y);
+            } else {
+                offSoundBtn.updatePress(vec.x, vec.y);
+            }
         } else {
             if(playBtn.getIsPress()) {
                 playBtn.setIsPress(false);
@@ -92,9 +95,11 @@ public class PauseState extends State {
             }
             if(onSoundBtn.getIsPress()) {
                 onSoundBtn.setIsPress(false);
+                GameRunner.isPlay = !GameRunner.isPlay;
+            }
+            if(offSoundBtn.getIsPress()) {
                 offSoundBtn.setIsPress(false);
                 GameRunner.isPlay = !GameRunner.isPlay;
-
             }
         }
         if(Gdx.input.justTouched()) {
@@ -102,8 +107,11 @@ public class PauseState extends State {
             playBtn.setPress(vec.x, vec.y);
             restartBtn.setPress(vec.x, vec.y);
             exitBtn.setPress(vec.x, vec.y);
-            onSoundBtn.setPress(vec.x, vec.y);
-            offSoundBtn.setPress(vec.x, vec.y);
+            if(GameRunner.isPlay) {
+                onSoundBtn.setPress(vec.x, vec.y);
+            } else {
+                offSoundBtn.setPress(vec.x, vec.y);
+            }
         }
     }
 

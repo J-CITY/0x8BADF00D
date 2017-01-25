@@ -25,6 +25,8 @@ public class Shop extends Building {
         }
         sprite.setCenter(613-__x, __y-1324);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

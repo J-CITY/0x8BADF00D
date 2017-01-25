@@ -19,7 +19,7 @@ public class MenuState extends State {
     private Button playBtn, onSoundBtn, offSoundBtn, shopBtn, settingsBtn;
     private float pbtnY0 = 0, pbtnY = 400;
     private float sbtnY0 = -250, sbtnY = -400;
-    private float shbtnY0 = -150, shbtnY = -400;
+    private float shbtnY0 = -120, shbtnY = -400;
     private float stbtnY0 = 250, stbtnY = 400;
     private String TITLE = "0x8BADF00D";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
@@ -59,8 +59,11 @@ public class MenuState extends State {
         if(Gdx.input.isTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             playBtn.updatePress(vec.x, vec.y);
-            onSoundBtn.updatePress(vec.x, vec.y);
-            offSoundBtn.updatePress(vec.x, vec.y);
+            if(GameRunner.isPlay) {
+                onSoundBtn.updatePress(vec.x, vec.y);
+            } else {
+                offSoundBtn.updatePress(vec.x, vec.y);
+            }
             shopBtn.updatePress(vec.x, vec.y);
             settingsBtn.updatePress(vec.x, vec.y);
         } else {
@@ -80,6 +83,9 @@ public class MenuState extends State {
             }
             if(onSoundBtn.getIsPress()) {
                 onSoundBtn.setIsPress(false);
+                GameRunner.isPlay = !GameRunner.isPlay;
+            }
+            if(offSoundBtn.getIsPress()) {
                 offSoundBtn.setIsPress(false);
                 GameRunner.isPlay = !GameRunner.isPlay;
             }
@@ -117,11 +123,14 @@ public class MenuState extends State {
             }
             settingsBtn.setPress(vec.x, vec.y);
             shopBtn.setPress(vec.x, vec.y);
-            onSoundBtn.setPress(vec.x, vec.y);
-            offSoundBtn.setPress(vec.x, vec.y);
+            if(GameRunner.isPlay) {
+                onSoundBtn.setPress(vec.x, vec.y);
+            } else {
+                offSoundBtn.setPress(vec.x, vec.y);
+            }
 
             //if(GB.collide(vec.x, vec.y)) {
-             //   gameStateMenager.push(new InAppBillingState(gameStateMenager));
+            //   gameStateMenager.push(new InAppBillingState(gameStateMenager));
             //}
         }
     }
@@ -175,7 +184,7 @@ public class MenuState extends State {
             offSoundBtn.getSprite().draw(sb);
         }
         if (LOADING_bool) {
-           Loading.draw(sb);
+            Loading.draw(sb);
         }
         sb.end();
     }

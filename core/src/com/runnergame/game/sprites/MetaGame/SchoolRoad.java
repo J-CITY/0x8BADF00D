@@ -22,6 +22,8 @@ public class SchoolRoad extends Building {
         }
         sprite.setCenter(1681-__x, __y-1451);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

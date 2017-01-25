@@ -25,6 +25,8 @@ public class Fire extends Building {
         }
         sprite.setCenter(1385-__x, __y-1410);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

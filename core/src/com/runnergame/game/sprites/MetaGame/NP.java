@@ -26,6 +26,8 @@ public class NP extends Building {
         }
         sprite.setCenter(499-__x, __y-827);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

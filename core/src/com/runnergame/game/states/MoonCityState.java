@@ -61,6 +61,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
     OrthographicCamera cam_btn;
 
     GestureDetector gestureDetector;
+    int RUNNER_LEVEL;
 
     private void loadBuilds() {
         builds.add(new Shop(21));
@@ -107,7 +108,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         GameRunner.now_metal = GameRunner.dm.load2("metal");
         pauseBtn = new Button("button/bar", cam_btn.position.x - 580, cam_btn.position.y + 320);
         pauseBtn.setScale(2);
-        runnerPlayBtn = new Button("button/play", cam_btn.position.x + 580, cam_btn.position.y - 320);
+        runnerPlayBtn = new Button("button/runnerPlay", cam_btn.position.x + 580, cam_btn.position.y - 320);
         runnerPlayBtn.setScale(2);
         //cardBtn = new Button("meta/infoBtn.png", cam_btn.position.x, cam_btn.position.y);
         //cardBtn.setScale(0.7f);
@@ -117,9 +118,9 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         metaGameBtn = new Button("button/info", cam_btn.position.x - 580, cam_btn.position.y - 320);
         metaGameBtn.setScale(2);
 
-        buyCoinsBtn = new Button("button/by", cam_btn.position.x - 380, cam_btn.position.y + 330);
+        buyCoinsBtn = new Button("button/by", cam_btn.position.x - 350, cam_btn.position.y + 330);
         buyCoinsBtn.setScale(1.4f);
-        metalBtn = new Button("button/by", cam_btn.position.x + 20, cam_btn.position.y + 330);
+        metalBtn = new Button("button/by", cam_btn.position.x, cam_btn.position.y + 330);
         metalBtn.setScale(1.4f);
 
         timeNC = GameRunner.dm.loadDataTime("NCMODE");
@@ -128,6 +129,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
             GameRunner.playMusic = 0;
             GameRunner.updateMusic = true;
         }
+        RUNNER_LEVEL = GameRunner.dm.load2("level") + 1;
     }
 
     @Override
@@ -173,7 +175,6 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
                 gameStateMenager.push(new HelperMetaState(gameStateMenager, metaLvl, helperMetaLvl));
             }
         }
-        //System.out.print(camera.position.x+" "+ camera.position.y+"\n");
         I_AM_HERE = true;
         camera.update();
 
@@ -181,10 +182,31 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
             helperMetaLvl = GameRunner.dm.load2("helperMetaLevel");
             metaLvl = GameRunner.dm.load2("metaGameLevel");
             isUpdate = false;
+            for(Building b : builds) {
+                if(b.updateBuild()) {
+                    Vector2 vec = b.getPos();
+                    camera.position.x = vec.x;
+                    camera.position.y = vec.y;
+                    if(camera.position.x < -1270) {
+                        camera.position.x = -1269;
+                    }
+                    if(camera.position.x > 1270) {
+                        camera.position.x = 1269;
+                    }
+                    if(camera.position.y < -1370) {
+                        camera.position.y = -1369;
+                    }
+                    if(camera.position.y > 1370) {
+                        camera.position.y = 1369;
+                    }
+                }
+            }
             builds.clear();
             loadBuilds();
+            RUNNER_LEVEL = GameRunner.dm.load2("level") + 1;
         }
     }
+    //Sprite spriteForDraw;
     @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(camera.combined);
@@ -194,7 +216,6 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         //System.out.print(map.getSprite().getWidth() + " " + map.getSprite().getHeight()+"!!!!!!!!!!!!!!\n" );
         for (Building b : builds) {
             b.getSprite().draw(sb);
-            //System.out.print("" + b.getSprite().getX() +" " + b.getSprite().getY()+"\n");
         }
         sb.end();
 
@@ -218,8 +239,9 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
             GameRunner.font.draw(tb, "NCMode: " +  h + ":" + m + ":" + s, cam_btn.position.x-480,
                     cam_btn.position.y - 350);
         }
-        GameRunner.font.draw(tb, "     COINS: " + GameRunner.now_coins, cam_btn.position.x - 530, cam_btn.position.y + 350);
-        GameRunner.font.draw(tb, "     METAL: " + GameRunner.now_metal, cam_btn.position.x - 130, cam_btn.position.y + 350);
+        GameRunner.font.draw(tb, "     COINS: " + GameRunner.now_coins, cam_btn.position.x - 520, cam_btn.position.y + 350);
+        GameRunner.font.draw(tb, "     METAL: " + GameRunner.now_metal, cam_btn.position.x - 160, cam_btn.position.y + 350);
+        GameRunner.font.draw(tb, RUNNER_LEVEL+"", cam_btn.position.x + 530, cam_btn.position.y - 300);
         if(visibleCard) {
             cardSprite.draw(tb);
             if(visibleCardBtn) {
@@ -301,6 +323,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
                 return true;
             }
         }
+
         boolean flag = false;
         /*card = 0;
         int i = 0;
@@ -355,7 +378,7 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         float _x = camera.position.x, _y = camera.position.y;
         Vector3 touchPos = new Vector3(x,y,0);
         camera.unproject(touchPos);
-        camera.translate(-deltaX, deltaY);
+        camera.translate(-deltaX*camera.zoom, deltaY*camera.zoom);
         if(camera.position.x < -1270 || camera.position.x > 1270) {
             camera.position.x = _x;
         }
@@ -369,14 +392,14 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
     public boolean panStop(float x, float y, int pointer, int button) {
         return false;
     }
-
+    float SPRITE_SCALE = 1;
     @Override
     public boolean zoom(float initialDistance, float distance) {
         if(!I_AM_HERE)
             return false;
-       // System.out.print(camera.zoom+"\n");
+        // System.out.print(camera.zoom+"\n");
         if (initialDistance >= distance) {
-            if(camera.zoom < 3)
+            if(camera.zoom < 2)
                 camera.zoom += 0.02;
         } else {
             if(camera.zoom > 0.5)

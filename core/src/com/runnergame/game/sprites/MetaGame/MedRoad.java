@@ -22,6 +22,8 @@ public class MedRoad extends Building {
         }
         sprite.setCenter(2252-__x, __y-1109);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

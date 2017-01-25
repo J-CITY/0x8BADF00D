@@ -25,6 +25,8 @@ public class Bank extends Building {
         }
         sprite.setCenter(1778-__x, __y-751);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

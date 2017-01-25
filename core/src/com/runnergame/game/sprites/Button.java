@@ -22,7 +22,9 @@ public class Button {
         spriteOff = new Sprite(new Texture(path+"_off.png"));
         spriteOn.setCenter(x, y);
         spriteOff.setCenter(x, y);
-        bounds = new Rectangle(spriteOn.getBoundingRectangle());
+        bounds = new Rectangle();
+        bounds.setSize(spriteOff.getWidth()+10, spriteOff.getHeight()+10);
+        bounds.setCenter(x, y);
         pos = new Vector2(x, y);
 
     }
@@ -93,6 +95,8 @@ public class Button {
 
     public void setScale(float _scl) {
         scl = _scl;
+        bounds.setSize(spriteOff.getWidth()*scl+10, spriteOff.getHeight()*scl+10);
+        bounds.setCenter(pos.x, pos.y);
         /// /sprite.setScale(scl);
     }
 

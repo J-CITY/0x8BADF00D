@@ -22,10 +22,14 @@ public class WinState extends State {
     private float pbtnY0 = 0, pbtnY = 400, cbtnY0 = 340, cbtnY = 400;
     private float sbtnY0 = -250, sbtnY = -400;
     Background bg;
+    int CoinNow, MetalNow, CoinAdd;
     public WinState(GameStateManager gameStateMenager, int _lvl) {
         super(gameStateMenager);
         GameRunner.adMobFlag = false;
         lvl =_lvl;
+        CoinNow = GameRunner.dm.load2("coins");
+        MetalNow = GameRunner.now_metal;
+        CoinAdd = GameRunner.now_coins - CoinNow;
         GameRunner.dm.addData2("metal", GameRunner.now_metal+100);
         GameRunner.dm.addData2("coins", GameRunner.now_coins);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
@@ -44,8 +48,11 @@ public class WinState extends State {
         if(Gdx.input.isTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             playBtn.updatePress(vec.x, vec.y);
-            offSoundBtn.updatePress(vec.x, vec.y);
-            onSoundBtn.updatePress(vec.x, vec.y);
+            if(GameRunner.isPlay) {
+                onSoundBtn.updatePress(vec.x, vec.y);
+            } else {
+                offSoundBtn.updatePress(vec.x, vec.y);
+            }
             closeBtn.updatePress(vec.x, vec.y);
         } else {
             if(playBtn.getIsPress()) {
@@ -72,9 +79,11 @@ public class WinState extends State {
             }
             if(onSoundBtn.getIsPress()) {
                 onSoundBtn.setIsPress(false);
+                GameRunner.isPlay = !GameRunner.isPlay;
+            }
+            if(offSoundBtn.getIsPress()) {
                 offSoundBtn.setIsPress(false);
                 GameRunner.isPlay = !GameRunner.isPlay;
-
             }
             if(closeBtn.getIsPress()) {
                 closeBtn.setIsPress(false);
@@ -94,8 +103,11 @@ public class WinState extends State {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             playBtn.setPress(vec.x, vec.y);
             closeBtn.setPress(vec.x, vec.y);
-            onSoundBtn.setPress(vec.x, vec.y);
-            offSoundBtn.setPress(vec.x, vec.y);
+            if(GameRunner.isPlay) {
+                onSoundBtn.setPress(vec.x, vec.y);
+            } else {
+                offSoundBtn.setPress(vec.x, vec.y);
+            }
         }
     }
 
@@ -133,6 +145,7 @@ public class WinState extends State {
         //GameRunner.font.draw(sb, "SCORE: " + GameRunner.score, GameRunner.WIDTH / 2, GameRunner.HEIGHT - 150);
         //GameRunner.font.draw(sb, "RECORD: " + GameRunner.rm.load(), GameRunner.WIDTH / 2, GameRunner.HEIGHT - 200);
         GameRunner.font.draw(sb, TITLE, camera.position.x - 400, camera.position.y + 350);
+        GameRunner.font.draw(sb, " + " + CoinAdd + " Coins  " + " + 100 Metal", camera.position.x - 200, camera.position.y + 150);
         playBtn.getSprite().draw(sb);
         closeBtn.getSprite().draw(sb);
         if(GameRunner.isPlay) {

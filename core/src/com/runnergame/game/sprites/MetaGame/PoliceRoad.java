@@ -22,6 +22,8 @@ public class PoliceRoad extends Building {
         }
         sprite.setCenter(1232-__x, __y-1037);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

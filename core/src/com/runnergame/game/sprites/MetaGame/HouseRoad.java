@@ -22,6 +22,8 @@ public class HouseRoad extends Building {
         }
         sprite.setCenter(2524-__x, __y-592);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

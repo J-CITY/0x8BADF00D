@@ -28,6 +28,8 @@ public class HouseBuild extends Building {
         }
         sprite.setCenter(2616-__x, __y-491);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

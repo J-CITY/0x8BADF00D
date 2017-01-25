@@ -25,6 +25,8 @@ public class FactoryBlock extends Building {
         }
         sprite.setCenter(701-__x, __y-1002);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

@@ -22,6 +22,8 @@ public class FireRoad extends Building {
         }
         sprite.setCenter(1497-__x, __y-1598);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

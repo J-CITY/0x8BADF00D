@@ -22,6 +22,8 @@ public class NPRoad extends Building {
         }
         sprite.setCenter(249-__x, __y-909);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

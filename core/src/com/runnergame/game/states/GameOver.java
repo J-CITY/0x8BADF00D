@@ -46,8 +46,11 @@ public class GameOver extends State {
             playBtn.updatePress(vec.x, vec.y);
             exitBtn.updatePress(vec.x, vec.y);
             rebornBtn.updatePress(vec.x, vec.y);
-            onSoundBtn.updatePress(vec.x, vec.y);
-            offSoundBtn.updatePress(vec.x, vec.y);
+            if(GameRunner.isPlay) {
+                onSoundBtn.updatePress(vec.x, vec.y);
+            } else {
+                offSoundBtn.updatePress(vec.x, vec.y);
+            }
         } else {
             if(playBtn.getIsPress()) {
                 playBtn.setIsPress(false);
@@ -95,17 +98,22 @@ public class GameOver extends State {
             }
             if(onSoundBtn.getIsPress()) {
                 onSoundBtn.setIsPress(false);
+                GameRunner.isPlay = !GameRunner.isPlay;
+            }
+            if(offSoundBtn.getIsPress()) {
                 offSoundBtn.setIsPress(false);
                 GameRunner.isPlay = !GameRunner.isPlay;
-
             }
         }
         if(Gdx.input.justTouched()) {
             Vector3 vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             playBtn.setPress(vec.x, vec.y);
             rebornBtn.setPress(vec.x, vec.y);
-            onSoundBtn.setPress(vec.x, vec.y);
-            offSoundBtn.setPress(vec.x, vec.y);
+            if(GameRunner.isPlay) {
+                onSoundBtn.setPress(vec.x, vec.y);
+            } else {
+                offSoundBtn.setPress(vec.x, vec.y);
+            }
             exitBtn.setPress(vec.x, vec.y);
         }
     }

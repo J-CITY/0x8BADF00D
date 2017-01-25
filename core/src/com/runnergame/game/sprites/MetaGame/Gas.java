@@ -25,6 +25,8 @@ public class Gas extends Building {
         }
         sprite.setCenter(1485-__x, __y-695);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

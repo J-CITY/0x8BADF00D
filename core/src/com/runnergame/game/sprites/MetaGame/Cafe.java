@@ -25,6 +25,8 @@ public class Cafe extends Building {
         }
         sprite.setCenter(1109-__x, __y-821);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

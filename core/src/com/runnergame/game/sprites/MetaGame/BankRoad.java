@@ -22,6 +22,8 @@ public class BankRoad extends Building {
         }
         sprite.setCenter(1734-__x, __y-901);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

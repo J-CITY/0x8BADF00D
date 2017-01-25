@@ -25,6 +25,8 @@ public class School extends Building {
         }
         sprite.setCenter(1908-__x, __y-1296);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

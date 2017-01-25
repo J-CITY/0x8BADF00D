@@ -22,6 +22,8 @@ public class Pharmacy extends Building {
         }
         sprite.setCenter(2476-__x, __y-680);
         bounds = new Rectangle(sprite.getBoundingRectangle());
+        pos.x = sprite.getX();
+        pos.y = sprite.getY();
     }
 
     @Override

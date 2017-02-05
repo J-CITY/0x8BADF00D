@@ -26,8 +26,4 @@ public class NPRoad extends Building {
         pos.y = sprite.getY();
     }
 
-    @Override
-    public boolean update(int p) {
-        return false;
-    }
 }

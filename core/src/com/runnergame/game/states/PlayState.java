@@ -1,6 +1,7 @@
 package com.runnergame.game.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -31,6 +32,7 @@ import com.runnergame.game.sprites.Button;
 import com.runnergame.game.sprites.Coin;
 import com.runnergame.game.sprites.Player;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class PlayState extends State {
@@ -137,7 +139,7 @@ public class PlayState extends State {
         blocks.last().setColor(0);
         blocks.addLast(new BlockFloor(x + BLOCK_SPACING*1, Constants.Y0, Constants.B_FLOOR));
         blocks.last().setColor(0);
-        blocks.addLast(new BlockJump(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_JUMP, 500));
+        blocks.addLast(new BlockJump(x + BLOCK_SPACING*2, Constants.Y0, Constants.B_JUMP, 400));
         blocks.last().setColor(platform_color1);
         __x = blocks.get(blocks.size-1).getPos().x+Constants.BLOCK_W+192;
         //blocks.add(new BlockJump(x + BLOCK_SPACING*4, Constants.Y0+64, Constants.B_JUMP));
@@ -151,9 +153,9 @@ public class PlayState extends State {
         _floor = 2;
         for (int i = 0; i < len; ++i) {
             if (MathUtils.random(0, 20) >= 16) {
-                coins.add(new Coin(__x, Constants.GROUND + 32, 0));
+                coins.add(new Coin(__x, Constants.Y0 + 32, 0));
             }
-            blocks.addLast(new BlockFloor(__x, Constants.Y0 + 64*_floor, Constants.B_FLOOR));
+            blocks.addLast(new BlockFloor(__x, Constants.Y0 + 35*_floor, Constants.B_FLOOR));
             blocks.last().setColor(platform_color1);
             blocks.addLast(new BlockFloor(__x, Constants.Y0, Constants.B_FLOOR));
             blocks.last().setColor(platform_color2);
@@ -535,23 +537,29 @@ public class PlayState extends State {
             }
             for (int i = 0; i < 15; ++i) {
                 if(i==12) {
-                    blocks.addFirst(new BlockJump(BLOCK_SPACING*(14-i), Constants.Y0, Constants.B_JUMP, 350));
+                    blocks.addFirst(new BlockJump(BLOCK_SPACING*(i), Constants.Y0, Constants.B_JUMP, 350));
+                    blocks.first().setColor(Colors.BLUE);
+                    continue;
                 }
-                blocks.addFirst(new BlockFloor(BLOCK_SPACING*(14-i), Constants.Y0, Constants.B_FLOOR));
+                blocks.addFirst(new BlockFloor(BLOCK_SPACING*(i), Constants.Y0, Constants.B_FLOOR));
                 blocks.first().setColor(Colors.GRAY);
             }
             int i = 0;
             float _x = 0;
             for(Block b : blocks) {
-                if(Math.abs(_x-b.getPos().x) >= 10 ) {
+                if(i >= 15) {
+                    b.setPos(b.getPos().x + 7*BLOCK_SPACING, b.getPos().y);
+                }
+                /*if(Math.abs(_x-b.getPos().x) >= 10 ) {
                     _x = b.getPos().x;
                     if(Math.abs(_x-b.getPos().x) >= 40)
                         i++;
                     if(Math.abs(_x-b.getPos().x) >= 80)
                         i++;
                     ++i;
-                }
-                b.setPos(i*BLOCK_SPACING, b.getPos().y);
+                }*/
+                ++i;
+                //b.setPos(i*BLOCK_SPACING, b.getPos().y);
             }
             player.setPositionX(200);
             player.setPositionY(232);
@@ -604,6 +612,37 @@ public class PlayState extends State {
             HashMap<String, String> parameters = new HashMap<String, String>();
             parameters.put("LEVEL", String.valueOf(lvl));
             FlurryAgent.logEvent("WON_LEVEL", parameters);
+
+            long curTime = System.currentTimeMillis();
+            if(lvl == 0) {
+                parameters.put("TIMELVL", "1");
+                GameRunner.dm.addDataTime("LEVEL_TIME", curTime);
+            } else {
+                long curTime0 = GameRunner.dm.loadDataTime("LEVEL_TIME");
+                long seconds = Math.abs(curTime0 - curTime)/1000;
+                if(seconds < 86400) {
+                    parameters.put("TIMELVL", "1");
+                } else if(seconds < 86400*3) {
+                    parameters.put("TIMELVL", "3");
+                }  else if(seconds < 86400*7) {
+                    parameters.put("TIMELVL", "7");
+                } else if(seconds < 86400*14) {
+                    parameters.put("TIMELVL", "14");
+                } else if(seconds < 86400*30) {
+                    parameters.put("TIMELVL", "30");
+                } else if(seconds < 86400*60) {
+                    parameters.put("TIMELVL", "60");
+                } else if(seconds < 86400*90) {
+                    parameters.put("TIMELVL", "90");
+                } else if(seconds < 86400*180) {
+                    parameters.put("TIMELVL", "180");
+                } else if(seconds < 86400*360) {
+                    parameters.put("TIMELVL", "360");
+                }  else if(seconds > 86400*360) {
+                    parameters.put("TIMELVL", "more");
+                }
+            }
+            FlurryAgent.logEvent("LEVEL_TIME", parameters);
             gameStateMenager.set(new WinState(gameStateMenager, lvl));
         }
         if(player.isLife)
@@ -869,6 +908,9 @@ public class PlayState extends State {
         }
 
         pauseBtn.getSprite().draw(tb);
+
+        //GameRunner.font.draw(tb, "FPS: " + Gdx.graphics.getFramesPerSecond(), cam_btn.position.x - 100, cam_btn.position.y);
+
         if(!START_LEVEL) {
             GameRunner.font.draw(tb, "TAP TO START", cam_btn.position.x - 100, cam_btn.position.y);
         }

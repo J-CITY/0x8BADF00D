@@ -132,6 +132,10 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         RUNNER_LEVEL = GameRunner.dm.load2("level") + 1;
     }
 
+    boolean isMove = false;
+    Vector2 moveToVec;
+    boolean isCanUpdateVisable = false;
+
     @Override
     protected void hendleInput() {
 
@@ -177,42 +181,96 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         }
         I_AM_HERE = true;
         camera.update();
+        if(isCanUpdateVisable) {
+            int bool = 1;
+            boolean bb = true;
+            for(Building b : builds) {
+                bb = b.update(delta);
+                bool *= (bb) ? (1) : (0);
+            }
+            if(bool == 1) {
+                isCanUpdateVisable = false;
+            }
+        }
+
+
+        if(isMove) {
+            //System.out.print("move " + camera.position.x + " " + camera.position.y + "\n");
+            float distance = (float) Math.sqrt((camera.position.x - moveToVec.x)*(camera.position.x - moveToVec.x) +
+                    (camera.position.y - moveToVec.y)*(camera.position.y - moveToVec.y));
+            if (distance > 50){
+                camera.position.x += 1000*delta*(moveToVec.x - camera.position.x) / distance;
+                camera.position.y += 1000*delta*(moveToVec.y - camera.position.y) / distance;
+            }
+            else {
+                isMove = false;
+                isCanUpdateVisable = true;
+            }
+
+        }
 
         if(isUpdate) {
             helperMetaLvl = GameRunner.dm.load2("helperMetaLevel");
             metaLvl = GameRunner.dm.load2("metaGameLevel");
             isUpdate = false;
+            String bName = "";
             for(Building b : builds) {
                 if(b.updateBuild()) {
-                    Vector2 vec = b.getPos();
-                    camera.position.x = vec.x;
-                    camera.position.y = vec.y;
-                    if(camera.position.x < -1270) {
-                        camera.position.x = -1269;
+                    moveToVec = b.getPos();
+                    if(moveToVec.x < -1270) {
+                        moveToVec.x = -1265;
                     }
-                    if(camera.position.x > 1270) {
-                        camera.position.x = 1269;
+                    if(moveToVec.x > 1270) {
+                        moveToVec.x = 1265;
                     }
-                    if(camera.position.y < -1370) {
-                        camera.position.y = -1369;
+                    if(moveToVec.y < -1370) {
+                        moveToVec.y = -1365;
                     }
-                    if(camera.position.y > 1370) {
-                        camera.position.y = 1369;
+                    if(moveToVec.y > 1370) {
+                        moveToVec.y = 1365;
                     }
+                    isMove = true;
+                    bName = b.getName();
+                   // camera.position.x = vec.x;
+                   // camera.position.y = vec.y;
+                   // if(camera.position.x < -1270) {
+                   //     camera.position.x = -1269;
+                   // }
+                   // if(camera.position.x > 1270) {
+                   //     camera.position.x = 1269;
+                   // }
+                   // if(camera.position.y < -1370) {
+                   //     camera.position.y = -1369;
+                   // }
+                   // if(camera.position.y > 1370) {
+                   //     camera.position.y = 1369;
+                   // }
                 }
             }
             builds.clear();
             loadBuilds();
+            for(Building b : builds) {
+                if(bName.equals(b.getName())) {
+                    bName = "";
+                    //b.isVisable = false;
+                    b.alphaChannel = 0;
+                }
+            }
             RUNNER_LEVEL = GameRunner.dm.load2("level") + 1;
+            GameRunner.now_coins = GameRunner.dm.load2("coins");
+            GameRunner.now_metal = GameRunner.dm.load2("metal");
         }
     }
     //Sprite spriteForDraw;
     @Override
     public void render(SpriteBatch sb) {
+        //Gdx.gl.glClearColor(133/255f, 170/255f, 91/255f, 1);
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
+        sb.disableBlending();
         map.getSprite().draw(sb);
-        System.out.print("Pharmacy:   "+GameRunner.dm.load2("Pharmacy_lvl"));
+        sb.enableBlending();
+        //System.out.print("Pharmacy:   "+GameRunner.dm.load2("Pharmacy_lvl"));
         //System.out.print(map.getSprite().getWidth() + " " + map.getSprite().getHeight()+"!!!!!!!!!!!!!!\n" );
         for (Building b : builds) {
             b.getSprite().draw(sb);
@@ -287,18 +345,20 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         }*/
         if(runnerPlayBtn.collide(vec_btn.x, vec_btn.y)) {
             I_AM_HERE = false;
-            /*int _lvl = dm.load2("level");
+            int _lvl = GameRunner.dm.load2("level");
             if(_lvl < Levels.levels.size) {
                 PlayState.lvl = _lvl;
                 if (PlayState.lvl >= 0 && PlayState.lvl <= 2) {
                     HelperState.lvl = PlayState.lvl;
+                    GameRunner.soundPressBtn.play(GameRunner.soundVol);
                     gameStateMenager.set(new HelperState(gameStateMenager));
                 } else {
+                    GameRunner.soundPressBtn.play(GameRunner.soundVol);
                     gameStateMenager.set(new PlayState(gameStateMenager));
                 }
-            }*/
-            GameRunner.soundPressBtn.play(GameRunner.soundVol);
-            gameStateMenager.push(new SelectLevel(gameStateMenager));
+            }
+            //GameRunner.soundPressBtn.play(GameRunner.soundVol);
+            //gameStateMenager.push(new SelectLevel(gameStateMenager));
         }
         if(metaGameBtn.collide(vec_btn.x, vec_btn.y)) {
             I_AM_HERE = false;
@@ -370,26 +430,47 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
     public boolean fling(float velocityX, float velocityY, int button) {
         return false;
     }
-
+    float curZoom = 1;
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
         if(!I_AM_HERE)
             return false;
-        float _x = camera.position.x, _y = camera.position.y;
-        Vector3 touchPos = new Vector3(x,y,0);
-        camera.unproject(touchPos);
-        camera.translate(-deltaX*camera.zoom, deltaY*camera.zoom);
-        if(camera.position.x < -1270 || camera.position.x > 1270) {
-            camera.position.x = _x;
+        //float _x = camera.position.x, _y = camera.position.y;
+        Vector3 touchPos1 = new Vector3(x, y, 0);
+        touchPos1 = camera.unproject(touchPos1);
+        Vector3 touchPos2 = new Vector3(x + deltaX, y + deltaY, 0);
+        touchPos2 = camera.unproject(touchPos2);
+        touchPos1.x -= touchPos2.x;
+        touchPos1.y -= touchPos2.y;
+        //camera.translate(-deltaX*camera.zoom, deltaY*camera.zoom);
+        //camera.translate(-touchPos.x * curZoom, touchPos.y * curZoom);
+        camera.position.add(touchPos1.x, touchPos1.y, 0);
+        camera.update();
+
+        if(camera.position.x < -1270) {
+            camera.position.x = -1270;
         }
-        if(camera.position.y < -1370 || camera.position.y > 1370) {
-            camera.position.y = _y;
+        if(camera.position.x > 1270) {
+            camera.position.x = 1270;
         }
+        if(camera.position.y < -1370) {
+            camera.position.y = -1370;
+        }
+        if(camera.position.y > 1370) {
+            camera.position.y = 1370;
+        }
+        //if(camera.position.x < -1270 || camera.position.x > 1270) {
+        //    camera.position.x = _x;
+        //}
+        //if(camera.position.y < -1370 || camera.position.y > 1370) {
+        //    camera.position.y = _y;
+        //}
         return true;
     }
 
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
+        curZoom = camera.zoom;
         return false;
     }
     float SPRITE_SCALE = 1;
@@ -398,13 +479,22 @@ public class MoonCityState extends State implements GestureDetector.GestureListe
         if(!I_AM_HERE)
             return false;
         // System.out.print(camera.zoom+"\n");
-        if (initialDistance >= distance) {
+        camera.zoom = (initialDistance / distance) * curZoom;
+        if(camera.zoom > 2.5) {
+            camera.zoom = 2.5f;
+        }
+        if(camera.zoom < 1) {
+            camera.zoom = 1f;
+        }
+        camera.update();
+
+        /*if (initialDistance >= distance) {
             if(camera.zoom < 2)
                 camera.zoom += 0.02;
         } else {
             if(camera.zoom > 0.5)
                 camera.zoom -= 0.02;
-        }
+        }*/
         return true;
     }
 

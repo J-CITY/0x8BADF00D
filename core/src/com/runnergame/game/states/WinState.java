@@ -26,6 +26,8 @@ public class WinState extends State {
     public WinState(GameStateManager gameStateMenager, int _lvl) {
         super(gameStateMenager);
         GameRunner.adMobFlag = false;
+        //System.out.print(GameRunner.now_coins + " !!!!\n");
+        //System.out.print(GameRunner.dm.load2("coins") + " !!!!\n");
         lvl =_lvl;
         CoinNow = GameRunner.dm.load2("coins");
         MetalNow = GameRunner.now_metal;

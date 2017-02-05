@@ -130,7 +130,7 @@ public class GameRunner implements ApplicationListener {
 	int time = TIME;
 	@Override
 	public void render () {
-		com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+		/*com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
 			@Override
 			public void run() {
 				time--;
@@ -140,12 +140,13 @@ public class GameRunner implements ApplicationListener {
 					GameRunner.now_metal = GameRunner.dm.load2("metal");
 				}
 			}
-		}, 1);
+		}, 1);*/
 
 		//Gdx.gl.glClearColor( 245/255f, 232/255f, 101/255f, 1 );
 		//Gdx.gl.glClearColor( 204/255f, 204/255f, 204/255f, 1 );
 		//Gdx.gl.glClearColor( 205/255f, 153/255f, 52/255f, 1 );
-		Gdx.gl.glClearColor(41/255f, 41/255f, 41/255f, 1);
+		//Gdx.gl.glClearColor(41/255f, 41/255f, 41/255f, 1);
+		Gdx.gl.glClearColor(133/255f, 170/255f, 91/255f, 1);
 		if(updateMusic) {
 			updateMusic = false;
 			music.stop();
@@ -176,14 +177,23 @@ public class GameRunner implements ApplicationListener {
 		if(context.getInfoBuyCoins(0)) {
 			context.setInfoBuyCoins(0,false);
 			dm.addData2("coins", dm.load2("coins") + 100);
+			HashMap<String, String> parameters = new HashMap<String, String>();
+			parameters.put("MONEY", String.valueOf(100));
+			FlurryAgent.logEvent("BUY_MONEY", parameters);
 		}
 		if(context.getInfoBuyCoins(1)) {
 			context.setInfoBuyCoins(1,false);
 			dm.addData2("coins", dm.load2("coins") + 500);
+			HashMap<String, String> parameters = new HashMap<String, String>();
+			parameters.put("MONEY", String.valueOf(500));
+			FlurryAgent.logEvent("BUY_MONEY", parameters);
 		}
 		if(context.getInfoBuyCoins(2)) {
 			context.setInfoBuyCoins(2,false);
 			dm.addData2("coins", dm.load2("coins") + 1000);
+			HashMap<String, String> parameters = new HashMap<String, String>();
+			parameters.put("MONEY", String.valueOf(1000));
+			FlurryAgent.logEvent("BUY_MONEY", parameters);
 		}
 		gsm.update(Gdx.graphics.getDeltaTime());
 		gsm.render(batch);

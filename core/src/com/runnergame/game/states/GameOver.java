@@ -87,8 +87,8 @@ public class GameOver extends State {
                         time--;
                         if (time <= 1) {
                             time = 2;
-                            if (GameRunner.dm.load2("coins") >= 100 && !PlayState.reborn) {
-                                GameRunner.dm.addData2("coins", GameRunner.dm.load2("coins")-100);
+                            if (GameRunner.dm.load2("coins") >= 10 && !PlayState.reborn) {
+                                GameRunner.dm.addData2("coins", GameRunner.dm.load2("coins")-10);
                                 PlayState.reborn = true;
                                 gameStateMenager.pop();
                             }
@@ -157,7 +157,9 @@ public class GameOver extends State {
         GameRunner.font.draw(sb, TITLE + "            COINS: " + GameRunner.now_coins, camera.position.x - 400, camera.position.y + 350);
         playBtn.getSprite().draw(sb);
         exitBtn.getSprite().draw(sb);
-        rebornBtn.getSprite().draw(sb);
+        if(!PlayState.reborn) {
+            rebornBtn.getSprite().draw(sb);
+        }
         if(GameRunner.isPlay) {
             onSoundBtn.getSprite().draw(sb);
         } else {

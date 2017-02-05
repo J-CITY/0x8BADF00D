@@ -32,15 +32,5 @@ public class HouseBuild extends Building {
         pos.y = sprite.getY();
     }
 
-    @Override
-    public boolean update(int p) {
-        if(p == 0) {
-            return true;
-        } else if(p == 1) {
-            return  true;
-        } else if(p == 2) {
-            return true;
-        }
-        return false;
-    }
+
 }

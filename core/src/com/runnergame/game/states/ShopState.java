@@ -31,7 +31,10 @@ public class ShopState extends State {
     private Sprite headder = new Sprite(new Texture("headder.png"));
     private Sprite frame = new Sprite(new Texture("frame.png"));
     Background bg;
+    int skinNow;
+    Sprite skinNowSprite;
 
+    boolean isUpdate = false;
 
     public ShopState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
@@ -62,6 +65,10 @@ public class ShopState extends State {
         }
         headder.setCenter(cam_btn.position.x, cam_btn.position.y+330);
         headder.setScale(1, 0.5f);
+
+        skinNow = GameRunner.dm.load2("playerSkin");
+        skinNowSprite = new Sprite(new Texture(GameRunner.colors.playerSkins.get(skinNow)));
+        skinNowSprite.setCenter(cam_btn.position.x+500, cam_btn.position.y+100);
     }
     float time = 2;
     @Override
@@ -95,6 +102,7 @@ public class ShopState extends State {
                             time = 2;
                             int c = GameRunner.dm.load2("coins");
                             if (c >= price) {
+                                isUpdate = true;
                                 GameRunner.dm.addData2("coins", c - price);
                                 GameRunner.dm.addData2("playerSkin", numSkin);
                                 GameRunner.dm.addData2(GameRunner.colors.playerSkins.get(numSkin), 1);
@@ -112,6 +120,7 @@ public class ShopState extends State {
                         time--;
                         if (time <= 1) {
                             time = 2;
+                            isUpdate = true;
                             GameRunner.dm.addData2("playerSkin", numSkin);
                         }
                     }
@@ -121,10 +130,12 @@ public class ShopState extends State {
         if (Gdx.input.justTouched()) {
             Vector3 vec = vec = cam_btn.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             backBtn.setPress(vec.x, vec.y);
-            if(pref != 0) {
-                setBtn.setPress(vec.x, vec.y);
-            } else {
-                buyBtn.setPress(vec.x, vec.y);
+            if(numSkin != skinNow) {
+                if(pref != 0) {
+                    setBtn.setPress(vec.x, vec.y);
+                } else {
+                    buyBtn.setPress(vec.x, vec.y);
+                }
             }
 
             vec = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -150,6 +161,11 @@ public class ShopState extends State {
     @Override
     public void update(float delta) {
         hendleInput();
+        if(isUpdate) {
+            skinNow = GameRunner.dm.load2("playerSkin");
+            skinNowSprite = new Sprite(new Texture(GameRunner.colors.playerSkins.get(skinNow)));
+            skinNowSprite.setCenter(cam_btn.position.x+500, cam_btn.position.y+100);
+        }
     }
 
     @Override
@@ -177,12 +193,15 @@ public class ShopState extends State {
         tb.begin();
         headder.draw(tb);
         GameRunner.font.draw(tb, TITLE + "            COINS: " + GameRunner.now_coins, cam_btn.position.x - 400, cam_btn.position.y + 350);
-        if(pref != 0 && price >= 0) {
-            setBtn.getSprite().draw(tb);
-        } else if(pref == 0 && price >= 0) {
-            GameRunner.font.draw(tb, "  PRICE: " + price, cam_btn.position.x + 420, cam_btn.position.y);
-            buyBtn.getSprite().draw(tb);
+        if(numSkin != skinNow) {
+            if(pref != 0 && price >= 0) {
+                setBtn.getSprite().draw(tb);
+            } else if(pref == 0 && price >= 0) {
+                GameRunner.font.draw(tb, "  PRICE: " + price, cam_btn.position.x + 420, cam_btn.position.y);
+                buyBtn.getSprite().draw(tb);
+            }
         }
+        skinNowSprite.draw(tb);
 
         backBtn.getSprite().draw(tb);
         tb.end();

@@ -19,8 +19,8 @@ public class BlockBullet extends Block {
         X0 = _x0;
         Y0 = _y0;
         color = 0;
-        animOn = new Animation(new TextureRegion(new Texture("blocks/bullet.png")), 1, 1);
-        animOff = new Animation(new TextureRegion(new Texture("blocks/bullet.png")), 1, 1);
+        animOn = new Animation(new TextureRegion(new Texture("blocks/bullet_on.png")), 1, 1);
+        animOff = new Animation(new TextureRegion(new Texture("blocks/bullet_off.png")), 1, 1);
         sprite = animOn.getSprite();
         sprite.setCenter(x, y);
         bounds = new Rectangle(sprite.getBoundingRectangle());

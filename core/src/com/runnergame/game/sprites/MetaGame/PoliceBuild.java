@@ -27,14 +27,5 @@ public class PoliceBuild extends Building {
         pos.y = sprite.getY();
     }
 
-    @Override
-    public boolean update(int p) {
-        if(p == 0) {
-            if (GameRunner.dm.load2(Constants.CITI_PARAM) == 3 &&
-                    GameRunner.dm.load2(Constants.HOUSE_PARAM) == 3) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 }

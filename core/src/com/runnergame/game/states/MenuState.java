@@ -18,7 +18,7 @@ public class MenuState extends State {
 
     private Button playBtn, onSoundBtn, offSoundBtn, shopBtn, settingsBtn;
     private float pbtnY0 = 0, pbtnY = 400;
-    private float sbtnY0 = -250, sbtnY = -400;
+    private float sbtnY0 = -250, sbtnY = -410;
     private float shbtnY0 = -120, shbtnY = -400;
     private float stbtnY0 = 250, stbtnY = 400;
     private String TITLE = "0x8BADF00D";
@@ -40,10 +40,15 @@ public class MenuState extends State {
         }
 
         playBtn = new Button("button/playT", camera.position.x, camera.position.y+pbtnY);
+        playBtn.setScale(2);
         onSoundBtn = new Button("button/musicOn", camera.position.x-530, camera.position.y+sbtnY);
+        onSoundBtn.setScale(1.5f);
         offSoundBtn = new Button("button/musicOff", camera.position.x-530, camera.position.y+sbtnY);
+        offSoundBtn.setScale(1.5f);
         shopBtn = new Button("button/shoppingCart", camera.position.x-530, camera.position.y+shbtnY);
+        shopBtn.setScale(1.5f);
         settingsBtn = new Button("button/settings", camera.position.x-530, camera.position.y+stbtnY);
+        settingsBtn.setScale(1.5f);
         //GB = new Button("button/shoppingCart", camera.position.x+530, camera.position.y);
 
         bg = new Background(camera.position.x, camera.position.y, 0);
@@ -194,5 +199,10 @@ public class MenuState extends State {
         playBtn.dispose();
         onSoundBtn.dispose();
         offSoundBtn.dispose();
+        shopBtn.dispose();
+        settingsBtn.dispose();
+        CCS.getTexture().dispose();
+        Loading.getTexture().dispose();
+        bg.dispouse();
     }
 }

@@ -18,4 +18,8 @@ public class Map {
     public Sprite getSprite() {
         return sprite;
     }
+
+    public void dispouse() {
+        sprite.getTexture().dispose();
+    }
 }

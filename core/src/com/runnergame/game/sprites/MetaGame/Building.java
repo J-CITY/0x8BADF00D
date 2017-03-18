@@ -20,7 +20,6 @@ public abstract class Building {
     int price;
     public boolean isVisable = true;
     protected Rectangle bounds;
-    protected Animation anim;
     protected Sprite sprite;
     protected Vector2 pos;
     public float alphaChannel = 1f;
@@ -28,6 +27,10 @@ public abstract class Building {
     public Building(int _t) {
         type = _t;
         pos = new Vector2();
+    }
+
+    public void dispouse() {
+        sprite.getTexture().dispose();
     }
 
     public boolean update(float delta) {

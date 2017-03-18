@@ -72,5 +72,8 @@ public class HelperMetaState extends State {
     @Override
     public void dispose() {
         tex.dispose();
+        okBtn.dispose();
+        sprite.getTexture().dispose();
+        bgs.getTexture().dispose();
     }
 }

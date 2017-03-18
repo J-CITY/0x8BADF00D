@@ -42,6 +42,7 @@ public class ShopState extends State {
         cam_btn = new OrthographicCamera(GameRunner.WIDTH, GameRunner.HEIGHT);
         cam_btn.update();
         backBtn = new Button("button/close", cam_btn.position.x-550, cam_btn.position.y+340);
+        backBtn.setScale(1.5f);
         buyBtn = new Button("button/buy", cam_btn.position.x+530, cam_btn.position.y-100);
         //buyBtn.setScale(0.5f);
         setBtn = new Button("button/set", cam_btn.position.x+530, cam_btn.position.y-100);
@@ -162,6 +163,7 @@ public class ShopState extends State {
     public void update(float delta) {
         hendleInput();
         if(isUpdate) {
+            skinNowSprite.getTexture().dispose();
             skinNow = GameRunner.dm.load2("playerSkin");
             skinNowSprite = new Sprite(new Texture(GameRunner.colors.playerSkins.get(skinNow)));
             skinNowSprite.setCenter(cam_btn.position.x+500, cam_btn.position.y+100);
@@ -209,6 +211,17 @@ public class ShopState extends State {
 
     @Override
     public void dispose() {
+        tb.dispose();
+        for(Button b : buttons) {
+            b.dispose();
+        }
+        backBtn.dispose();
+        buyBtn.dispose();
+        setBtn.dispose();
 
+        headder.getTexture().dispose();
+        frame.getTexture().dispose();
+        bg.dispouse();
+        skinNowSprite.getTexture().dispose();
     }
 }

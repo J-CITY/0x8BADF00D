@@ -9,7 +9,6 @@ import com.runnergame.game.GameRunner;
 import com.runnergame.game.sprites.Button;
 
 public class SelectLevel extends State {
-
     private void limitFPS() {
         try {
             Thread.sleep(100);
@@ -30,7 +29,6 @@ public class SelectLevel extends State {
     private SpriteBatch tb;
 
     private Array<Button> lvls;
-
 
     SelectLevel(GameStateManager gameStateMenager) {
         super(gameStateMenager);
@@ -81,7 +79,7 @@ public class SelectLevel extends State {
             if(arr_rBtn.collide(vec.x, vec.y) && PAGE < MAX_PAGE) {
                 PAGE++;
                 lvls.clear();
-                System.out.print(lvls.size + "\n");
+                //System.out.print(lvls.size + "\n");
                 for(int i = 0; i < LEVEL_COUNT/3; ++i) {
                     for(int j = 0; j < LEVEL_COUNT/3; ++j) {
                         if((i*3+j + PAGE*10) <= LEVEL_OPENED) {
@@ -105,7 +103,7 @@ public class SelectLevel extends State {
             } else if(arr_lBtn.collide(vec.x, vec.y) && PAGE > 0) {
                 PAGE--;
                 lvls.clear();
-                System.out.print(lvls.size + "\n");
+                //System.out.print(lvls.size + "\n");
                 for(int i = 0; i < LEVEL_COUNT/3; ++i) {
                     for(int j = 0; j < LEVEL_COUNT/3; ++j) {
                         if((i*3+j + PAGE*10) <= LEVEL_OPENED) {
@@ -188,5 +186,8 @@ public class SelectLevel extends State {
             b.dispose();
         }
         backBtn.dispose();
+        arr_lBtn.dispose();
+        arr_rBtn.dispose();
+        tb.dispose();
     }
 }

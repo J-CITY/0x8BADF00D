@@ -12,6 +12,7 @@ import java.util.Random;
 public abstract class Block {
     public int TYPE = 0;
     public boolean life = true;
+    protected int GRAVITY = 5;
 
     protected Animation animOn, animOff;
 
@@ -35,6 +36,7 @@ public abstract class Block {
     public abstract boolean collide(Player player);
 
     public Sprite getSprite(int p_color) {
+        //sprite.getTexture().dispose();
         if(color == p_color || color == 0) {
             sprite = animOn.getSprite();
         } else {

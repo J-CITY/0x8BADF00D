@@ -28,7 +28,7 @@ public class MetaTasksState extends State {
     private String TASK;
     private float prize;
     private float price;
-    float metal;
+    int metal;
     private Sprite headder = new Sprite(new Texture("headder.png"));
     //private Sprite bgs = new Sprite(new Texture("meta/helper/lvl.png"));
 
@@ -59,6 +59,7 @@ public class MetaTasksState extends State {
 
         doBtn = new Button("button/perfom", camera.position.x + 400, camera.position.y+dbtnY);
         closeBtn = new Button("button/close", camera.position.x-530, camera.position.y+cbtnY);
+        closeBtn.setScale(1.5f);
 
         bg = new Background(camera.position.x, camera.position.y, 0);
         headder.setCenter(camera.position.x, camera.position.y+330);
@@ -89,7 +90,7 @@ public class MetaTasksState extends State {
                                 GameRunner.now_coins = GameRunner.dm.load2("coins");
                                 int p = GameRunner.dm.load2(metaLevels.levels.get(metaLevels.level).param+"_lvl");
                                 GameRunner.dm.addData2(metaLevels.levels.get(metaLevels.level).param+"_lvl", p + 1);
-                                System.out.print(metaLevels.levels.get(metaLevels.level).param+"_lvl\n");
+                                //System.out.print(metaLevels.levels.get(metaLevels.level).param+"_lvl\n");
                                 GameRunner.dm.addData2("metaGameLevel", metaLevels.level+1);
                                 gameStateMenager.pop();
                             }
@@ -156,5 +157,7 @@ public class MetaTasksState extends State {
     public void dispose() {
         doBtn.dispose();
         closeBtn.dispose();
+        bg.dispouse();
+        headder.getTexture().dispose();
     }
 }

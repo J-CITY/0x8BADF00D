@@ -30,4 +30,8 @@ public class Background {
         return sprite_bg;
     }
 
+    public void dispouse() {
+        sprite_bg.getTexture().dispose();
+    }
+
 }

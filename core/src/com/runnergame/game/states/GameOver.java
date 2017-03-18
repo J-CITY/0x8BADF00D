@@ -34,6 +34,7 @@ public class GameOver extends State {
         onSoundBtn = new Button("button/musicOn", camera.position.x-530, camera.position.y+sbtnY);
         offSoundBtn = new Button("button/musicOff", camera.position.x-530, camera.position.y+sbtnY);
         exitBtn = new Button("button/close", camera.position.x-530, camera.position.y+ebtnY);
+        exitBtn.setScale(1.5f);
         bg = new Background(camera.position.x, camera.position.y, 0);
         headder.setCenter(camera.position.x, camera.position.y+330);
         headder.setScale(1, 0.5f);
@@ -91,6 +92,8 @@ public class GameOver extends State {
                                 GameRunner.dm.addData2("coins", GameRunner.dm.load2("coins")-10);
                                 PlayState.reborn = true;
                                 gameStateMenager.pop();
+                            } else if(GameRunner.dm.load2("coins") < 10) {
+                                gameStateMenager.push(new InAppBillingState(gameStateMenager));
                             }
                         }
                     }
@@ -171,7 +174,9 @@ public class GameOver extends State {
     @Override
     public void dispose() {
         playBtn.dispose();
+        rebornBtn.dispose();
         onSoundBtn.dispose();
         offSoundBtn.dispose();
+        exitBtn.dispose();
     }
 }

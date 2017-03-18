@@ -16,6 +16,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.flurry.android.FlurryAgent;
 import com.runnergame.game.GameRunner;
 import com.runnergame.game.states.DataManager;
+import com.runnergame.game.util.IabException;
 import com.runnergame.game.util.IabHelper;
 import com.runnergame.game.util.IabResult;
 import com.runnergame.game.util.Inventory;
@@ -30,9 +31,9 @@ public class AndroidLauncher extends AndroidApplication implements AnLauncher {
 	static final String TAG = "Google BILLING";
 	// Индефикаторы двух продуктов:
 	//static final String SKU = "coins";
-	static final String SKU = "android.test.purchased";
-	static final String SKU1 = "android.test.purchased";
-	static final String SKU2 = "android.test.purchased";
+	static final String SKU  = "cc_add_100_coins";//"android.test.purchased";
+	static final String SKU1 = "cc_add_500_coins";
+	static final String SKU2 = "cc_add_1000_coins";
 	static public boolean buy100coins = false;
 	static public boolean buy500coins = false;
 	static public boolean buy1000coins = false;
@@ -65,9 +66,11 @@ public class AndroidLauncher extends AndroidApplication implements AnLauncher {
 		// которые будут вызванны по завешении получения данных.
 		mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
 			public void onIabSetupFinished(IabResult result) {
+				if(mHelper == null) {
+					return;
+				}
 				Log.d(TAG, "Setup finished.");
 				if (!result.isSuccess()) {
-					// Произошла ошибка, сообщаем о ней пользователю и выходим из метода
 					complain("Problem setting up in-app billing: " + result);
 					return;
 				}
@@ -104,6 +107,9 @@ public class AndroidLauncher extends AndroidApplication implements AnLauncher {
 	IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
 		public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
 			Log.d(TAG, "Query inventory finished.");
+			if(mHelper == null) {
+				return;
+			}
 			if (result.isFailure()) {
 				// Сообщаем пользователю о том, что не удалось получить список купленных продуктов в магазине
 				complain("Failed to query inventory: " + result);
@@ -149,6 +155,11 @@ public class AndroidLauncher extends AndroidApplication implements AnLauncher {
 			// но если в вашем приложении более одного потребляемого продукта,
 			// то имеет смысл тут установить проверку на идентификатор продукта.
 			//purchase.getSku();
+
+			if(mHelper == null) {
+				return;
+			}
+
 			if (result.isSuccess()) {
 				// Потребление продукта прошло успешно.
 				// Активируем логику приложения и заправим наш танк.
@@ -169,6 +180,9 @@ public class AndroidLauncher extends AndroidApplication implements AnLauncher {
 
 	// Пользователь нажимает на кнопку "Buy 100 coins"
 	public void onBuyButtonClicked(int key) {
+		if(mHelper == null) {
+			return;
+		}
 		Log.d(TAG, "Buy button clicked.");
 		// И через хелпер связываемся с магазином для покупки продукта
 		switch (key) {
@@ -191,18 +205,23 @@ public class AndroidLauncher extends AndroidApplication implements AnLauncher {
 	IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
 		public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
 			Log.d(TAG, "Purchase finished: " + result + ", purchase: " + purchase);
+			if(mHelper == null) {
+				return;
+			}
 			if (result.isFailure()) {
 				// Произошла ошибка, сообщаем об этом пользователю
-				complain("Error purchasing: " + result);
+				//complain("Error purchasing: " + result);
 				//setWaitScreen(false);
 				// Выходим из метода
 				return;
 			}
+			if(purchase == null)
+				return;
 			Log.d(TAG, "Purchase successful.");
 			// Проверяем, что же именно купил пользователь
 			if (purchase.getSku().equals(SKU)) {
 				Log.d(TAG, "Purchase is gas. Starting gas consumption.");
-				// Ели это оказалось топливо, то запускаем метод потребления продукта
+				// Ели это оказалось топливо, то запускаем метод потребления продукт
 				mHelper.consumeAsync(purchase, mConsumeFinishedListener);
 				buy100coins = true;
 			} else if (purchase.getSku().equals(SKU1)) {
@@ -222,6 +241,9 @@ public class AndroidLauncher extends AndroidApplication implements AnLauncher {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
 		// Отдаем переменные в хелпер
+		if(mHelper == null) {
+			return;
+		}
 		if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
 			// если переменные не для хелпера, то передаем их дальше
 			super.onActivityResult(requestCode, resultCode, data);

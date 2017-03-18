@@ -23,13 +23,13 @@ public class Levels {
         levels.add(new Level("032443206754090", 400f, 2, 0f, 0f, 0));
         levels.add(new Level("009064637q65q", 400f, 2, 0f, 0f, 0));
         levels.add(new Level("0242367643727321", 400f, 2, 0f, 0f, 0));
-        levels.add(new Level("083499938893320", 400f, 2, 0f, 0f, 0));
+        levels.add(new Level("083490938833320", 400f, 2, 0f, 0f, 0));
         levels.add(new Level("08358637433434309", 400f, 2, 0f, 0f, 0));
         levels.add(new Level("08274463721987634", 400f, 2, 0f, 0f, 0));
-        levels.add(new Level("03423787879879211", 400f, 2, 20f, 0f, 0));
+        levels.add(new Level("03423787879872211", 400f, 2, 20f, 0f, 0));
         levels.add(new Level("0765393821451156", 400f, 2, -60f, 0f, 0));
         levels.add(new Level("009865432113570111", 400f, 2, 40f, 0f, 0));
-        levels.add(new Level("02121215698423B", 400f, 2, 0f, 0f, 0));
+        levels.add(new Level("02121215658423B", 400f, 2, 0f, 0f, 0));
 
         levels.add(new Level("064624782238912", 400f, 2, 30f, 0f, 0));
         levels.add(new Level("06478381621qq212q1", 400f, 2, 60f, 0f, 0));

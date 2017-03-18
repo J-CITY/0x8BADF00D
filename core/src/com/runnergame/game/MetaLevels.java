@@ -18,7 +18,7 @@ public class MetaLevels {
     public void load() {
         try {
             XmlReader xmlReader = new XmlReader();
-            System.out.print(FILE+"\n");
+            //System.out.print(FILE+"\n");
             FileHandle file = Gdx.files.internal(FILE);
             XmlReader.Element root = xmlReader.parse(file);
             String name = root.getAttribute("name");
@@ -31,7 +31,7 @@ public class MetaLevels {
                 int lvlName = taskElement.getInt("name");
                 int p = taskElement.getInt("prize");
                 String d = taskElement.getAttribute("discription");
-                System.out.print(d+"\n");
+                //System.out.print(d+"\n");
                 String tex = taskElement.getAttribute("tex");
                 String param = taskElement.getAttribute("param");
                 int price = taskElement.getInt("price");

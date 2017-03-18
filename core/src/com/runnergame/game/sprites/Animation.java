@@ -47,4 +47,10 @@ public class Animation {
     public Sprite getSprite() {
         return new Sprite(frames.get(frame));
     }
+
+    public void dispouse() {
+        for(TextureRegion tr : frames) {
+            tr.getTexture().dispose();
+        }
+    }
 }

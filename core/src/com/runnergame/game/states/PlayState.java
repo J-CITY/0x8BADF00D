@@ -22,12 +22,14 @@ import com.runnergame.game.sprites.Blocks.BlockBeam;
 import com.runnergame.game.sprites.Blocks.BlockBoost;
 import com.runnergame.game.sprites.Blocks.BlockBoss;
 import com.runnergame.game.sprites.Blocks.BlockBullet;
+import com.runnergame.game.sprites.Blocks.BlockCount;
 import com.runnergame.game.sprites.Blocks.BlockFinish;
 import com.runnergame.game.sprites.Blocks.BlockFloor;
 import com.runnergame.game.sprites.Blocks.BlockGun;
 import com.runnergame.game.sprites.Blocks.BlockIce;
 import com.runnergame.game.sprites.Blocks.BlockJump;
 import com.runnergame.game.sprites.Blocks.BlockNeedle;
+import com.runnergame.game.sprites.Bullet;
 import com.runnergame.game.sprites.Button;
 import com.runnergame.game.sprites.Coin;
 import com.runnergame.game.sprites.Player;
@@ -36,6 +38,20 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 public class PlayState extends State {
+    class SpriteObj {
+       public float _x = 0;
+       public float _y = 0;
+       public float _rot = 0;
+       public float _color = 0;
+       public float _scale = 0;
+       public SpriteObj(float __x, float __y, float __scale, float __rot, float __color) {
+            _x = __x;
+            _y = __y;
+            _rot = __rot;
+            _color = __color;
+           _scale = __scale;
+        }
+    }
     //CHEATS
     public static boolean doNotDie=false;
     public static boolean doNotCollige=false;
@@ -50,13 +66,18 @@ public class PlayState extends State {
     private Array<Coin> coins;
 
     private Player player;
-    private Array<Sprite> playerTail;
+    //private Array<Sprite> playerTail;
+    private Sprite playerTailSprite;
+    private Array<SpriteObj> playerTailPos;
+
     private Sprite helpColorChange = new Sprite(new Texture("halper.png"));
 
-    private Array<Sprite> bgEffect;
+    //private Array<Sprite> bgEffect;
+    private Array<SpriteObj> bgEffectPos;
+    private Sprite bgEffectSprite;
     Background bg;
 
-    boolean pauseBtnPress = false;
+    //boolean pauseBtnPress = false;
     Button pauseBtn;
     //REBORN
     public static boolean reborn = false;
@@ -82,7 +103,7 @@ public class PlayState extends State {
         int color = MathUtils.random(1, colorSize);
         int len;
         for(int i = 0; i < size; ++i) {
-            len = MathUtils.random(3, 7);
+            len = MathUtils.random(5, 8);
             for(int j = 0; j < len; ++j) {
                 if(j == len-1) {
                     blocks.addLast(new BlockBeam(x, Constants.Y0+Constants.BLOCK_H/2+16, Constants.B_FLOOR));
@@ -441,19 +462,41 @@ public class PlayState extends State {
 
         player = new Player(200, 232, "player_p.png", 1);
         player.colorSize = colorSize;
-        playerTail = new Array<Sprite>();
-        for(int i = 0; i < 10; ++i) {
-            playerTail.add(new Sprite(player.getSprite()));
-            playerTail.get(playerTail.size-1).setCenter(player.getPosition().x - Constants.BLOCK_W/2 + i*20, player.getPosition().y);
-            playerTail.get(playerTail.size-1).setScale(MathUtils.random(0.1f, 0.25f));
+        playerTailSprite = new Sprite(player.getSprite());
+        playerTailPos = new Array<SpriteObj>();
+        for(int i = 0; i < 5; ++i) {
+            playerTailPos.add(new SpriteObj(player.getPosition().x - Constants.BLOCK_W/2 + i*60,
+                    player.getPosition().y,
+                    MathUtils.random(0.1f, 0.25f), 0, 0
+                    ));
         }
-        bgEffect = new Array<Sprite>();
-        for(int i = 0; i < 70; ++i) {
+
+        //playerTail = new Array<Sprite>();
+        //for(int i = 0; i < 5; ++i) {
+        //    playerTail.add(new Sprite(player.getSprite()));
+        //    playerTail.get(playerTail.size-1).setCenter(player.getPosition().x - Constants.BLOCK_W/2 + i*60, player.getPosition().y);
+        //    playerTail.get(playerTail.size-1).setScale(MathUtils.random(0.1f, 0.25f));
+        //}
+        /*bgEffect = new Array<Sprite>();
+        for(int i = 0; i < 35; ++i) {
             bgEffect.add(new Sprite(new Texture("s.png")));
-            bgEffect.get(bgEffect.size-1).setCenter(cam_btn.position.x + 550  - Constants.BLOCK_W/2 - i*20, cam_btn.position.y + MathUtils.random(-290, 290));
+            bgEffect.get(bgEffect.size-1).setCenter(cam_btn.position.x + 550  - Constants.BLOCK_W/2 - i*50, cam_btn.position.y + MathUtils.random(-290, 290));
             bgEffect.get(bgEffect.size-1).setScale(MathUtils.random(0.5f, 1.5f));
             bgEffect.get(bgEffect.size-1).setColor(1,1,1,MathUtils.random(0.5f, 1f));
         }
+        */
+        bgEffectSprite = new Sprite(new Texture("s.png"));
+        bgEffectPos = new Array<SpriteObj>();
+        for(int i = 0; i < 35; ++i) {
+            bgEffectPos.add( new SpriteObj(
+                    cam_btn.position.x + 550  - Constants.BLOCK_W/2 - i*50,
+                    cam_btn.position.y + MathUtils.random(-290, 290),
+                    MathUtils.random(0.5f, 1.5f),
+                    MathUtils.random(0f, 359f),
+                    MathUtils.random(0.5f, 1f)
+            ) );
+        }
+
         coins = new Array<Coin>(30);
         blocks = new Queue<Block>(100);
         for (int i = 0; i < 15; ++i) {
@@ -476,7 +519,7 @@ public class PlayState extends State {
         boolean second = Gdx.input.isTouched(1);
         boolean third = Gdx.input.isTouched(2);
         if(first && second && third) {
-            gameStateMenager.push(new CheatState(gameStateMenager));
+            //gameStateMenager.push(new CheatState(gameStateMenager));
         }
         if(Gdx.input.isTouched()) {
             Vector3 vec = cam_btn.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -509,6 +552,8 @@ public class PlayState extends State {
         }
     }
     boolean onTime = false;
+    int BLOCKS_COUNTER_FOR_REBORN = 0;
+    boolean NEED_FLOOR = false;
     @Override
     public void update(float delta) {
         GameRunner.adMobFlag = false;
@@ -532,11 +577,27 @@ public class PlayState extends State {
             if(TIME_LEVEL)
                 timer += 10;
             doReborn = false;
-            for(int i = 0; i < 5; ++i) {
+
+            if(BLOCKS_COUNTER_FOR_REBORN >= GameRunner.levels.levels.get(lvl).level.length()) {
+                BLOCKS_COUNTER_FOR_REBORN = GameRunner.levels.levels.get(lvl).level.length() - 1;
+            }
+            BLOCK_COUNT_NOW = BLOCKS_COUNTER_FOR_REBORN;
+            for(Block b : blocks) {
+                b.dispose();
+            }
+            blocks.clear();
+            for (int i = 0; i < 15; ++i) {
+                blocks.addLast(new BlockFloor(BLOCK_SPACING*i, Constants.Y0, Constants.B_FLOOR));
+                blocks.last().setColor(Colors.GRAY);
+            }
+            START_LEVEL = false;
+            NEED_FLOOR = true;
+            /*int delElemSize = blocks.size < 5 ? 2 : 5;
+            for(int i = 0; i < delElemSize; ++i) {
                 blocks.removeFirst();
             }
             for (int i = 0; i < 15; ++i) {
-                if(i==12) {
+                if(i==13) {
                     blocks.addFirst(new BlockJump(BLOCK_SPACING*(i), Constants.Y0, Constants.B_JUMP, 350));
                     blocks.first().setColor(Colors.BLUE);
                     continue;
@@ -548,22 +609,16 @@ public class PlayState extends State {
             float _x = 0;
             for(Block b : blocks) {
                 if(i >= 15) {
-                    b.setPos(b.getPos().x + 7*BLOCK_SPACING, b.getPos().y);
+                    b.setPos(b.getPos().x + (15 - delElemSize-1)*BLOCK_SPACING, b.getPos().y);
                 }
-                /*if(Math.abs(_x-b.getPos().x) >= 10 ) {
-                    _x = b.getPos().x;
-                    if(Math.abs(_x-b.getPos().x) >= 40)
-                        i++;
-                    if(Math.abs(_x-b.getPos().x) >= 80)
-                        i++;
-                    ++i;
-                }*/
+
                 ++i;
                 //b.setPos(i*BLOCK_SPACING, b.getPos().y);
-            }
+            }*/
             player.setPositionX(200);
             player.setPositionY(232);
             player.setLife(true);
+            player.setVelosity(0, 0);
             camera.position.y = player.getPosition().y;
         }
         if(!doNotCollige)
@@ -577,6 +632,18 @@ public class PlayState extends State {
             gameStateMenager.push(new GameOver(gameStateMenager));
             //gameStateMenager.set(new GameOver(gameStateMenager));
         }
+        for(SpriteObj s : playerTailPos) {
+            if(s._x <= player.getPosition().x - 220) {
+                s._x = player.getPosition().x-20;
+                s._y = player.getPosition().y;
+                s._scale = MathUtils.random(0.1f, 0.25f);
+                s._rot = MathUtils.random(0f, 359f);
+                s._color = MathUtils.random(0.5f, 1f);
+            } else {
+                s._x = s._x - Block.speed*delta;
+            }
+        }
+        /*
         for(Sprite s : playerTail) {
             if(s.getX() <= player.getPosition().x - 220) {
                 s.setCenter(player.getPosition().x-20, player.getPosition().y);
@@ -585,13 +652,23 @@ public class PlayState extends State {
             } else {
                 s.setX(s.getX() - Block.speed*delta);
             }
-        }
-        for(Sprite s : bgEffect) {
+        }*/
+        /*for(Sprite s : bgEffect) {
             if(s.getX() <= cam_btn.position.x-700) {
                 s.setCenter(cam_btn.position.x + 690, cam_btn.position.y + MathUtils.random(-290, 290));
                 s.setScale(MathUtils.random(0.5f, 1.5f));
             } else {
                 s.setX(s.getX() - (Block.speed/4)*delta);
+            }
+        }*/
+        for(SpriteObj s : bgEffectPos) {
+            if(s._x <= cam_btn.position.x-700) {
+                s._x = cam_btn.position.x + 690;
+                s._y = cam_btn.position.y + MathUtils.random(-290, 290);
+                s._scale = MathUtils.random(0.5f, 1.5f);
+                s._rot = MathUtils.random(0f, 359f);
+            } else {
+                s._x = s._x - (Block.speed/4)*delta;
             }
         }
         boolean flag = false;
@@ -607,6 +684,9 @@ public class PlayState extends State {
             if(flag) {
                 break;
             }
+        }
+        if(player.getPosition().x > blocks.last().getPos().x && blocks.last().TYPE == Constants.B_FINISH) {
+            flag = true;
         }
         if (flag) {
             HashMap<String, String> parameters = new HashMap<String, String>();
@@ -649,6 +729,10 @@ public class PlayState extends State {
             camera.position.y = player.getPosition().y;
         if(START_LEVEL) {
             while (blocks.size < BLOCKS_MAX_COUNT && BLOCK_COUNT_NOW < BLOCK_LEN) {
+                if(NEED_FLOOR) {
+                    NEED_FLOOR = false;
+                    addFloor((blocks.size-1)*BLOCK_SPACING);
+                }
                 char new_blocks = GameRunner.levels.levels.get(lvl).level.charAt(BLOCK_COUNT_NOW);
                 BLOCK_COUNT_NOW++;
                 switch (new_blocks) {
@@ -710,6 +794,7 @@ public class PlayState extends State {
                         addTiemr();
                         break;
                 }
+                blocks.addLast(new BlockCount(blocks.get(blocks.size-1).getPos().x + BLOCK_SPACING, Constants.Y0, Constants.B_COUNT));
             }
             if(IS_BOSS) {
                 if(heat) {
@@ -791,7 +876,7 @@ public class PlayState extends State {
             for (int i = 0; i < coins.size; ++i) {
                 Coin c = coins.get(i);
                 if(c.TYPE == 2) {
-                    System.out.print(""+c.getPos().x);
+                    //System.out.print(""+c.getPos().x);
                 }
                 if (camera.position.x - (camera.viewportWidth / 2) > c.getPos().x + c.getPos().x + 64) {
                     coins.get(i).dispose();
@@ -804,6 +889,9 @@ public class PlayState extends State {
                     //if (r.TYPE == Constants.B_FLOOR || r.TYPE == Constants.B_JUMP) {
                     //    GameRunner.score++;
                     //}
+                    if(r.TYPE == Constants.B_COUNT) {
+                        BLOCKS_COUNTER_FOR_REBORN++;
+                    }
                     blocks.get(i).dispose();
                     blocks.removeIndex(i);
                 }
@@ -838,14 +926,22 @@ public class PlayState extends State {
         tb.setProjectionMatrix(cam_btn.combined);
         tb.begin();
         bg.getBgSprite().draw(tb);
-        for(Sprite sp : bgEffect) {
-            sp.draw(tb);
+        //for(Sprite sp : bgEffect) {
+        //    sp.draw(tb);
+        //}
+        for(SpriteObj sp : bgEffectPos) {
+            bgEffectSprite.setCenter(sp._x, sp._y);
+            bgEffectSprite.setRotation(sp._rot);
+            bgEffectSprite.setScale(sp._scale);
+            bgEffectSprite.setColor(1,1,1,sp._color);
+            bgEffectSprite.draw(tb);
         }
+
         tb.end();
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
 
-        for(Sprite sp : playerTail) {
+        /*for(Sprite sp : playerTail) {
             if(player.color == 1)
                 sp.setColor(GameRunner.colors.blue);
             else if (player.color == 2)
@@ -854,10 +950,21 @@ public class PlayState extends State {
                 sp.setColor(GameRunner.colors.green);
             sp.draw(sb);
         }
-        Sprite sp = player.getSprite();
-        //sp.setRotation(player.getRot());
-        //sp.setCenter(player.getPosition().x, player.getPosition().y + 2);
-        sp.draw(sb);
+        */
+        for(SpriteObj sp : playerTailPos) {
+            playerTailSprite.setCenter(sp._x, sp._y);
+            playerTailSprite.setRotation(sp._rot);
+            playerTailSprite.setScale(sp._scale);
+            if(player.color == 1)
+                playerTailSprite.setColor(GameRunner.colors.blue);
+            else if (player.color == 2)
+                playerTailSprite.setColor(GameRunner.colors.red);
+            else
+                playerTailSprite.setColor(GameRunner.colors.green);
+            playerTailSprite.draw(sb);
+        }
+        player.getSprite().draw(sb);
+
 
         for (Block b : blocks) {
             b.getSprite(player.color).draw(sb);
@@ -927,6 +1034,8 @@ public class PlayState extends State {
         parameters.put("LEVEL", String.valueOf(lvl));
         FlurryAgent.logEvent("STOP_LEVEL", parameters);
         player.dispose();
+        bg.dispouse();
+
         pauseBtn.dispose();
         for(Block b : blocks) {
             b.dispose();
@@ -934,5 +1043,14 @@ public class PlayState extends State {
         for (Coin c : coins) {
             c.dispose();
         }
+        for(BlockBullet b : bul) {
+            b.dispose();
+        }
+        if(boss != null) {
+            boss.dispose();
+        }
+        bgEffectSprite.getTexture().dispose();
+        helpColorChange.getTexture().dispose();
+        playerTailSprite.getTexture().dispose();
     }
 }

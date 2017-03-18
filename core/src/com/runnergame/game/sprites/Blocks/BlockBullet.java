@@ -79,5 +79,8 @@ public class BlockBullet extends Block {
 
     @Override
     public void dispose() {
+        animOff.dispouse();
+        animOn.dispouse();
+        sprite.getTexture().dispose();
     }
 }

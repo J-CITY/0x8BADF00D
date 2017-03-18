@@ -60,7 +60,7 @@ public class BlockBoost extends Block {
         bounds.setPosition(pos.x, pos.y);
         bounds.setCenter(pos.x, pos.y);
         if(pos.x < _x - 160) {
-            pos.y -= 10;
+            pos.y -= GRAVITY;
             bounds.setCenter(pos.x, pos.y);
         }
     }
@@ -88,5 +88,8 @@ public class BlockBoost extends Block {
 
     @Override
     public void dispose() {
+        animOff.dispouse();
+        animOn.dispouse();
+        sprite.getTexture().dispose();
     }
 }

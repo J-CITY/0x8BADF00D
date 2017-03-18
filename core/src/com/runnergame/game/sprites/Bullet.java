@@ -73,6 +73,6 @@ public class Bullet {
     }
 
     public void dispose() {
-
+        sprite.getTexture().dispose();
     }
 }

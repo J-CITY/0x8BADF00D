@@ -37,12 +37,19 @@ public class SettingsState extends State {
         }
 
         lenguageLBtn = new Button("button/arrL", camera.position.x-200, camera.position.y+lbtnY);
+        lenguageLBtn.setScale(1.5f);
         lenguageRBtn = new Button("button/arrR", camera.position.x+200, camera.position.y+lbtnY);
+        lenguageRBtn.setScale(1.5f);
         closeBtn = new Button("button/close", camera.position.x-550, camera.position.y+cbtnY);
+        closeBtn.setScale(1.5f);
         onSoundBtn = new Button("button/audioOn", camera.position.x-200, camera.position.y+sbtnY);
+        onSoundBtn.setScale(1.5f);
         offSoundBtn = new Button("button/audioOff", camera.position.x-200, camera.position.y+sbtnY);
+        offSoundBtn.setScale(1.5f);
         onMusicBtn = new Button("button/musicOn", camera.position.x+200, camera.position.y+sbtnY);
+        onMusicBtn.setScale(1.5f);
         offMusicBtn = new Button("button/musicOff", camera.position.x+200, camera.position.y+sbtnY);
+        offMusicBtn.setScale(1.5f);
         bg = new Background(camera.position.x, camera.position.y, 0);
 
         headder.setCenter(camera.position.x, camera.position.y+330);
@@ -60,7 +67,7 @@ public class SettingsState extends State {
             } else {
                 offMusicBtn.updatePress(vec.x, vec.y);
             }
-            if(GameRunner.isPlay) {
+            if(GameRunner.soundVol != 0) {
                 onSoundBtn.updatePress(vec.x, vec.y);
             } else {
                 offSoundBtn.updatePress(vec.x, vec.y);
@@ -117,11 +124,11 @@ public class SettingsState extends State {
             }
             if(onMusicBtn.getIsPress()) {
                 onSoundBtn.setIsPress(false);
-                GameRunner.isPlay = !GameRunner.isPlay;
+                GameRunner.isPlay = false;
             }
             if(offMusicBtn.getIsPress()) {
                 offSoundBtn.setIsPress(false);
-                GameRunner.isPlay = !GameRunner.isPlay;
+                GameRunner.isPlay = true;
             }
             if(closeBtn.getIsPress()) {
                 closeBtn.setIsPress(false);
@@ -142,10 +149,16 @@ public class SettingsState extends State {
             lenguageRBtn.setPress(vec.x, vec.y);
             lenguageLBtn.setPress(vec.x, vec.y);
             closeBtn.setPress(vec.x, vec.y);
-            onSoundBtn.setPress(vec.x, vec.y);
-            offSoundBtn.setPress(vec.x, vec.y);
-            onMusicBtn.setPress(vec.x, vec.y);
-            offMusicBtn.setPress(vec.x, vec.y);
+            if(GameRunner.soundVol != 0) {
+                onSoundBtn.setPress(vec.x, vec.y);
+            } else {
+                offSoundBtn.setPress(vec.x, vec.y);
+            }
+            if(GameRunner.isPlay) {
+                onMusicBtn.setPress(vec.x, vec.y);
+            } else {
+                offMusicBtn.setPress(vec.x, vec.y);
+            }
         }
     }
 
@@ -193,7 +206,7 @@ public class SettingsState extends State {
         GameRunner.font.draw(sb, TITLE, camera.position.x - 400, camera.position.y + 350);
         GameRunner.font.draw(sb, Language, camera.position.x - 100, camera.position.y+5);
         GameRunner.font.draw(sb, "Music: http://www.bensound.com", camera.position.x - 250, camera.position.y-200);
-        System.out.print(Language+"\n");
+        //System.out.print(Language+"\n");
         lenguageLBtn.getSprite().draw(sb);
         lenguageRBtn.getSprite().draw(sb);
         closeBtn.getSprite().draw(sb);
@@ -219,5 +232,8 @@ public class SettingsState extends State {
         offMusicBtn.dispose();
         onSoundBtn.dispose();
         offSoundBtn.dispose();
+        closeBtn.dispose();
+        headder.getTexture().dispose();
+        bg.dispouse();
     }
 }

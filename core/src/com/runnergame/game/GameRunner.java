@@ -27,7 +27,7 @@ public class GameRunner implements ApplicationListener {
 	final String FONT_CHARS = "абвгдежзийклмнопрстуфхцчшщъыьэюяabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;:,{}\"´`'<>";
 	public static final int WIDTH = 1366;
 	public static final int HEIGHT = 768;
-	public static final String TITLE = "Change Color";
+	public static final String TITLE = "Chroma Runner";
 
 	private GameStateManager gsm;
 	private SpriteBatch batch;
@@ -80,6 +80,9 @@ public class GameRunner implements ApplicationListener {
 		firstRun = dm.load2("firstRun");
 		if(firstRun == 0) {
 			FlurryAgent.logEvent("FIRST_RUN", true);
+			long timeNow;
+			timeNow = System.currentTimeMillis();
+			dm.addDataTime("NCMODE", timeNow + 86400000);
 		} else {
 			FlurryAgent.logEvent("SESSION_LENGTH", true);
 		}
@@ -261,5 +264,6 @@ public class GameRunner implements ApplicationListener {
 		batch.dispose();
 		music.dispose();
 		soundPressBtn.dispose();
+		font.dispose();
 	}
 }

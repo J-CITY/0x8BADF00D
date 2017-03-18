@@ -105,5 +105,8 @@ public class Button {
     }
 
 
-    public void dispose() {}
+    public void dispose() {
+        spriteOff.getTexture().dispose();
+        spriteOn.getTexture().dispose();
+    }
 }

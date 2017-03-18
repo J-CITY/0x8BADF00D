@@ -60,8 +60,10 @@ public class Player {
             velosity.add(0, GRAVITY*SCL, 0);
         }
         velosity.scl(delta);
-        if(velosity.y < -5) velosity.y = -5;
+        //System.out.print("!!!" + delta + " " + velosity.y + "\n");
         //System.out.print(velosity.y+"\n");
+        if(velosity.y < -8) velosity.y = -8;
+
         position.add(0, velosity.y, 0);
         if(on_floor) {
             position.y = floor;
@@ -98,6 +100,8 @@ public class Player {
     }
 
     public void dispose() {
+        sprite.getTexture().dispose();
+        anim.dispouse();
     }
 
     public Rectangle getBounds() {
@@ -138,5 +142,10 @@ public class Player {
 
     public void changeColor() {
         color = color % colorSize + 1;
+    }
+
+    public void setVelosity(float x, float y) {
+        velosity.x = x;
+        velosity.y = y;
     }
 }

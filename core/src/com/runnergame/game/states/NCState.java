@@ -130,7 +130,7 @@ public class NCState extends State {
         for (Coin c : coins) {
             if (c.life) {
                 c.getSprite().draw(sb);
-                System.out.print(c.getPos().x+"\n");
+                //System.out.print(c.getPos().x+"\n");
             }
         }
         sb.end();
@@ -144,5 +144,13 @@ public class NCState extends State {
     @Override
     public void dispose() {
         player.dispose();
+        for(Sprite s : playerTail) {
+            s.getTexture().dispose();
+        }
+        for(Coin c : coins) {
+            c.dispose();
+        }
+        tb.dispose();
+        bg.dispouse();
     }
 }

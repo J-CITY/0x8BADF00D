@@ -35,6 +35,7 @@ public class PauseState extends State {
         onSoundBtn = new Button("button/musicOn", camera.position.x-530, camera.position.y+sbtnY);
         offSoundBtn = new Button("button/musicOff", camera.position.x-530, camera.position.y+sbtnY);
         exitBtn = new Button("button/close", camera.position.x-530, camera.position.y+ebtnY);
+        exitBtn.setScale(1.5f);
         bg = new Background(camera.position.x, camera.position.y, 0);
         headder.setCenter(camera.position.x, camera.position.y+330);
         headder.setScale(1, 0.5f);
@@ -166,9 +167,11 @@ public class PauseState extends State {
 
     @Override
     public void dispose() {
+        bg.dispouse();
         onSoundBtn.dispose();
         offSoundBtn.dispose();
         playBtn.dispose();
         restartBtn.dispose();
+        headder.getTexture().dispose();
     }
 }

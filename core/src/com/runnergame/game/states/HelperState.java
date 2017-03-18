@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.runnergame.game.GameRunner;
+import com.runnergame.game.sprites.Background;
 import com.runnergame.game.sprites.Button;
 
 
@@ -13,6 +14,7 @@ public class HelperState extends State {
     private Button okBtn;
     private Texture tex;
     private Sprite sprite;
+    Background bg;
 
     public HelperState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
@@ -31,6 +33,9 @@ public class HelperState extends State {
         sprite = new Sprite(tex);
         sprite.setCenter(camera.position.x, camera.position.y);
         sprite.setScale(0.7f);
+
+        bg = new Background(camera.position.x, camera.position.y, 0);
+
     }
 
     @Override
@@ -52,6 +57,7 @@ public class HelperState extends State {
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(camera.combined);
         sb.begin();
+        bg.getBgSprite().draw(sb);
         sprite.draw(sb);
         okBtn.getSprite().draw(sb);
         sb.end();
@@ -60,5 +66,8 @@ public class HelperState extends State {
     @Override
     public void dispose() {
         tex.dispose();
+        okBtn.dispose();
+        sprite.getTexture().dispose();
+        bg.dispouse();
     }
 }

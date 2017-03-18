@@ -56,7 +56,7 @@ public class BonusState extends State {
                 for(Button b : bonus) {
                     if(b.getIsPress()) {
                         b.setIsPress(false);
-                        Coins = MathUtils.random(10, 100);
+                        Coins = MathUtils.random(10, 30);
                         Metal = MathUtils.random(10, 100);
                         GameRunner.dm.addData2("coins",  GameRunner.dm.load2("coins") + Coins);
                         GameRunner.dm.addData2("metal",  GameRunner.dm.load2("metal") + Metal);
@@ -122,5 +122,7 @@ public class BonusState extends State {
         for(Button b : bonus) {
             b.dispose();
         }
+        okBtn.dispose();
+        bg.dispouse();
     }
 }

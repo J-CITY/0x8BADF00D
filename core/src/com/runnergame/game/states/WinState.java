@@ -38,8 +38,11 @@ public class WinState extends State {
         playBtn = new Button("button/next", camera.position.x, camera.position.y+cbtnY);
         playBtn.setScale(2);
         closeBtn = new Button("button/close", camera.position.x-530, camera.position.y+cbtnY);
+        closeBtn.setScale(1.5f);
         onSoundBtn = new Button("button/musicOn", camera.position.x-530, camera.position.y+sbtnY);
+        onSoundBtn.setScale(1.5f);
         offSoundBtn = new Button("button/musicOff", camera.position.x-530, camera.position.y+sbtnY);
+        offSoundBtn.setScale(1.5f);
         bg = new Background(camera.position.x, camera.position.y, 0);
         headder.setCenter(camera.position.x, camera.position.y+330);
         headder.setScale(1, 0.5f);
@@ -122,12 +125,14 @@ public class WinState extends State {
             playBtn.setPos(playBtn.getPos().x, camera.position.y + pbtnY);
         } else {
             pbtnY = pbtnY0;
+            playBtn.setPos(playBtn.getPos().x, camera.position.y + pbtnY);
         }
         if(cbtnY0 < cbtnY) {
             cbtnY -= speed*delta;
             closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
         } else {
             cbtnY = cbtnY0;
+            closeBtn.setPos(closeBtn.getPos().x, camera.position.y + cbtnY);
         }
         if(sbtnY0 > sbtnY) {
             sbtnY += speed*delta;
@@ -135,6 +140,8 @@ public class WinState extends State {
             onSoundBtn.setPos(onSoundBtn.getPos().x, camera.position.y + sbtnY);
         } else {
             sbtnY = sbtnY0;
+            offSoundBtn.setPos(offSoundBtn.getPos().x, camera.position.y + sbtnY);
+            onSoundBtn.setPos(onSoundBtn.getPos().x, camera.position.y + sbtnY);
         }
     }
 
@@ -163,5 +170,8 @@ public class WinState extends State {
         playBtn.dispose();
         onSoundBtn.dispose();
         offSoundBtn.dispose();
+        closeBtn.dispose();
+        headder.getTexture().dispose();
+        bg.dispouse();
     }
 }

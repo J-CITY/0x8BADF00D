@@ -8,24 +8,23 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
 import com.runnergame.game.GameRunner;
-import com.runnergame.game.Levels;
 import com.runnergame.game.sprites.Background;
 import com.runnergame.game.sprites.Button;
 
 /**
- * Created by 333da on 18.12.2016.
+ * Created by 333da on 16.02.2017.
  */
 
-public class InAppBillingState extends State {
+public class MetalShopState extends State {
     private Button buy1Btn, buy2Btn, buy3Btn, closeBtn;
-    private String TITLE = "COIN SHOP";
+    private String TITLE = "METAL SHOP";
     private final GlyphLayout layout = new GlyphLayout(GameRunner.font, TITLE);
 
     private Sprite headder = new Sprite(new Texture("headder.png"));
 
     private float b1btnY0 = 0, b1btnY = 400, cbtnY0 = 340, cbtnY = 400;
     Background bg;
-    public InAppBillingState(GameStateManager gameStateMenager) {
+    public MetalShopState(GameStateManager gameStateMenager) {
         super(gameStateMenager);
         //GameRunner.dm.addData2("coins", GameRunner.now_coins);
         camera.setToOrtho(false, GameRunner.WIDTH, GameRunner.HEIGHT);
@@ -57,7 +56,12 @@ public class InAppBillingState extends State {
                         time--;
                         if (time <= 2) {
                             time = 2;
-                            GameRunner.buyBtn100coins = true;
+                            if (GameRunner.dm.load2("coins") >= 100) {
+                                GameRunner.dm.addData2("coins", GameRunner.dm.load2("coins")-100);
+                                GameRunner.dm.addData2("metal", GameRunner.dm.load2("metal") + 100);
+                                GameRunner.now_coins = GameRunner.dm.load2("coins");
+                                GameRunner.now_metal = GameRunner.dm.load2("metal");
+                            }
                         }
                     }
                 }, 0.1f);
@@ -70,7 +74,12 @@ public class InAppBillingState extends State {
                         time--;
                         if (time <= 2) {
                             time = 2;
-                            GameRunner.buyBtn500coins = true;
+                            if (GameRunner.dm.load2("coins") >= 450) {
+                                GameRunner.dm.addData2("coins", GameRunner.dm.load2("coins")-450);
+                                GameRunner.dm.addData2("metal", GameRunner.dm.load2("metal") + 500);
+                                GameRunner.now_coins = GameRunner.dm.load2("coins");
+                                GameRunner.now_metal = GameRunner.dm.load2("metal");
+                            }
                         }
                     }
                 }, 0.1f);
@@ -83,7 +92,12 @@ public class InAppBillingState extends State {
                         time--;
                         if (time <= 2) {
                             time = 2;
-                            GameRunner.buyBtn1000coins = true;
+                            if (GameRunner.dm.load2("coins") >= 900) {
+                                GameRunner.dm.addData2("coins", GameRunner.dm.load2("coins")-900);
+                                GameRunner.dm.addData2("metal", GameRunner.dm.load2("metal") + 1000);
+                                GameRunner.now_coins = GameRunner.dm.load2("coins");
+                                GameRunner.now_metal = GameRunner.dm.load2("metal");
+                            }
                         }
                     }
                 }, 0.1f);
@@ -142,9 +156,11 @@ public class InAppBillingState extends State {
         bg.getBgSprite().draw(sb);
         headder.draw(sb);
         GameRunner.font.draw(sb, TITLE, camera.position.x - 400, camera.position.y + 350);
-        GameRunner.font.draw(sb, "100 Coins", camera.position.x-450, camera.position.y+100);
-        GameRunner.font.draw(sb, "500 Coins", camera.position.x-60, camera.position.y+100);
-        GameRunner.font.draw(sb, "1000 Coins", camera.position.x+330, camera.position.y+100);
+        GameRunner.font.draw(sb, "     COINS: " + GameRunner.now_coins, camera.position.x - 200, camera.position.y + 350);
+        GameRunner.font.draw(sb, "     METAL: " + GameRunner.now_metal, camera.position.x - 0, camera.position.y + 350);
+        GameRunner.font.draw(sb, "100 Metal for 100 Coins", camera.position.x-550, camera.position.y+100);
+        GameRunner.font.draw(sb, "500 Metal for 450 Coins", camera.position.x-170, camera.position.y+100);
+        GameRunner.font.draw(sb, "1000 Metal for 900 Coins", camera.position.x+230, camera.position.y+100);
         buy1Btn.getSprite().draw(sb);
         buy2Btn.getSprite().draw(sb);
         buy3Btn.getSprite().draw(sb);

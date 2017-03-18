@@ -12,6 +12,7 @@ public class Constants {
     public static int B_FINISH = 5;
     public static int B_NEEDLE = 1;
     public static int B_BEAM = 6;
+    public static int B_COUNT = 15;
 
     //BUILDINGS PARAM
     public static String CITI_PARAM = "City_lvl";
